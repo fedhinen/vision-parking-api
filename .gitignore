@@ -1,0 +1,9 @@
+#files of nodejs
+node_modules
+.env
+
+#files of prisma
+migrations
+
+#innecesary docs
+dist
