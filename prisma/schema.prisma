@@ -1,0 +1,278 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  usr_id           String             @id @default(uuid())
+  usr_name         String             @unique
+  usr_email        String             @unique
+  usr_password     String
+  usr_active       Boolean            @default(true)
+  usr_date         DateTime           @default(now())
+  tokens           tokens[]
+  sessions         sessions[]
+  reservations     reservations[]
+  rfid_assignments rfid_assignments[]
+  spot_assignments spot_assignments[]
+  company_users    company_users[]
+  user_roles       user_roles[]
+}
+
+model tokens {
+  tok_id              String   @id @default(uuid())
+  tok_token           String   @unique
+  usr_id              String
+  tok_expiration_date DateTime
+  tok_active          Boolean  @default(true)
+  tok_date            DateTime @default(now())
+
+  user users @relation(fields: [usr_id], references: [usr_id])
+}
+
+model sessions {
+  ses_id           String     @id @default(uuid())
+  usr_id           String
+  pry_name         Plataforma
+  ses_initial_date DateTime   @default(now())
+  ses_end_date     DateTime?
+  ses_active       Boolean    @default(true)
+  ses_created_by   String
+
+  user users @relation(fields: [usr_id], references: [usr_id])
+}
+
+model rfid_tags {
+  rft_id           String             @id @default(uuid())
+  rft_tag          String             @unique
+  rft_date         DateTime           @default(now())
+  rft_active       Boolean            @default(true)
+  rft_created_by   String
+  rfid_assignments rfid_assignments[]
+}
+
+model companies {
+  cmp_id        String          @id @default(uuid())
+  cmp_name      String          @unique
+  cmp_active    Boolean         @default(true)
+  cmp_date      DateTime        @default(now())
+  clients       clients[]
+  parking_lots  parking_lots[]
+  company_users company_users[]
+}
+
+model vehicles {
+  veh_id         String   @id @default(uuid())
+  veh_plate      String   @unique
+  veh_brand      String
+  veh_model      String
+  veh_color      String
+  veh_year       Int
+  veh_active     Boolean  @default(true)
+  veh_date       DateTime @default(now())
+  veh_created_by String
+}
+
+model status {
+  stu_id        String          @id @default(uuid())
+  stu_name      String          @unique
+  stu_table     String
+  stu_active    Boolean         @default(true)
+  parking_spots parking_spots[]
+  reservations  reservations[]
+}
+
+model log_actions {
+  log_id         String   @id @default(uuid())
+  log_table_name String
+  log_field_id   String
+  log_body       Json
+  log_action     String
+  log_response   Json
+  log_date       DateTime @default(now())
+  log_created_by String
+}
+
+model roles {
+  rol_id           String             @id @default(uuid())
+  rol_name         String             @unique
+  rol_active       Boolean            @default(true)
+  rol_date         DateTime           @default(now())
+  user_roles       user_roles[]
+  role_permissions role_permissions[]
+}
+
+model permissions {
+  per_id           String             @id @default(uuid())
+  per_name         String             @unique
+  per_description  String
+  per_active       Boolean            @default(true)
+  per_date         DateTime           @default(now())
+  role_permissions role_permissions[]
+}
+
+model clients {
+  cte_id         String   @id @default(uuid())
+  cte_name       String   @unique
+  cte_phone      String
+  cte_email      String
+  cte_address    String
+  cte_zipcode    String
+  cmp_id         String
+  cte_active     Boolean  @default(true)
+  cte_date       DateTime @default(now())
+  cte_created_by String
+
+  company companies @relation(fields: [cmp_id], references: [cmp_id])
+}
+
+model parking_lots {
+  pkl_id         String   @id @default(uuid())
+  cmp_id         String
+  pkl_name       String   @unique
+  pkl_active     Boolean  @default(true)
+  pkl_date       DateTime @default(now())
+  pkl_created_by String
+
+  company companies @relation(fields: [cmp_id], references: [cmp_id])
+}
+
+model parking_spots {
+  pks_id         String   @id @default(uuid())
+  pkl_id         String
+  stu_id         String
+  pks_number     String
+  pkl_date       DateTime @default(now())
+  pks_created_by String
+
+  status           status             @relation(fields: [stu_id], references: [stu_id])
+  reservations     reservations[]
+  spot_assignments spot_assignments[]
+}
+
+model spot_assignments {
+  spa_id         String   @id @default(uuid())
+  pks_id         String
+  usr_id         String
+  spa_active     Boolean  @default(true)
+  spa_date       DateTime @default(now())
+  spa_created_by String
+
+  parking_spot parking_spots @relation(fields: [pks_id], references: [pks_id])
+  user         users         @relation(fields: [usr_id], references: [usr_id])
+}
+
+model reservations {
+  rsv_id           String   @id @default(uuid())
+  usr_id           String
+  pks_id           String
+  stu_id           String
+  rsv_initial_date DateTime
+  rsv_end_date     DateTime
+  rsv_reason       String
+  rsv_date         DateTime @default(now())
+  rsv_created_by   String
+
+  user         users         @relation(fields: [usr_id], references: [usr_id])
+  parking_spot parking_spots @relation(fields: [pks_id], references: [pks_id])
+  status       status        @relation(fields: [stu_id], references: [stu_id])
+}
+
+model reservation_cancellations {
+  rsc_id          String   @id @default(uuid())
+  rsv_id          String
+  rsc_description String
+  rsc_active      Boolean  @default(true)
+  rsc_date        DateTime @default(now())
+  rsc_created_by  String
+}
+
+model rfid_assignments {
+  rfa_id            String   @id @default(uuid())
+  rft_id            String
+  usr_id            String
+  rfa_assigned_date DateTime @default(now())
+  rfa_active        Boolean  @default(true)
+  rfa_created_by    String
+
+  rfid_tag rfid_tags @relation(fields: [rft_id], references: [rft_id])
+  user     users     @relation(fields: [usr_id], references: [usr_id])
+}
+
+model company_access_requests {
+  cma_id            String    @id @default(uuid())
+  usr_id            String
+  cmp_id            String
+  stu_id            String
+  cma_description   String
+  cma_approved_by   String?
+  cma_approved_date DateTime?
+  cma_active        Boolean   @default(true)
+  cma_date          DateTime  @default(now())
+  cma_created_by    String
+}
+
+model files {
+  fil_id          String   @id @default(uuid())
+  fil_name        String
+  fil_relation_id String
+  fil_path        String
+  fil_type        String
+  fil_size        Int
+  fil_active      Boolean  @default(true)
+  fil_date        DateTime @default(now())
+  fil_created_by  String
+}
+
+model user_vehicles {
+  uv_id         String   @id @default(uuid())
+  usr_id        String
+  veh_id        String
+  uv_active     Boolean  @default(true)
+  uv_date       DateTime @default(now())
+  uv_created_by String
+}
+
+model role_permissions {
+  rp_id  String @id @default(uuid())
+  rol_id String
+  per_id String
+
+  role       roles       @relation(fields: [rol_id], references: [rol_id])
+  permission permissions @relation(fields: [per_id], references: [per_id])
+}
+
+model user_roles {
+  ur_id  String @id @default(uuid())
+  usr_id String
+  rol_id String
+
+  user users @relation(fields: [usr_id], references: [usr_id])
+  role roles @relation(fields: [rol_id], references: [rol_id])
+}
+
+model company_users {
+  cu_id  String @id @default(uuid())
+  cmp_id String
+  usr_id String
+
+  user    users     @relation(fields: [usr_id], references: [usr_id])
+  company companies @relation(fields: [cmp_id], references: [cmp_id])
+}
+
+enum Plataforma {
+  VISION_PARKING_WEB
+  VISION_PARKING_DESKTOP
+  VISION_PARKING_MOVIL
+}
