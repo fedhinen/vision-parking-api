@@ -7,3 +7,4 @@ migrations
 
 #innecesary docs
 dist
+/generated/prisma
