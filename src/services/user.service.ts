@@ -1,4 +1,4 @@
-import { AuthError, InternalServerError } from "../middleware/error"
+import { AuthError, InternalServerError } from "../middleware/error/error"
 import { ERROR_CATALOG } from "../utils/error-catalog"
 import { prisma } from "../utils/lib/prisma"
 import argon2 from "argon2"

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { userService } from "../services/user.service";
 import { signinSchema, userSchema } from "../schemas/user.schema";
-import { ValidationError } from "../middleware/error";
+import { ValidationError } from "../middleware/error/error";
 import { verifyCodeSchema } from "../schemas/code.schema";
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
