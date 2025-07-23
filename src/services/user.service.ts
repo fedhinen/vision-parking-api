@@ -202,7 +202,7 @@ const generateToken = async (usr_id: string) => {
   const secretKey = process.env.JWT_KEY || "";
 
   const token = jwt.sign(
-    { usr_id: user.usr_id, usr_email: user.usr_email },
+    { usr_id: user.usr_id },
     secretKey
   );
 
@@ -240,5 +240,6 @@ const getUserById = async (usr_id: string) => {
 export const userService = {
   signup,
   signin,
-  verifyCode
+  verifyCode,
+  getUserById
 }

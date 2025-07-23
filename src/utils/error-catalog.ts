@@ -55,6 +55,10 @@ export const ERROR_CATALOG = {
         "AUTH014": {
             "message": "Usuario no encontrado",
             "status": 404
+        },
+        "AUTH015": {
+            "message": "No contiene la cabecera de autorización",
+            "status": 500
         }
     },
     "validation": {
@@ -239,7 +243,11 @@ export const ERROR_CATALOG = {
         "LNG034": {
             "message": "Error al tratar de eliminar la solicitud",
             "status": 500
-        }
+        },
+        "LNG035": {
+            "message": "Error al tratar de crear la compania",
+            "status": 500
+        },
     }
 }
 
@@ -247,6 +255,7 @@ export const FIELD_NAMES: Record<string, string> = {
     "usr_name": "Usuario",
     "usr_email": "Correo electrónico",
     "usr_password": "Contraseña",
+    "cmp_name": "Nombre de la empresa",
     "veh_plate": "Placa del vehículo",
     "veh_brand": "Marca del vehículo",
     "veh_model": "Modelo del vehículo",

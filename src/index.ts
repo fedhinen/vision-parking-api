@@ -12,3 +12,15 @@ app.use(errorHandler)
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
 })
+
+declare global {
+    namespace Express {
+        interface Request {
+            user?: {
+                usr_id: string;
+                usr_email: string;
+                usr_name: string;
+            };
+        }
+    }
+}
