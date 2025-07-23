@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpError, ValidationError } from "./error";
 
-export const errorHandler = (err:any,req:Request,res:Response,next:NextFunction) => {
-    if(err instanceof HttpError){
+export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+    if (err instanceof HttpError) {
         const errorMessage = err.message
         const errorStatus = err.status
 
@@ -11,13 +11,14 @@ export const errorHandler = (err:any,req:Request,res:Response,next:NextFunction)
         });
     }
 
-    if(err instanceof ValidationError){
+    if (err instanceof ValidationError) {
         return res.status(err.status).json({
-            errors:err.errors
+            errors: err.errors
         })
     }
 
-    else{
-        return res.status(500).json({message:"Error no controlado"})
+    else {
+        console.log(err)
+        return res.status(500).json({ message: "Error no controlado" })
     }
 }

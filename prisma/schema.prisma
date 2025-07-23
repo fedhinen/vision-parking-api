@@ -33,7 +33,7 @@ model users {
 
 model tokens {
   tok_id              String   @id @default(uuid())
-  tok_token           String   @unique
+  tok_token           String   @db.LongText()
   usr_id              String
   tok_expiration_date DateTime
   tok_active          Boolean  @default(true)
@@ -181,7 +181,7 @@ model reservations {
   stu_id           String
   rsv_initial_date DateTime
   rsv_end_date     DateTime
-  rsv_reason       String
+  rsv_reason       String   @db.LongText()
   rsv_date         DateTime @default(now())
   rsv_created_by   String
 
@@ -193,7 +193,7 @@ model reservations {
 model reservation_cancellations {
   rsc_id          String   @id @default(uuid())
   rsv_id          String
-  rsc_description String
+  rsc_description String   @db.LongText()
   rsc_active      Boolean  @default(true)
   rsc_date        DateTime @default(now())
   rsc_created_by  String
@@ -275,7 +275,7 @@ model company_users {
 model user_codes {
   cod_id              String   @id @default(uuid())
   usr_id              String
-  cod_code            String
+  cod_code            String   @db.LongText()
   cod_expiration_date DateTime
   cod_active          Boolean  @default(false)
   cod_date            DateTime @default(now())

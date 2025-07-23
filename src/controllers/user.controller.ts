@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { userService } from "../services/user.service";
 import { signinSchema, userSchema } from "../schemas/user.schema";
 import { ValidationError } from "../middleware/error";
+import { verifyCodeSchema } from "../schemas/code.schema";
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
     const result = userSchema.safeParse(req.body)
@@ -30,18 +31,26 @@ const signin = async (req: Request, res: Response, next: NextFunction) => {
     const body = result.data
 
     try {
-        const user = await userService.signin(body)
-        res.status(200).json(user)
+        await userService.signin(body)
+        res.status(200).json({
+            message: "Se te ha enviado un codigo de verificacion a tu correo",
+        })
     } catch (error) {
         next(error)
     }
 }
 
-const validateCode = async (req: Request, res: Response, next: NextFunction) => {
-    const { usr_email, cod_code } = req.body
+const verifyCode = async (req: Request, res: Response, next: NextFunction) => {
+    const result = verifyCodeSchema.safeParse(req.body)
+
+    if (!result.success) {
+        throw new ValidationError(result.error)
+    }
+
+    const body = result.data
 
     try {
-        const userValidated = await userService.validateCode(usr_email, cod_code)
+        const userValidated = await userService.verifyCode(body)
 
         res.status(200).json({
             message: "Codigo verificado correctamente",
@@ -54,5 +63,6 @@ const validateCode = async (req: Request, res: Response, next: NextFunction) => 
 
 export const userController = {
     signup,
-    signin
+    signin,
+    verifyCode
 }

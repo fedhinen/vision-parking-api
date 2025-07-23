@@ -66,9 +66,8 @@ const signin = async (body: any) => {
   const isRegister = await userExists(usr_email, usr_password)
 
   try {
-
     const userCode = await generateCode(isRegister)
-    await sendEmail(userCode.usr_email, userCode.cod_code)
+    //await sendEmail(userCode.usr_email, userCode.cod_code)
 
   } catch (error) {
     throw new InternalServerError(AUTH009);
@@ -98,6 +97,16 @@ const userExists = async (usr_email: string, usr_password: string) => {
 
 const generateCode = async (isRegister: any) => {
   try {
+    await prisma.user_codes.updateMany({
+      where: {
+        usr_id: isRegister.usr_id,
+        cod_active: true,
+      },
+      data: {
+        cod_active: false,
+      },
+    })
+
     const code = Math.floor(100000 + Math.random() * 900000)
 
     await prisma.user_codes.create({
@@ -120,12 +129,12 @@ const generateCode = async (isRegister: any) => {
 
 const sendEmail = async (email: string, code: number) => {
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: parseInt(process.env.EMAIL_PORT || "587"),
+    host: process.env.MAIL_HOST,
+    port: parseInt(process.env.MAIL_PORT || "587"),
     secure: false,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASSWORD,
     },
   });
 
@@ -139,7 +148,9 @@ const sendEmail = async (email: string, code: number) => {
   await transporter.sendMail(mailOptions);
 }
 
-const validateCode = async (usr_id: string, code: number) => {
+const verifyCode = async (body: any) => {
+  const { usr_id, cod_code } = body;
+
   const userCode = await prisma.user_codes.findFirst({
     where: {
       usr_id,
@@ -151,16 +162,16 @@ const validateCode = async (usr_id: string, code: number) => {
     throw new AuthError(AUTH011);
   }
 
-  const isExpired = userCode.cod_expiration_date > new Date();
-
-  if (isExpired) {
-    throw new AuthError(AUTH013);
-  }
-
-  const isValid = await argon2.verify(userCode.cod_code, code.toString());
+  const isValid = await argon2.verify(userCode.cod_code, String(cod_code));
 
   if (!isValid) {
     throw new AuthError(AUTH012);
+  }
+
+  const isExpired = new Date() > userCode.cod_expiration_date;
+
+  if (isExpired) {
+    throw new AuthError(AUTH013);
   }
 
   await prisma.user_codes.update({
@@ -229,5 +240,5 @@ const getUserById = async (usr_id: string) => {
 export const userService = {
   signup,
   signin,
-  validateCode
+  verifyCode
 }
