@@ -70,18 +70,14 @@ COPY --from=builder /app/package.json ./
 # Change ownership to non-root user
 RUN chown -R appuser:appgroup /app
 
+EXPOSE 30000
+
 # Switch to non-root user
 USER appuser
 
-ARG PORT
-ENV PORT=${PORT}
-
-# Expose port (adjust if your app uses a different port)
-EXPOSE ${PORT}
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+    CMD node -e "require('http').get('http://localhost:30000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
 
 # Start the application
 CMD ["node", "dist/index.js"]
