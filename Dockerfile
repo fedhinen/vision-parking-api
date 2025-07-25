@@ -70,6 +70,8 @@ COPY --from=builder /app/package.json ./
 # Change ownership to non-root user
 RUN chown -R appuser:appgroup /app
 
+EXPOSE 30000
+
 # Switch to non-root user
 USER appuser
 
