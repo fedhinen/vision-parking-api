@@ -1,11 +1,19 @@
 import z from "zod";
+import { ERROR_CATALOG } from "../utils/error-catalog";
 
 export const vehicleSchema = z.object({
-    veh_plate: z.string().min(1, "Placa del vehículo es requerida"),
-    veh_brand: z.string().min(1, "Marca del vehículo es requerida"),
-    veh_model: z.string().min(1, "Modelo del vehículo es requerido"),
-    veh_color: z.string().min(1, "Color del vehículo es requerido"),
-    veh_year: z.number().int().min(1900, "Año debe ser mayor a 1900").max(new Date().getFullYear() + 1, "Año no puede ser futuro")
+    veh_plate: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+    veh_brand: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+    veh_model: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+    veh_color: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+    veh_year: z.number(ERROR_CATALOG.validation.VAL002.message)
+        .int()
+        .min(1900, "Año debe ser mayor a 1900")
+        .max(new Date().getFullYear() + 1, "Año no puede ser futuro")
 });
 
 export const updateVehicleSchema = vehicleSchema.partial();

@@ -1,12 +1,18 @@
 import z from "zod";
+import { ERROR_CATALOG } from "../utils/error-catalog";
 
 export const clientSchema = z.object({
-    cte_name: z.string().min(1, "Nombre del cliente es requerido"),
-    cte_phone: z.string().min(1, "Teléfono es requerido"),
-    cte_email: z.email("Formato de email inválido"),
-    cte_address: z.string().min(1, "Dirección es requerida"),
-    cte_zipcode: z.string().min(1, "Código postal es requerido"),
-    cmp_id: z.uuid("ID de compañía debe ser un UUID válido")
+    cte_name: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+    cte_phone: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+    cte_email: z.email(ERROR_CATALOG.validation.VAL010.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+    cte_address: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+    cte_zipcode: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+    cmp_id: z.uuid(ERROR_CATALOG.validation.VAL002.message)
 });
 
 export const updateClientSchema = clientSchema.partial();

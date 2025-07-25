@@ -1,8 +1,9 @@
 import z from "zod";
+import { ERROR_CATALOG } from "../utils/error-catalog";
 
 export const rfidAssignmentSchema = z.object({
-    rft_id: z.uuid("ID del tag RFID debe ser un UUID válido"),
-    usr_id: z.uuid("ID del usuario debe ser un UUID válido")
+    rft_id: z.uuid(ERROR_CATALOG.validation.VAL002.message),
+    usr_id: z.uuid(ERROR_CATALOG.validation.VAL002.message)
 });
 
 export const updateRfidAssignmentSchema = rfidAssignmentSchema.partial();

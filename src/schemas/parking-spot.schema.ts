@@ -1,9 +1,11 @@
 import z from "zod";
+import { ERROR_CATALOG } from "../utils/error-catalog";
 
 export const parkingSpotSchema = z.object({
-    pkl_id: z.uuid("ID del estacionamiento debe ser un UUID válido"),
-    stu_id: z.uuid("ID del estado debe ser un UUID válido"),
-    pks_number: z.string().min(1, "Número del cajón es requerido")
+    pkl_id: z.uuid(ERROR_CATALOG.validation.VAL002.message),
+    stu_id: z.uuid(ERROR_CATALOG.validation.VAL002.message),
+    pks_number: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1))
 });
 
 export const updateParkingSpotSchema = parkingSpotSchema.partial();

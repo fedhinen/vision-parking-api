@@ -1,18 +1,16 @@
 import { z } from "zod";
+import { ERROR_CATALOG } from "../utils/error-catalog";
 
 export const uploadFileSchema = z.object({
     body: z.object({
-        fil_relation_id: z.string({
-            message: "fil_relation_id es requerido y debe ser una cadena"
-        }).min(1, "fil_relation_id no puede estar vacío")
+        fil_relation_id: z.string(ERROR_CATALOG.validation.VAL001.message)
+            .min(1, ERROR_CATALOG.validation.VAL007.message(1))
     })
 });
 
 export const fileIdSchema = z.object({
     params: z.object({
-        id: z.uuid({
-            message: "ID del archivo es requerido y debe ser un UUID"
-        })
+        id: z.uuid(ERROR_CATALOG.validation.VAL002.message)
     })
 });
 

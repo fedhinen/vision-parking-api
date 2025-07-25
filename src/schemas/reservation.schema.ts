@@ -1,12 +1,14 @@
 import z from "zod";
+import { ERROR_CATALOG } from "../utils/error-catalog";
 
 export const reservationSchema = z.object({
-    usr_id: z.uuid("ID del usuario debe ser un UUID válido"),
-    pks_id: z.uuid("ID del cajón debe ser un UUID válido"),
-    stu_id: z.uuid("ID del estado debe ser un UUID válido"),
-    rsv_initial_date: z.date(),
-    rsv_end_date: z.date(),
-    rsv_reason: z.string().min(1, "Razón de la reserva es requerida")
+    usr_id: z.uuid(ERROR_CATALOG.validation.VAL002.message),
+    pks_id: z.uuid(ERROR_CATALOG.validation.VAL002.message),
+    stu_id: z.uuid(ERROR_CATALOG.validation.VAL002.message),
+    rsv_initial_date: z.date(ERROR_CATALOG.validation.VAL009.message),
+    rsv_end_date: z.date(ERROR_CATALOG.validation.VAL009.message),
+    rsv_reason: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1))
 }).refine((data) => data.rsv_end_date > data.rsv_initial_date, {
     message: "La fecha final debe ser posterior a la fecha inicial",
     path: ["rsv_end_date"]
