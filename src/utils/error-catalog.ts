@@ -259,6 +259,110 @@ export const ERROR_CATALOG = {
         "LNG038": {
             "message": "Error al tratar de eliminar la compañia",
             "status": 500
+        },
+        "LNG039": {
+            "message": "Error al tratar de crear el cliente",
+            "status": 500
+        },
+        "LNG040": {
+            "message": "Error al tratar de actualizar el cliente",
+            "status": 500
+        },
+        "LNG041": {
+            "message": "Error al tratar de eliminar el cliente",
+            "status": 500
+        },
+        "LNG042": {
+            "message": "Error al tratar de crear el vehículo",
+            "status": 500
+        },
+        "LNG043": {
+            "message": "Vehículo no encontrado",
+            "status": 404
+        },
+        "LNG044": {
+            "message": "Error al tratar de actualizar el vehículo",
+            "status": 500
+        },
+        "LNG045": {
+            "message": "Error al tratar de crear el estacionamiento",
+            "status": 500
+        },
+        "LNG046": {
+            "message": "Estacionamiento no encontrado",
+            "status": 404
+        },
+        "LNG047": {
+            "message": "Error al tratar de actualizar el estacionamiento",
+            "status": 500
+        },
+        "LNG048": {
+            "message": "Error al tratar de crear el cajón",
+            "status": 500
+        },
+        "LNG049": {
+            "message": "Cajón no encontrado",
+            "status": 404
+        },
+        "LNG050": {
+            "message": "Error al tratar de actualizar el cajón",
+            "status": 500
+        },
+        "LNG051": {
+            "message": "Error al tratar de crear la reserva",
+            "status": 500
+        },
+        "LNG052": {
+            "message": "Reserva no encontrada",
+            "status": 404
+        },
+        "LNG053": {
+            "message": "Error al tratar de actualizar la reserva",
+            "status": 500
+        },
+        "LNG054": {
+            "message": "Error al tratar de eliminar la reserva",
+            "status": 500
+        },
+        "LNG055": {
+            "message": "Error al tratar de crear la asignación RFID",
+            "status": 500
+        },
+        "LNG056": {
+            "message": "Asignación RFID no encontrada",
+            "status": 404
+        },
+        "LNG057": {
+            "message": "Error al tratar de actualizar la asignación RFID",
+            "status": 500
+        },
+        "LNG058": {
+            "message": "Error al tratar de eliminar la asignación RFID",
+            "status": 500
+        },
+        "LNG059": {
+            "message": "Error al tratar de crear la asignación de cajón",
+            "status": 500
+        },
+        "LNG060": {
+            "message": "Asignación de cajón no encontrada",
+            "status": 404
+        },
+        "LNG061": {
+            "message": "Error al tratar de actualizar la asignación de cajón",
+            "status": 500
+        },
+        "LNG062": {
+            "message": "Error al tratar de eliminar la asignación de cajón",
+            "status": 500
+        },
+        "LNG063": {
+            "message": "Solicitud de acceso no encontrada",
+            "status": 404
+        },
+        "LNG064": {
+            "message": "Error al tratar de actualizar la solicitud de acceso",
+            "status": 500
         }
     }
 }
