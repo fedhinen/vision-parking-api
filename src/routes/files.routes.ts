@@ -5,19 +5,17 @@ import { authenticate } from "../middleware/authenticate";
 
 const router = Router();
 
-router.get("/", authenticate,)
-
 router.post(
-    "/upload",
+    "/files/upload",
     authenticate,
     upload.single("file"),
     uploadFile
 );
 
-router.get("/download/:id", downloadFile);
+router.get("/files/download/:id", downloadFile);
 
-router.get("/info/:fil_relation_id", getFileInfo);
+router.get("/files/info/:fil_relation_id", getFileInfo);
 
-router.delete("/:id", authenticate, deleteFile);
+router.delete("/files/:id", authenticate, deleteFile);
 
 export { router as filesRoutes };
