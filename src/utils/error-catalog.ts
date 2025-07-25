@@ -248,6 +248,18 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de crear la compania",
             "status": 500
         },
+        "LNG036": {
+            "message": "Compañia no encontrada",
+            "status": 404
+        },
+        "LNG037": {
+            "message": "Error al tratar de actualizar la compañia",
+            "status": 500
+        },
+        "LNG038": {
+            "message": "Error al tratar de eliminar la compañia",
+            "status": 500
+        }
     }
 }
 
