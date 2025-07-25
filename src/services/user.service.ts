@@ -67,7 +67,8 @@ const signin = async (body: any) => {
 
   try {
     const userCode = await generateCode(isRegister)
-    //await sendEmail(userCode.usr_email, userCode.cod_code)
+    console.log('usercode', { userCode });
+    await sendEmail(userCode.usr_email, userCode.cod_code)
 
   } catch (error) {
     throw new InternalServerError(AUTH009);
