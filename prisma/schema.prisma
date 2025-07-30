@@ -15,20 +15,21 @@ datasource db {
 }
 
 model users {
-  usr_id           String             @id @default(uuid())
-  usr_name         String             @unique
-  usr_email        String             @unique
-  usr_password     String
-  usr_active       Boolean            @default(true)
-  usr_date         DateTime           @default(now())
-  tokens           tokens[]
-  sessions         sessions[]
-  reservations     reservations[]
-  rfid_assignments rfid_assignments[]
-  spot_assignments spot_assignments[]
-  company_users    company_users[]
-  user_roles       user_roles[]
-  user_codes       user_codes[]
+  usr_id                String                  @id @default(uuid())
+  usr_name              String                  @unique
+  usr_email             String                  @unique
+  usr_password          String
+  usr_active            Boolean                 @default(true)
+  usr_date              DateTime                @default(now())
+  tokens                tokens[]
+  sessions              sessions[]
+  reservations          reservations[]
+  rfid_assignments      rfid_assignments[]
+  spot_assignments      spot_assignments[]
+  company_users         company_users[]
+  user_roles            user_roles[]
+  user_codes            user_codes[]
+  reset_password_tokens reset_password_tokens[]
 }
 
 model tokens {
@@ -38,6 +39,17 @@ model tokens {
   tok_expiration_date DateTime
   tok_active          Boolean  @default(true)
   tok_date            DateTime @default(now())
+
+  user users @relation(fields: [usr_id], references: [usr_id])
+}
+
+model reset_password_tokens {
+  rpt_id              String   @id @default(uuid())
+  rpt_token           String
+  usr_id              String
+  rpt_expiration_data DateTime
+  rpt_used            Boolean  @default(false)
+  rpt_date            DateTime
 
   user users @relation(fields: [usr_id], references: [usr_id])
 }

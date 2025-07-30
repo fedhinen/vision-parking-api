@@ -1,9 +1,10 @@
 import { AuthError, InternalServerError } from "../middleware/error/error"
 import { ERROR_CATALOG } from "../utils/error-catalog"
+import { sendEmail } from "../utils/functions"
 import { prisma } from "../utils/lib/prisma"
 import argon2 from "argon2"
 import jwt from "jsonwebtoken"
-import nodemailer from "nodemailer"
+
 
 const
   {
@@ -67,7 +68,7 @@ const signin = async (body: any) => {
 
   try {
     const userCode = await generateCode(isRegister)
-    //await sendEmail(userCode.usr_email, userCode.cod_code)
+    //await sendCodeEmail(userCode.usr_email, userCode.cod_code)
 
   } catch (error) {
     throw new InternalServerError(AUTH009);
@@ -127,25 +128,15 @@ const generateCode = async (isRegister: any) => {
   }
 }
 
-const sendEmail = async (email: string, code: number) => {
-  const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST,
-    port: parseInt(process.env.MAIL_PORT || "587"),
-    secure: false,
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASSWORD,
-    },
-  });
-
+const sendCodeEmail = async (email: string, code: number) => {
   const mailOptions = {
-    from: `"Vision Parking" <${process.env.EMAIL_USER}>`,
+    from: "vision.parking@gmail.com",
     to: email,
     subject: "Código de Verificación",
     text: `Tu código de verificación es: ${code}`,
   };
 
-  await transporter.sendMail(mailOptions);
+  await sendEmail(mailOptions)
 }
 
 const verifyCode = async (body: any) => {
@@ -235,6 +226,32 @@ const getUserById = async (usr_id: string) => {
   }
 
   return user;
+}
+
+const sendChangePasswordEmail = async (usr_email: string) => {
+  const user = await prisma.users.findUnique({
+    where: {
+      usr_email
+    }
+  })
+
+  if (!user) {
+    throw new AuthError(AUTH014)
+  }
+
+  const token = crypto.randomUUID()
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
+
+  const resetLink = `http://localhost:5173/reset-password?token=${token}`
+
+  const mailOptions = {
+    from: "vision.parking@gmail.com",
+    to: user?.usr_email,
+    subject: "Reestablece tu contraseña",
+    text: `Haz click en este enlace para reestablecer tu contraseña: ${resetLink}`,
+  }
+
+  sendEmail(mailOptions)
 }
 
 export const userService = {
