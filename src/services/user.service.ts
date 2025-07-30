@@ -4,6 +4,7 @@ import { sendEmail } from "../utils/functions"
 import { prisma } from "../utils/lib/prisma"
 import argon2 from "argon2"
 import jwt from "jsonwebtoken"
+import { mailTemplates } from "../utils/lib/mail/templates"
 
 
 const
@@ -68,7 +69,7 @@ const signin = async (body: any) => {
 
   try {
     const userCode = await generateCode(isRegister)
-    //await sendCodeEmail(userCode.usr_email, userCode.cod_code)
+    await sendCodeEmail(userCode.usr_email, userCode.cod_code)
 
   } catch (error) {
     throw new InternalServerError(AUTH009);
@@ -114,7 +115,7 @@ const generateCode = async (isRegister: any) => {
       data: {
         usr_id: isRegister.usr_id,
         cod_code: await argon2.hash(code.toString()),
-        cod_expiration_date: new Date(Date.now() + 1000 * 60 * 3),
+        cod_expiration_date: new Date(Date.now() + 1000 * 60 * 5),
         cod_active: true,
       }
     })
@@ -130,10 +131,10 @@ const generateCode = async (isRegister: any) => {
 
 const sendCodeEmail = async (email: string, code: number) => {
   const mailOptions = {
-    from: "vision.parking@gmail.com",
+    from: process.env.MAIL_FROM,
     to: email,
     subject: "Código de Verificación",
-    text: `Tu código de verificación es: ${code}`,
+    html: mailTemplates.codeTemplate(code),
   };
 
   await sendEmail(mailOptions)
@@ -245,10 +246,10 @@ const sendChangePasswordEmail = async (usr_email: string) => {
   const resetLink = `http://localhost:5173/reset-password?token=${token}`
 
   const mailOptions = {
-    from: "vision.parking@gmail.com",
+    from: process.env.MAIL_FROM,
     to: user?.usr_email,
     subject: "Reestablece tu contraseña",
-    text: `Haz click en este enlace para reestablecer tu contraseña: ${resetLink}`,
+    html: mailTemplates.changePasswordTemplate,
   }
 
   sendEmail(mailOptions)

@@ -7,9 +7,14 @@ export const sendEmail = async (mailOptions: any) => {
         secure: false,
         auth: {
             user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASSWORD,
+            pass: process.env.MAIL_PASS,
         },
     });
 
-    await transporter.sendMail(mailOptions);
+    try {
+        await transporter.sendMail(mailOptions);
+    } catch (error) {
+        console.error("Error al enviar el correo:", error);
+        throw error
+    }
 }
