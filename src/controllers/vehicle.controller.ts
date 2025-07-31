@@ -19,10 +19,10 @@ const getCompanyVehicles = async (req: Request, res: Response, next: NextFunctio
 }
 
 const getUserVehicles = async (req: Request, res: Response, next: NextFunction) => {
-    const { userId } = req.params;
+    const { id } = req.params;
 
     try {
-        const vehicles = await vehicleService.getUserVehicles(userId);
+        const vehicles = await vehicleService.getUserVehicles(id);
 
         res.status(200).json({
             message: "Vehículos encontrados correctamente",

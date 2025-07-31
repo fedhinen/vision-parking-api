@@ -2,7 +2,7 @@
 import { prisma } from "../utils/lib/prisma";
 import { BadRequestError, ConflictError, InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
-import { PrismaClientKnownRequestError } from "../../generated/prisma/runtime/library";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const {
     LNG011,
@@ -73,7 +73,8 @@ const getUserVehicles = async (userId: string) => {
     try {
         const userVehicles = await prisma.user_vehicles.findMany({
             where: {
-                usr_id: userId
+                usr_id: userId,
+                uv_active: true
             }
         })
 
