@@ -1,32 +1,154 @@
 
 import { prisma } from "../utils/lib/prisma";
-import { InternalServerError, NotFoundError } from "../middleware/error/error";
+import { BadRequestError, ConflictError, InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
-import { vehicleSchema, updateVehicleSchema, VehicleSchema, UpdateVehicleSchema } from "../schemas/vehicle.schema";
+import { PrismaClientKnownRequestError } from "../../generated/prisma/runtime/library";
 
 const {
+    LNG011,
     LNG043,
     LNG042,
     LNG044,
-    LNG031
+    LNG031,
+    LNG065,
+    LNG066
 } = ERROR_CATALOG.businessLogic
 
-const createVehicle = async (body: VehicleSchema) => {
-    const validatedData = vehicleSchema.parse(body);
-
+const getCompanyVehicles = async (companyId: string) => {
     try {
-        const newVehicle = await prisma.vehicles.create({
-            data: {
-                veh_plate: validatedData.veh_plate,
-                veh_brand: validatedData.veh_brand,
-                veh_model: validatedData.veh_model,
-                veh_color: validatedData.veh_color,
-                veh_year: validatedData.veh_year,
-                veh_created_by: "system" // You might want to pass this as parameter
+        const users = await prisma.users.findMany({
+            include: {
+                company_users: {
+                    where: {
+                        company: {
+                            cmp_id: companyId
+                        }
+                    }
+                }
+            }
+        })
+
+        const data = []
+
+        for (const user of users) {
+            const userVehicles = await prisma.user_vehicles.findMany({
+                where: {
+                    usr_id: user.usr_id,
+                },
+            })
+
+            const vehicleIds = userVehicles.map(userVehicle => userVehicle.veh_id);
+
+            const vehicles = await prisma.vehicles.findMany({
+                where: {
+                    veh_id: {
+                        in: vehicleIds
+                    }
+                },
+                select: {
+                    veh_id: true,
+                    veh_plate: true,
+                    veh_brand: true,
+                    veh_model: true,
+                    veh_year: true,
+                    veh_color: true
+                }
+            });
+
+            data.push({
+                user: {
+                    usr_name: user.usr_name,
+                },
+                vehicles: vehicles
+            })
+        }
+
+        return data
+    } catch (error) {
+        throw new InternalServerError(LNG065)
+    }
+}
+
+const getUserVehicles = async (userId: string) => {
+    try {
+        const userVehicles = await prisma.user_vehicles.findMany({
+            where: {
+                usr_id: userId
+            }
+        })
+
+        const vehicleIds = userVehicles.map(userVehicle => userVehicle.veh_id);
+
+        const vehicles = await prisma.vehicles.findMany({
+            where: {
+                veh_id: {
+                    in: vehicleIds
+                },
+                veh_active: true
+            },
+            select: {
+                veh_id: true,
+                veh_plate: true,
+                veh_brand: true,
+                veh_model: true,
+                veh_year: true,
+                veh_color: true
             }
         });
-        return newVehicle;
+
+        return vehicles
     } catch (error) {
+        throw new InternalServerError(LNG065);
+    }
+}
+
+const createVehicle = async (body: any) => {
+    const {
+        veh_plate,
+        veh_brand,
+        veh_model,
+        veh_color,
+        veh_year,
+        usr_id
+    } = body
+
+    await checkCountVehicles(usr_id);
+
+    try {
+        const result = await prisma.$transaction(async (tx) => {
+            const newVehicle = await tx.vehicles.create({
+                data: {
+                    veh_plate,
+                    veh_brand,
+                    veh_model,
+                    veh_color,
+                    veh_year,
+                    veh_created_by: "system"
+                }
+            });
+
+            await tx.user_vehicles.create({
+                data: {
+                    usr_id: usr_id,
+                    veh_id: newVehicle.veh_id,
+                    uv_created_by: "system"
+                }
+            });
+
+            return newVehicle;
+        });
+
+        return result
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            if (
+                error.code === 'P2002' &&
+                String(error?.meta?.target).includes('veh_plate')
+            ) {
+                throw new ConflictError(LNG011);
+            }
+        }
+
         throw new InternalServerError(LNG042);
     }
 }
@@ -50,9 +172,7 @@ const getVehicleById = async (vehicleId: string) => {
     }
 }
 
-const updateVehicle = async (vehicleId: string, body: UpdateVehicleSchema) => {
-    const validatedData = updateVehicleSchema.parse(body);
-    
+const updateVehicle = async (vehicleId: string, body: any) => {
     const vehicle = await getVehicleById(vehicleId);
 
     try {
@@ -60,7 +180,7 @@ const updateVehicle = async (vehicleId: string, body: UpdateVehicleSchema) => {
             where: {
                 veh_id: vehicle.veh_id
             },
-            data: validatedData
+            data: body
         });
 
         return updatedVehicle;
@@ -86,9 +206,30 @@ const deleteVehicle = async (vehicleId: string) => {
     }
 }
 
+const checkCountVehicles = async (userId: string) => {
+    try {
+        const vehiclesCount = await prisma.user_vehicles.count({
+            where: {
+                usr_id: userId,
+                uv_active: true
+            }
+        })
+
+        if (vehiclesCount >= 4) {
+            throw new BadRequestError(LNG066);
+        }
+
+        return vehiclesCount
+    } catch (error) {
+        throw error
+    }
+}
+
 export const vehicleService = {
     createVehicle,
     getVehicleById,
     updateVehicle,
-    deleteVehicle
+    deleteVehicle,
+    getCompanyVehicles,
+    getUserVehicles
 } 

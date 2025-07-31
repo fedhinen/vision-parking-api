@@ -63,3 +63,9 @@ export class UnauthorizedError extends HttpError {
     super(objError)
   }
 }
+
+export class ConflictError extends HttpError {
+  constructor(objError: { message: string, status: number }) {
+    super(objError)
+  }
+}

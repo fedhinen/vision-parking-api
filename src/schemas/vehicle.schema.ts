@@ -3,7 +3,8 @@ import { ERROR_CATALOG } from "../utils/error-catalog";
 
 export const vehicleSchema = z.object({
     veh_plate: z.string(ERROR_CATALOG.validation.VAL001.message)
-        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1))
+        .regex(/^[A-Z]{3}-\d{3}-[A-Z]$/, ERROR_CATALOG.validation.VAL011.message),
     veh_brand: z.string(ERROR_CATALOG.validation.VAL001.message)
         .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
     veh_model: z.string(ERROR_CATALOG.validation.VAL001.message)

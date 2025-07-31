@@ -106,6 +106,10 @@ export const ERROR_CATALOG = {
             "message": "El campo {field} debe ser un email valido",
             "status": 400
         },
+        "VAL011": {
+            "message": "El campo placa debe tener el formato AAA-000-A",
+            "status": 400
+        }
     },
     "businessLogic": {
         "LNG001": {
@@ -363,6 +367,18 @@ export const ERROR_CATALOG = {
         "LNG064": {
             "message": "Error al tratar de actualizar la solicitud de acceso",
             "status": 500
+        },
+        "LNG065": {
+            "message": "Error al tratar de consultar los vehiculos",
+            "status": 500
+        },
+        "LNG066": {
+            "message": "Haz excedido el límite de vehículos permitidos por usuario",
+            "status": 500
+        },
+        "LNG067": {
+            "message": "Error al tratar de asignar el vehículo al usuario",
+            "status": 500
         }
     }
 }
@@ -376,6 +392,7 @@ export const FIELD_NAMES: Record<string, string> = {
     "veh_brand": "Marca del vehículo",
     "veh_model": "Modelo del vehículo",
     "veh_color": "Color del vehículo",
+    "veh_year": "Año del vehículo",
     "rol_name": "Nombre del rol",
     "rft_tag": "Tag RFID",
     "per_name": "Nombre del permiso",
