@@ -4,34 +4,33 @@ import { companyAccessRequestSchema, updateCompanyAccessRequestSchema } from "..
 import { ZodError } from "zod"
 
 const createCompanyAccessRequest = async (req: Request, res: Response, next: NextFunction) => {
+    const result = companyAccessRequestSchema.safeParse(req.body);
+
+    if (!result.success) {
+        throw new ZodError(result.error.issues);
+    }
+
+    const body = result.data;
+
     try {
-        const validatedData = companyAccessRequestSchema.parse(req.body);
-        const companyAccessRequest = await companyAccessRequestService.createCompanyAccessRequest(validatedData);
-        
+        const companyAccessRequest = await companyAccessRequestService.createCompanyAccessRequest(body);
+
         res.status(201).json({
-            success: true,
             message: "Solicitud de acceso creada exitosamente",
             data: companyAccessRequest
         });
     } catch (error) {
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                success: false,
-                message: "Datos de entrada inválidos",
-                errors: error.issues
-            });
-        }
         next(error);
     }
 }
 
 const getCompanyAccessRequestById = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
     try {
-        const { companyAccessRequestId } = req.params;
-        const companyAccessRequest = await companyAccessRequestService.getCompanyAccessRequestById(companyAccessRequestId);
-        
+        const companyAccessRequest = await companyAccessRequestService.getCompanyAccessRequestById(id);
+
         res.status(200).json({
-            success: true,
             data: companyAccessRequest
         });
     } catch (error) {
@@ -40,35 +39,35 @@ const getCompanyAccessRequestById = async (req: Request, res: Response, next: Ne
 }
 
 const updateCompanyAccessRequest = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    const result = updateCompanyAccessRequestSchema.safeParse(req.body);
+
+    if (!result.success) {
+        throw new ZodError(result.error.issues);
+    }
+
+    const body = result.data;
+
     try {
-        const { companyAccessRequestId } = req.params;
-        const validatedData = updateCompanyAccessRequestSchema.parse(req.body);
-        const companyAccessRequest = await companyAccessRequestService.updateCompanyAccessRequest(companyAccessRequestId, validatedData);
-        
+        const companyAccessRequest = await companyAccessRequestService.updateCompanyAccessRequest(id, body);
+
         res.status(200).json({
-            success: true,
             message: "Solicitud de acceso actualizada exitosamente",
             data: companyAccessRequest
         });
     } catch (error) {
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                success: false,
-                message: "Datos de entrada inválidos",
-                errors: error.issues
-            });
-        }
         next(error);
     }
 }
 
 const deleteCompanyAccessRequest = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
     try {
-        const { companyAccessRequestId } = req.params;
-        await companyAccessRequestService.deleteCompanyAccessRequest(companyAccessRequestId);
-        
+        await companyAccessRequestService.deleteCompanyAccessRequest(id);
+
         res.status(200).json({
-            success: true,
             message: "Solicitud de acceso eliminada exitosamente"
         });
     } catch (error) {
