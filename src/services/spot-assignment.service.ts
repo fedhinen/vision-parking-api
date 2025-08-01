@@ -11,15 +11,15 @@ const {
     LNG062
 } = ERROR_CATALOG.businessLogic
 
-const createSpotAssigment = async (body: SpotAssignmentSchema) => {
-    const validatedData = spotAssignmentSchema.parse(body);
+const createSpotAssigment = async (body: any) => {
+    const { pks_id, usr_id } = body
 
     try {
         const newSpotAssignment = await prisma.spot_assignments.create({
             data: {
-                pks_id: validatedData.pks_id,
-                usr_id: validatedData.usr_id,
-                spa_created_by: "system" // You might want to pass this as parameter
+                pks_id: pks_id,
+                usr_id: usr_id,
+                spa_created_by: "system"
             },
             include: {
                 parking_spot: {
@@ -63,9 +63,7 @@ const getSpotAssignmentById = async (spotAssignmentId: string) => {
     }
 }
 
-const updateSpotAssigment = async (spotAssignmentId: string, body: UpdateSpotAssignmentSchema) => {
-    const validatedData = updateSpotAssignmentSchema.parse(body);
-    
+const updateSpotAssigment = async (spotAssignmentId: string, body: any) => {
     const spotAssignment = await getSpotAssignmentById(spotAssignmentId);
 
     try {
@@ -73,7 +71,7 @@ const updateSpotAssigment = async (spotAssignmentId: string, body: UpdateSpotAss
             where: {
                 spa_id: spotAssignment.spa_id
             },
-            data: validatedData,
+            data: body,
             include: {
                 parking_spot: {
                     include: {

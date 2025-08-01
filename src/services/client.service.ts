@@ -2,7 +2,6 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
-import { clientSchema, updateClientSchema, ClientSchema, UpdateClientSchema } from "../schemas/client.schema";
 
 const {
     LNG029,
@@ -11,19 +10,26 @@ const {
     LNG041
 } = ERROR_CATALOG.businessLogic
 
-const createClient = async (body: ClientSchema) => {
-    const validatedData = clientSchema.parse(body);
+const createClient = async (body: any) => {
+    const {
+        cte_name,
+        cte_phone,
+        cte_email,
+        cte_address,
+        cte_zipcode,
+        cmp_id
+    } = body
 
     try {
         const newClient = await prisma.clients.create({
             data: {
-                cte_name: validatedData.cte_name,
-                cte_phone: validatedData.cte_phone,
-                cte_email: validatedData.cte_email,
-                cte_address: validatedData.cte_address,
-                cte_zipcode: validatedData.cte_zipcode,
-                cmp_id: validatedData.cmp_id,
-                cte_created_by: "system" // You might want to pass this as parameter
+                cte_name: cte_name,
+                cte_phone: cte_phone,
+                cte_email: cte_email,
+                cte_address: cte_address,
+                cte_zipcode: cte_zipcode,
+                cmp_id: cmp_id,
+                cte_created_by: "system"
             },
             include: {
                 company: true
@@ -57,9 +63,7 @@ const getClientById = async (clientId: string) => {
     }
 }
 
-const updateClient = async (clientId: string, body: UpdateClientSchema) => {
-    const validatedData = updateClientSchema.parse(body);
-    
+const updateClient = async (clientId: string, body: any) => {
     const client = await getClientById(clientId);
 
     try {
@@ -67,7 +71,7 @@ const updateClient = async (clientId: string, body: UpdateClientSchema) => {
             where: {
                 cte_id: client.cte_id
             },
-            data: validatedData,
+            data: body,
             include: {
                 company: true
             }

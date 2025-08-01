@@ -2,7 +2,6 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
-import { reservationSchema, updateReservationSchema, ReservationSchema, UpdateReservationSchema } from "../schemas/reservation.schema";
 
 const {
     LNG052,
@@ -11,19 +10,26 @@ const {
     LNG054
 } = ERROR_CATALOG.businessLogic
 
-const createReservation = async (body: ReservationSchema) => {
-    const validatedData = reservationSchema.parse(body);
+const createReservation = async (body: any) => {
+    const {
+        usr_id,
+        pks_id,
+        stu_id,
+        rsv_initial_date,
+        rsv_end_date,
+        rsv_reason
+    } = body;
 
     try {
         const newReservation = await prisma.reservations.create({
             data: {
-                usr_id: validatedData.usr_id,
-                pks_id: validatedData.pks_id,
-                stu_id: validatedData.stu_id,
-                rsv_initial_date: validatedData.rsv_initial_date,
-                rsv_end_date: validatedData.rsv_end_date,
-                rsv_reason: validatedData.rsv_reason,
-                rsv_created_by: "system" // You might want to pass this as parameter
+                usr_id: usr_id,
+                pks_id: pks_id,
+                stu_id: stu_id,
+                rsv_initial_date: rsv_initial_date,
+                rsv_end_date: rsv_end_date,
+                rsv_reason: rsv_reason,
+                rsv_created_by: "system"
             },
             include: {
                 user: true,
@@ -68,9 +74,7 @@ const getReservationById = async (reservationId: string) => {
     }
 }
 
-const updateReservation = async (reservationId: string, body: UpdateReservationSchema) => {
-    const validatedData = updateReservationSchema.parse(body);
-    
+const updateReservation = async (reservationId: string, body: any) => {
     const reservation = await getReservationById(reservationId);
 
     try {
@@ -78,7 +82,7 @@ const updateReservation = async (reservationId: string, body: UpdateReservationS
             where: {
                 rsv_id: reservation.rsv_id
             },
-            data: validatedData,
+            data: body,
             include: {
                 user: true,
                 parking_spot: {

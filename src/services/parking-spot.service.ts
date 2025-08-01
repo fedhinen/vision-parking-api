@@ -11,16 +11,20 @@ const {
     LNG033
 } = ERROR_CATALOG.businessLogic
 
-const createParkingSpot = async (body: ParkingSpotSchema) => {
-    const validatedData = parkingSpotSchema.parse(body);
+const createParkingSpot = async (body: any) => {
+    const {
+        pkl_id,
+        stu_id,
+        pks_number
+    } = body
 
     try {
         const newParkingSpot = await prisma.parking_spots.create({
             data: {
-                pkl_id: validatedData.pkl_id,
-                stu_id: validatedData.stu_id,
-                pks_number: validatedData.pks_number,
-                pks_created_by: "system" // You might want to pass this as parameter
+                pkl_id: pkl_id,
+                stu_id: stu_id,
+                pks_number: pks_number,
+                pks_created_by: "system"
             },
             include: {
                 status: true
@@ -68,9 +72,7 @@ const getParkingSpotById = async (parkingSpotId: string) => {
     }
 }
 
-const updateParkingSpot = async (parkingSpotId: string, body: UpdateParkingSpotSchema) => {
-    const validatedData = updateParkingSpotSchema.parse(body);
-    
+const updateParkingSpot = async (parkingSpotId: string, body: any) => {
     const parkingSpot = await getParkingSpotById(parkingSpotId);
 
     try {
@@ -78,7 +80,7 @@ const updateParkingSpot = async (parkingSpotId: string, body: UpdateParkingSpotS
             where: {
                 pks_id: parkingSpot.pks_id
             },
-            data: validatedData,
+            data: body,
             include: {
                 status: true
             }
@@ -94,7 +96,6 @@ const deleteParkingSpot = async (parkingSpotId: string) => {
     const parkingSpot = await getParkingSpotById(parkingSpotId);
 
     try {
-        // Soft delete by deactivating related assignments and then the spot
         await prisma.spot_assignments.updateMany({
             where: {
                 pks_id: parkingSpot.pks_id

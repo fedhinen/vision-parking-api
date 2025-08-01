@@ -2,7 +2,6 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
-import { parkingLotSchema, updateParkingLotSchema, ParkingLotSchema, UpdateParkingLotSchema } from "../schemas/parking-lot.schema";
 
 const {
     LNG046,
@@ -11,15 +10,18 @@ const {
     LNG032
 } = ERROR_CATALOG.businessLogic
 
-const createParkingLot = async (body: ParkingLotSchema) => {
-    const validatedData = parkingLotSchema.parse(body);
+const createParkingLot = async (body: any) => {
+    const {
+        cmp_id,
+        pkl_name
+    } = body
 
     try {
         const newParkingLot = await prisma.parking_lots.create({
             data: {
-                cmp_id: validatedData.cmp_id,
-                pkl_name: validatedData.pkl_name,
-                pkl_created_by: "system" // You might want to pass this as parameter
+                cmp_id: cmp_id,
+                pkl_name: pkl_name,
+                pkl_created_by: "system"
             },
             include: {
                 company: true
@@ -53,9 +55,7 @@ const getParkingLotById = async (parkingLotId: string) => {
     }
 }
 
-const updateParkingLot = async (parkingLotId: string, body: UpdateParkingLotSchema) => {
-    const validatedData = updateParkingLotSchema.parse(body);
-    
+const updateParkingLot = async (parkingLotId: string, body: any) => {
     const parkingLot = await getParkingLotById(parkingLotId);
 
     try {
@@ -63,7 +63,7 @@ const updateParkingLot = async (parkingLotId: string, body: UpdateParkingLotSche
             where: {
                 pkl_id: parkingLot.pkl_id
             },
-            data: validatedData,
+            data: body,
             include: {
                 company: true
             }

@@ -2,7 +2,6 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
-import { rfidAssignmentSchema, updateRfidAssignmentSchema, RfidAssignmentSchema, UpdateRfidAssignmentSchema } from "../schemas/rfid-assignment.schema";
 
 const {
     LNG056,
@@ -11,15 +10,15 @@ const {
     LNG058
 } = ERROR_CATALOG.businessLogic
 
-const createRfidAssigment = async (body: RfidAssignmentSchema) => {
-    const validatedData = rfidAssignmentSchema.parse(body);
+const createRfidAssigment = async (body: any) => {
+    const { rft_id, usr_id } = body;
 
     try {
         const newRfidAssignment = await prisma.rfid_assignments.create({
             data: {
-                rft_id: validatedData.rft_id,
-                usr_id: validatedData.usr_id,
-                rfa_created_by: "system" // You might want to pass this as parameter
+                rft_id: rft_id,
+                usr_id: usr_id,
+                rfa_created_by: "system"
             },
             include: {
                 rfid_tag: true,
@@ -55,9 +54,7 @@ const getRfidAssignmentById = async (rfidAssignmentId: string) => {
     }
 }
 
-const updateRfidAssigment = async (rfidAssignmentId: string, body: UpdateRfidAssignmentSchema) => {
-    const validatedData = updateRfidAssignmentSchema.parse(body);
-    
+const updateRfidAssigment = async (rfidAssignmentId: string, body: any) => {
     const rfidAssignment = await getRfidAssignmentById(rfidAssignmentId);
 
     try {
@@ -65,7 +62,7 @@ const updateRfidAssigment = async (rfidAssignmentId: string, body: UpdateRfidAss
             where: {
                 rfa_id: rfidAssignment.rfa_id
             },
-            data: validatedData,
+            data: body,
             include: {
                 rfid_tag: true,
                 user: true

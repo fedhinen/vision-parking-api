@@ -2,7 +2,6 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
-import { companyAccessRequestSchema, updateCompanyAccessRequestSchema, CompanyAccessRequestSchema, UpdateCompanyAccessRequestSchema } from "../schemas/company-access-request.schema";
 
 const {
     LNG063,
@@ -11,17 +10,22 @@ const {
     LNG034
 } = ERROR_CATALOG.businessLogic
 
-const createCompanyAccessRequest = async (body: CompanyAccessRequestSchema) => {
-    const validatedData = companyAccessRequestSchema.parse(body);
+const createCompanyAccessRequest = async (body: any) => {
+    const {
+        usr_id,
+        cmp_id,
+        stu_id,
+        cma_description
+    } = body;
 
     try {
         const newCompanyAccessRequest = await prisma.company_access_requests.create({
             data: {
-                usr_id: validatedData.usr_id,
-                cmp_id: validatedData.cmp_id,
-                stu_id: validatedData.stu_id,
-                cma_description: validatedData.cma_description,
-                cma_created_by: "system" // You might want to pass this as parameter
+                usr_id: usr_id,
+                cmp_id: cmp_id,
+                stu_id: stu_id,
+                cma_description: cma_description,
+                cma_created_by: "system"
             }
         });
         return newCompanyAccessRequest;
@@ -49,9 +53,7 @@ const getCompanyAccessRequestById = async (id: string) => {
     }
 }
 
-const updateCompanyAccessRequest = async (id: string, body: UpdateCompanyAccessRequestSchema) => {
-    const validatedData = updateCompanyAccessRequestSchema.parse(body);
-    
+const updateCompanyAccessRequest = async (id: string, body: any) => {
     const companyAccessRequest = await getCompanyAccessRequestById(id);
 
     try {
@@ -60,11 +62,10 @@ const updateCompanyAccessRequest = async (id: string, body: UpdateCompanyAccessR
                 cma_id: companyAccessRequest.cma_id
             },
             data: {
-                ...validatedData,
-                // If approving the request, set approval fields
-                ...(validatedData.stu_id && {
+                ...body,
+                ...(body.stu_id && {
                     cma_approved_date: new Date(),
-                    cma_approved_by: "system" // You might want to pass this as parameter
+                    cma_approved_by: "system"
                 })
             }
         });
