@@ -2,43 +2,40 @@ import { NextFunction, Request, Response } from "express"
 import { reservationService } from "../services/reservation.service"
 import { reservationSchema, updateReservationSchema } from "../schemas/reservation.schema"
 import { ZodError } from "zod"
+import { ValidationError } from "../middleware/error/error"
 
 const createReservation = async (req: Request, res: Response, next: NextFunction) => {
+    const result = reservationSchema.safeParse(req.body);
+
+    if (!result.success) {
+        throw new ValidationError(result.error);
+    }
+
+    const body = {
+        ...result.data,
+        rsv_initial_date: new Date(req.body.rsv_initial_date),
+        rsv_end_date: new Date(req.body.rsv_end_date)
+    };
+
     try {
-        // Convert date strings to Date objects
-        const bodyData = {
-            ...req.body,
-            rsv_initial_date: new Date(req.body.rsv_initial_date),
-            rsv_end_date: new Date(req.body.rsv_end_date)
-        };
-        
-        const validatedData = reservationSchema.parse(bodyData);
-        const reservation = await reservationService.createReservation(validatedData);
-        
+        const reservation = await reservationService.createReservation(body);
+
         res.status(201).json({
-            success: true,
-            message: "Reserva creada exitosamente",
+            message: "Reservación creada exitosamente",
             data: reservation
         });
     } catch (error) {
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                success: false,
-                message: "Datos de entrada inválidos",
-                errors: error.issues
-            });
-        }
         next(error);
     }
 }
 
 const getReservationById = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
     try {
-        const { reservationId } = req.params;
-        const reservation = await reservationService.getReservationById(reservationId);
-        
+        const reservation = await reservationService.getReservationById(id);
+
         res.status(200).json({
-            success: true,
             data: reservation
         });
     } catch (error) {
@@ -47,46 +44,40 @@ const getReservationById = async (req: Request, res: Response, next: NextFunctio
 }
 
 const updateReservation = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    const result = updateReservationSchema.safeParse(req.body);
+
+    if (!result.success) {
+        throw new ValidationError(result.error);
+    }
+
+    const body = {
+        ...result.data,
+        rsv_initial_date: new Date(req.body.rsv_initial_date),
+        rsv_end_date: new Date(req.body.rsv_end_date)
+    };
+
     try {
-        const { reservationId } = req.params;
-        
-        // Convert date strings to Date objects if present
-        const bodyData = { ...req.body };
-        if (bodyData.rsv_initial_date) {
-            bodyData.rsv_initial_date = new Date(bodyData.rsv_initial_date);
-        }
-        if (bodyData.rsv_end_date) {
-            bodyData.rsv_end_date = new Date(bodyData.rsv_end_date);
-        }
-        
-        const validatedData = updateReservationSchema.parse(bodyData);
-        const reservation = await reservationService.updateReservation(reservationId, validatedData);
-        
+        const reservation = await reservationService.updateReservation(id, body);
+
         res.status(200).json({
-            success: true,
-            message: "Reserva actualizada exitosamente",
+            message: "Reservación actualizada exitosamente",
             data: reservation
         });
     } catch (error) {
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                success: false,
-                message: "Datos de entrada inválidos",
-                errors: error.issues
-            });
-        }
         next(error);
     }
 }
 
 const deleteReservation = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
     try {
-        const { reservationId } = req.params;
-        await reservationService.deleteReservation(reservationId);
-        
+        await reservationService.deleteReservation(id);
+
         res.status(200).json({
-            success: true,
-            message: "Reserva eliminada exitosamente"
+            message: "Reservación eliminada exitosamente"
         });
     } catch (error) {
         next(error);

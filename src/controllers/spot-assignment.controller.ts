@@ -1,35 +1,35 @@
 import { NextFunction, Request, Response } from "express"
 import { spotAssignmentService } from "../services/spot-assignment.service"
 import { spotAssignmentSchema, updateSpotAssignmentSchema } from "../schemas/spot-assignment.schema"
-import { ZodError } from "zod"
+import { ValidationError } from "../middleware/error/error"
 
 const createSpotAssigment = async (req: Request, res: Response, next: NextFunction) => {
+    const result = spotAssignmentSchema.safeParse(req.body);
+
+    if (!result.success) {
+        throw new ValidationError(result.error);
+    }
+
+    const body = result.data
+
     try {
-        const validatedData = spotAssignmentSchema.parse(req.body);
-        const spotAssignment = await spotAssignmentService.createSpotAssigment(validatedData);
-        
+        const spotAssignment = await spotAssignmentService.createSpotAssigment(body);
+
         res.status(201).json({
-            success: true,
             message: "Asignación de cajón creada exitosamente",
             data: spotAssignment
         });
     } catch (error) {
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                success: false,
-                message: "Datos de entrada inválidos",
-                errors: error.issues
-            });
-        }
         next(error);
     }
 }
 
 const getSpotAssignmentById = async (req: Request, res: Response, next: NextFunction) => {
+    const { spotAssignmentId } = req.params;
+
     try {
-        const { spotAssignmentId } = req.params;
         const spotAssignment = await spotAssignmentService.getSpotAssignmentById(spotAssignmentId);
-        
+
         res.status(200).json({
             success: true,
             data: spotAssignment
@@ -40,35 +40,35 @@ const getSpotAssignmentById = async (req: Request, res: Response, next: NextFunc
 }
 
 const updateSpotAssigment = async (req: Request, res: Response, next: NextFunction) => {
+    const { spotAssignmentId } = req.params;
+
+    const result = updateSpotAssignmentSchema.safeParse(req.body);
+
+    if (!result.success) {
+        throw new ValidationError(result.error);
+    }
+
+    const body = result.data;
+
     try {
-        const { spotAssignmentId } = req.params;
-        const validatedData = updateSpotAssignmentSchema.parse(req.body);
-        const spotAssignment = await spotAssignmentService.updateSpotAssigment(spotAssignmentId, validatedData);
-        
+        const spotAssignment = await spotAssignmentService.updateSpotAssigment(spotAssignmentId, body);
+
         res.status(200).json({
-            success: true,
             message: "Asignación de cajón actualizada exitosamente",
             data: spotAssignment
         });
     } catch (error) {
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                success: false,
-                message: "Datos de entrada inválidos",
-                errors: error.issues
-            });
-        }
         next(error);
     }
 }
 
 const deleteSpotAssignment = async (req: Request, res: Response, next: NextFunction) => {
+    const { spotAssignmentId } = req.params;
+
     try {
-        const { spotAssignmentId } = req.params;
         await spotAssignmentService.deleteSpotAssignment(spotAssignmentId);
-        
+
         res.status(200).json({
-            success: true,
             message: "Asignación de cajón eliminada exitosamente"
         });
     } catch (error) {
