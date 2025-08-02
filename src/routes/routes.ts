@@ -9,7 +9,7 @@ import { spotAssignmentsRoutes } from "./spot-assignment.routes";
 import { reservationRoutes } from "./reservation.routes";
 import { rfidAssignmentsRoutes } from "./rfid-assignment.routes";
 import { companyAccessRequestRoutes } from "./company-access-request.routes";
-import { filesRoutes } from "./files.routes";
+import { filesRoutes } from "./file.routes";
 
 export const router = Router();
 
