@@ -379,7 +379,11 @@ export const ERROR_CATALOG = {
         "LNG067": {
             "message": "Error al tratar de asignar el vehículo al usuario",
             "status": 500
-        }
+        },
+        "LNG068": {
+            "message": "Cliente ya registrado",
+            "status": 500
+        },
     }
 }
 
