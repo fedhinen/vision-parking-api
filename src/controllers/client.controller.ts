@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express"
 import { clientService } from "../services/client.service"
 import { clientSchema, updateClientSchema } from "../schemas/client.schema"
-import { ZodError } from "zod"
+import { ValidationError } from "../middleware/error/error"
 
 const createClient = async (req: Request, res: Response, next: NextFunction) => {
     const result = clientSchema.safeParse(req.body);
 
     if (!result.success) {
-        throw new ZodError(result.error.issues);
+        throw new ValidationError(result.error);
     }
 
     const body = result.data;
@@ -44,7 +44,7 @@ const updateClient = async (req: Request, res: Response, next: NextFunction) => 
     const result = updateClientSchema.safeParse(req.body);
 
     if (!result.success) {
-        throw new ZodError(result.error.issues);
+        throw new ValidationError(result.error);
     }
 
     const body = result.data;

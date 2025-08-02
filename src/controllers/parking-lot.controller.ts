@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express"
 import { parkingLotService } from "../services/parking-lot.service"
 import { parkingLotSchema, updateParkingLotSchema } from "../schemas/parking-lot.schema"
-import { ZodError } from "zod"
+import { ValidationError } from "../middleware/error/error"
 
 const createParkingLot = async (req: Request, res: Response, next: NextFunction) => {
     const result = parkingLotSchema.safeParse(req.body);
 
     if (!result.success) {
-        throw new ZodError(result.error.issues);
+        throw new ValidationError(result.error);
     }
 
     const body = result.data;
@@ -44,7 +44,7 @@ const updateParkingLot = async (req: Request, res: Response, next: NextFunction)
     const result = updateParkingLotSchema.safeParse(req.body);
 
     if (!result.success) {
-        throw new ZodError(result.error.issues);
+        throw new ValidationError(result.error);
     }
 
     const body = result.data;

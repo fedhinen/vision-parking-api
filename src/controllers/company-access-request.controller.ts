@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express"
 import { companyAccessRequestService } from "../services/company-access-request.service"
 import { companyAccessRequestSchema, updateCompanyAccessRequestSchema } from "../schemas/company-access-request.schema"
-import { ZodError } from "zod"
+import { ValidationError } from "../middleware/error/error"
 
 const createCompanyAccessRequest = async (req: Request, res: Response, next: NextFunction) => {
     const result = companyAccessRequestSchema.safeParse(req.body);
 
     if (!result.success) {
-        throw new ZodError(result.error.issues);
+        throw new ValidationError(result.error);
     }
 
     const body = result.data;
@@ -44,7 +44,7 @@ const updateCompanyAccessRequest = async (req: Request, res: Response, next: Nex
     const result = updateCompanyAccessRequestSchema.safeParse(req.body);
 
     if (!result.success) {
-        throw new ZodError(result.error.issues);
+        throw new ValidationError(result.error);
     }
 
     const body = result.data;
