@@ -97,12 +97,14 @@ model vehicles {
 }
 
 model status {
-  stu_id        String          @id @default(uuid())
-  stu_name      String          @unique
-  stu_table     String
-  stu_active    Boolean         @default(true)
-  parking_spots parking_spots[]
-  reservations  reservations[]
+  stu_id          String          @id @default(uuid())
+  stu_name        String          @unique
+  stu_table       String
+  stu_description String          @db.LongText()
+  stu_active      Boolean         @default(true)
+  stu_date        DateTime        @default(now())
+  parking_spots   parking_spots[]
+  reservations    reservations[]
 }
 
 model log_actions {
