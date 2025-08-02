@@ -12,9 +12,9 @@ router.post(
     uploadFile
 );
 
-router.get("/files/download/:id", downloadFile);
+router.get("/files/download/:id", authenticate, downloadFile);
 
-router.get("/files/info/:fil_relation_id", getFileInfo);
+router.get("/files/info/:fil_relation_id", authenticate, getFileInfo);
 
 router.delete("/files/:id", authenticate, deleteFile);
 
