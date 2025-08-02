@@ -384,6 +384,10 @@ export const ERROR_CATALOG = {
             "message": "Cliente ya registrado",
             "status": 500
         },
+        "LNG069": {
+            "message": "Error al tratar de consultar las compañias - empresas",
+            "status": 500
+        },
     }
 }
 

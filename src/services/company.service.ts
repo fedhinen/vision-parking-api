@@ -6,8 +6,22 @@ const {
     LNG035,
     LNG036,
     LNG037,
-    LNG038
+    LNG038,
+    LNG069
 } = ERROR_CATALOG.businessLogic
+
+const getCompanies = async () => {
+    try {
+        const companies = await prisma.companies.findMany({
+            where: {
+                cmp_active: true
+            }
+        });
+        return companies;
+    } catch (error) {
+        throw new InternalServerError(LNG069);
+    }
+}
 
 const createCompany = async (body: any) => {
     const { cmp_name } = body
@@ -81,8 +95,9 @@ const deleteCompany = async (companyId: string) => {
 }
 
 export const companyService = {
-    createCompany,
+    getCompanies,
     getCompanyById,
+    createCompany,
     updateCompany,
     deleteCompany
 }

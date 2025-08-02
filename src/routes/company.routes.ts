@@ -4,6 +4,7 @@ import { authenticate } from "../middleware/authenticate";
 
 const router = Router();
 
+router.get("/companies", authenticate, companyController.getCompanies)
 router.post("/companies", authenticate, companyController.createCompany)
 router.get("/companies/:id", authenticate, companyController.getCompanyById)
 router.put("/companies/:id", authenticate, companyController.updateCompany)

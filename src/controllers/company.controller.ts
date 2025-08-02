@@ -5,6 +5,15 @@ import { companyService } from "../services/company.service";
 import { logger } from "../utils/logger";
 import { USER_ACTIONS } from "../utils/consts";
 
+const getCompanies = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+        const companies = await companyService.getCompanies();
+        res.status(200).json(companies);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const createCompany = async (req: Request, res: Response, next: NextFunction) => {
     let log_field_id: string | undefined = undefined;
     let response: any = undefined;
@@ -110,6 +119,7 @@ const deleteCompany = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 export const companyController = {
+    getCompanies,
     createCompany,
     getCompanyById,
     updateCompany,
