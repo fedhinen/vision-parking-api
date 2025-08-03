@@ -374,7 +374,7 @@ export const ERROR_CATALOG = {
         },
         "LNG066": {
             "message": "Haz excedido el límite de vehículos permitidos por usuario",
-            "status": 500
+            "status": 409
         },
         "LNG067": {
             "message": "Error al tratar de asignar el vehículo al usuario",
@@ -382,7 +382,7 @@ export const ERROR_CATALOG = {
         },
         "LNG068": {
             "message": "Cliente ya registrado",
-            "status": 500
+            "status": 409
         },
         "LNG069": {
             "message": "Error al tratar de consultar las compañias - empresas",
