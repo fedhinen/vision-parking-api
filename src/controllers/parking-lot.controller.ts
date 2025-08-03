@@ -3,6 +3,18 @@ import { parkingLotService } from "../services/parking-lot.service"
 import { parkingLotSchema, updateParkingLotSchema } from "../schemas/parking-lot.schema"
 import { ValidationError } from "../middleware/error/error"
 
+const getParkingLotsByCompanyId = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    try {
+        const parkingLots = await parkingLotService.getParkingLotsByCompanyId(id);
+
+        res.status(200).json(parkingLots);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const createParkingLot = async (req: Request, res: Response, next: NextFunction) => {
     const result = parkingLotSchema.safeParse(req.body);
 
@@ -76,6 +88,7 @@ const deleteParkingLot = async (req: Request, res: Response, next: NextFunction)
 }
 
 export const parkingLotController = {
+    getParkingLotsByCompanyId,
     createParkingLot,
     getParkingLotById,
     updateParkingLot,
