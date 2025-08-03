@@ -64,7 +64,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/generated ./generated
 
-# Copy package.json for metadata
+# Copy package.json for metadata and prisma seed configuration
 COPY --from=builder /app/package.json ./
 
 # Change ownership to non-root user
@@ -80,4 +80,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "require('http').get('http://localhost:30000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
 
 # Start the application
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/src/index.js"]
