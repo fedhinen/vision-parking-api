@@ -14,21 +14,23 @@ datasource db {
 }
 
 model users {
-  usr_id                String                  @id @default(uuid())
-  usr_name              String                  @unique
-  usr_email             String                  @unique
-  usr_password          String
-  usr_active            Boolean                 @default(true)
-  usr_date              DateTime                @default(now())
-  tokens                tokens[]
-  sessions              sessions[]
-  reservations          reservations[]
-  rfid_assignments      rfid_assignments[]
-  spot_assignments      spot_assignments[]
-  company_users         company_users[]
-  user_roles            user_roles[]
-  user_codes            user_codes[]
-  reset_password_tokens reset_password_tokens[]
+  usr_id                  String                    @id @default(uuid())
+  usr_name                String                    @unique
+  usr_email               String                    @unique
+  usr_password            String
+  usr_active              Boolean                   @default(true)
+  usr_date                DateTime                  @default(now())
+  tokens                  tokens[]
+  sessions                sessions[]
+  reservations            reservations[]
+  rfid_assignments        rfid_assignments[]
+  spot_assignments        spot_assignments[]
+  company_users           company_users[]
+  user_roles              user_roles[]
+  user_codes              user_codes[]
+  reset_password_tokens   reset_password_tokens[]
+  company_access_requests company_access_requests[]
+  user_vehicles           user_vehicles[]
 }
 
 model tokens {
@@ -75,36 +77,39 @@ model rfid_tags {
 }
 
 model companies {
-  cmp_id        String          @id @default(uuid())
-  cmp_name      String          @unique
-  cmp_active    Boolean         @default(true)
-  cmp_date      DateTime        @default(now())
-  clients       clients[]
-  parking_lots  parking_lots[]
-  company_users company_users[]
+  cmp_id                  String                    @id @default(uuid())
+  cmp_name                String                    @unique
+  cmp_active              Boolean                   @default(true)
+  cmp_date                DateTime                  @default(now())
+  clients                 clients[]
+  parking_lots            parking_lots[]
+  company_users           company_users[]
+  company_access_requests company_access_requests[]
 }
 
 model vehicles {
-  veh_id         String   @id @default(uuid())
-  veh_plate      String   @unique
+  veh_id         String          @id @default(uuid())
+  veh_plate      String          @unique
   veh_brand      String
   veh_model      String
   veh_color      String
   veh_year       Int
-  veh_active     Boolean  @default(true)
-  veh_date       DateTime @default(now())
+  veh_active     Boolean         @default(true)
+  veh_date       DateTime        @default(now())
   veh_created_by String
+  user_vehicles  user_vehicles[]
 }
 
 model status {
-  stu_id          String          @id @default(uuid())
-  stu_name        String          @unique
-  stu_table       String
-  stu_description String          @db.LongText()
-  stu_active      Boolean         @default(true)
-  stu_date        DateTime        @default(now())
-  parking_spots   parking_spots[]
-  reservations    reservations[]
+  stu_id                  String                    @id @default(uuid())
+  stu_name                String                    @unique
+  stu_table               String
+  stu_description         String                    @db.LongText()
+  stu_active              Boolean                   @default(true)
+  stu_date                DateTime                  @default(now())
+  parking_spots           parking_spots[]
+  reservations            reservations[]
+  company_access_requests company_access_requests[]
 }
 
 model log_actions {
@@ -159,7 +164,8 @@ model parking_lots {
   pkl_date       DateTime @default(now())
   pkl_created_by String
 
-  company companies @relation(fields: [cmp_id], references: [cmp_id])
+  company       companies       @relation(fields: [cmp_id], references: [cmp_id])
+  parking_spots parking_spots[]
 }
 
 model parking_spots {
@@ -167,9 +173,11 @@ model parking_spots {
   pkl_id         String
   stu_id         String
   pks_number     String
+  pks_order      Int
   pkl_date       DateTime @default(now())
   pks_created_by String
 
+  parking_lot      parking_lots       @relation(fields: [pkl_id], references: [pkl_id])
   status           status             @relation(fields: [stu_id], references: [stu_id])
   reservations     reservations[]
   spot_assignments spot_assignments[]
@@ -198,9 +206,10 @@ model reservations {
   rsv_date         DateTime @default(now())
   rsv_created_by   String
 
-  user         users         @relation(fields: [usr_id], references: [usr_id])
-  parking_spot parking_spots @relation(fields: [pks_id], references: [pks_id])
-  status       status        @relation(fields: [stu_id], references: [stu_id])
+  user                      users                       @relation(fields: [usr_id], references: [usr_id])
+  parking_spot              parking_spots               @relation(fields: [pks_id], references: [pks_id])
+  status                    status                      @relation(fields: [stu_id], references: [stu_id])
+  reservation_cancellations reservation_cancellations[]
 }
 
 model reservation_cancellations {
@@ -210,6 +219,8 @@ model reservation_cancellations {
   rsc_active      Boolean  @default(true)
   rsc_date        DateTime @default(now())
   rsc_created_by  String
+
+  reservation reservations @relation(fields: [rsv_id], references: [rsv_id])
 }
 
 model rfid_assignments {
@@ -235,6 +246,10 @@ model company_access_requests {
   cma_active        Boolean   @default(true)
   cma_date          DateTime  @default(now())
   cma_created_by    String
+
+  user    users     @relation(fields: [usr_id], references: [usr_id])
+  company companies @relation(fields: [cmp_id], references: [cmp_id])
+  status  status    @relation(fields: [stu_id], references: [stu_id])
 }
 
 model files {
@@ -256,6 +271,9 @@ model user_vehicles {
   uv_active     Boolean  @default(true)
   uv_date       DateTime @default(now())
   uv_created_by String
+
+  user    users    @relation(fields: [usr_id], references: [usr_id])
+  vehicle vehicles @relation(fields: [veh_id], references: [veh_id])
 }
 
 model role_permissions {
