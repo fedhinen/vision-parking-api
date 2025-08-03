@@ -29,6 +29,7 @@ const createDefaultParkingSpots = async (parkingLotId: string) => {
                 pkl_id: parkingLotId,
                 stu_id: inactiveStatus?.stu_id,
                 pks_number: `${section}${i}`,
+                pks_order: i,
                 pks_created_by: "system",
             })
         }
