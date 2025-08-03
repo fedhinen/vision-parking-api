@@ -2,20 +2,55 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
-import { parkingSpotSchema, updateParkingSpotSchema, ParkingSpotSchema, UpdateParkingSpotSchema } from "../schemas/parking-spot.schema";
+import { parkingLotService } from "./parking-lot.service";
 
 const {
     LNG049,
     LNG048,
     LNG050,
-    LNG033
+    LNG033,
+    LNG071
 } = ERROR_CATALOG.businessLogic
+
+const getParkingSpotsByLotId = async (parkingLotId: string) => {
+    const parkingLot = await parkingLotService.getParkingLotById(parkingLotId);
+
+    try {
+        const parkingSpots = await prisma.parking_spots.findMany({
+            where: {
+                pkl_id: parkingLot.pkl_id
+            },
+            include: {
+                status: true,
+                reservations: {
+                    where: {
+                        rsv_end_date: {
+                            gte: new Date()
+                        }
+                    }
+                },
+                spot_assignments: {
+                    where: {
+                        spa_active: true
+                    },
+                    include: {
+                        user: true
+                    }
+                }
+            }
+        });
+        return parkingSpots;
+    } catch (error) {
+        throw new InternalServerError(LNG071);
+    }
+}
 
 const createParkingSpot = async (body: any) => {
     const {
         pkl_id,
         stu_id,
-        pks_number
+        pks_number,
+        pks_order
     } = body
 
     try {
@@ -24,6 +59,7 @@ const createParkingSpot = async (body: any) => {
                 pkl_id: pkl_id,
                 stu_id: stu_id,
                 pks_number: pks_number,
+                pks_order: pks_order,
                 pks_created_by: "system"
             },
             include: {
@@ -118,6 +154,7 @@ const deleteParkingSpot = async (parkingSpotId: string) => {
 }
 
 export const parkingSpotService = {
+    getParkingSpotsByLotId,
     createParkingSpot,
     getParkingSpotById,
     updateParkingSpot,
