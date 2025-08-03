@@ -1,6 +1,6 @@
 import { prisma } from "./lib/prisma";
 
-export const logger = async (body: any) => {
+export const userActionLogger = async (body: any) => {
     const {
         log_table_name,
         log_field_id,
