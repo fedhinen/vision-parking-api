@@ -388,6 +388,14 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de consultar las compañias - empresas",
             "status": 500
         },
+        "LNG070": {
+            "message": "Error al tratar de consultar los estacionamientos",
+            "status": 500
+        },
+        "LNG071": {
+            "message": "Error al tratar de consultar los cajones",
+            "status": 500
+        },
     }
 }
 
