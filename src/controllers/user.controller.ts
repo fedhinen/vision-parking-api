@@ -31,9 +31,13 @@ const signin = async (req: Request, res: Response, next: NextFunction) => {
     const body = result.data
 
     try {
-        await userService.signin(body)
+        const user = await userService.signin(body)
         res.status(200).json({
             message: "Se te ha enviado un codigo de verificacion a tu correo",
+            data: {
+                usr_id: user.usr_id,
+                usr_email: user.usr_email
+            }
         })
     } catch (error) {
         next(error)
