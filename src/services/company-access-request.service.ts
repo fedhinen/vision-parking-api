@@ -2,6 +2,7 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
+import { statusService } from "./status.service";
 
 const {
     LNG063,
@@ -19,11 +20,17 @@ const createCompanyAccessRequest = async (body: any) => {
     } = body;
 
     try {
+        const status = await
+            statusService.getStatusByTableAndName(
+                "company_access_requests",
+                "Pendiente"
+            )
+
         const newCompanyAccessRequest = await prisma.company_access_requests.create({
             data: {
                 usr_id: usr_id,
                 cmp_id: cmp_id,
-                stu_id: stu_id,
+                stu_id: status.stu_id,
                 cma_description: cma_description,
                 cma_created_by: "system"
             }
@@ -54,7 +61,30 @@ const getCompanyAccessRequestById = async (id: string) => {
 }
 
 const updateCompanyAccessRequest = async (id: string, body: any) => {
+    const {
+        cma_accepted
+    } = body
+
     const companyAccessRequest = await getCompanyAccessRequestById(id);
+
+    if (cma_accepted) {
+        const status = await statusService.getStatusByTableAndName(
+            "company_access_requests",
+            "Aceptada"
+        );
+
+        body.stu_id = status.stu_id
+        body.cma_approved_date = new Date()
+        body.cma_approved_by = "system"
+    } else {
+        const status = await statusService.getStatusByTableAndName(
+            "company_access_requests",
+            "Rechazada"
+        );
+
+        body.stu_id = status.stu_id
+        body.cma_active = false
+    }
 
     try {
         const updatedCompanyAccessRequest = await prisma.company_access_requests.update({
@@ -62,11 +92,10 @@ const updateCompanyAccessRequest = async (id: string, body: any) => {
                 cma_id: companyAccessRequest.cma_id
             },
             data: {
-                ...body,
-                ...(body.stu_id && {
-                    cma_approved_date: new Date(),
-                    cma_approved_by: "system"
-                })
+                stu_id: body.stu_id,
+                cma_approved_date: body.cma_approved_date,
+                cma_approved_by: body.cma_approved_by,
+                cma_active: body.cma_active,
             }
         });
 
