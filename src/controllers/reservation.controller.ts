@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { reservationService } from "../services/reservation.service"
-import { reservationSchema, updateReservationSchema } from "../schemas/reservation.schema"
-import { ZodError } from "zod"
+import { reservationSchema } from "../schemas/reservation.schema"
 import { ValidationError } from "../middleware/error/error"
 
 const createReservation = async (req: Request, res: Response, next: NextFunction) => {
@@ -43,26 +42,29 @@ const getReservationById = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
-const updateReservation = async (req: Request, res: Response, next: NextFunction) => {
+const acceptReservation = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const result = updateReservationSchema.safeParse(req.body);
-
-    if (!result.success) {
-        throw new ValidationError(result.error);
-    }
-
-    const body = {
-        ...result.data,
-        rsv_initial_date: new Date(req.body.rsv_initial_date),
-        rsv_end_date: new Date(req.body.rsv_end_date)
-    };
-
     try {
-        const reservation = await reservationService.updateReservation(id, body);
+        const reservation = await reservationService.acceptReservation(id);
 
         res.status(200).json({
-            message: "Reservación actualizada exitosamente",
+            message: "Reservación aceptada correctamente",
+            data: reservation
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+const rejectReservation = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    try {
+        const reservation = await reservationService.rejectReservation(id);
+
+        res.status(200).json({
+            message: "Reservación rechazada correctamente",
             data: reservation
         });
     } catch (error) {
@@ -77,7 +79,7 @@ const deleteReservation = async (req: Request, res: Response, next: NextFunction
         await reservationService.deleteReservation(id);
 
         res.status(200).json({
-            message: "Reservación eliminada exitosamente"
+            message: "Reservación eliminada correctamente"
         });
     } catch (error) {
         next(error);
@@ -87,6 +89,7 @@ const deleteReservation = async (req: Request, res: Response, next: NextFunction
 export const reservationController = {
     createReservation,
     getReservationById,
-    updateReservation,
+    acceptReservation,
+    rejectReservation,
     deleteReservation
 }

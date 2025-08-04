@@ -400,6 +400,14 @@ export const ERROR_CATALOG = {
             "message": "Estatus no encontrado",
             "status": 404
         },
+        "LNG073": {
+            "message": "Error al tratar de aceptar la reservación",
+            "status": 500
+        },
+        "LNG074": {
+            "message": "Error al tratar de rechazar la reservación",
+            "status": 500
+        },
     }
 }
 

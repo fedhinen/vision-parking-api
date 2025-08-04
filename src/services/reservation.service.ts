@@ -7,27 +7,29 @@ import { statusService } from "./status.service";
 const {
     LNG052,
     LNG051,
-    LNG053,
-    LNG054
+    LNG054,
+    LNG073,
+    LNG074
 } = ERROR_CATALOG.businessLogic
 
 const createReservation = async (body: any) => {
     const {
         usr_id,
         pks_id,
-        stu_id,
         rsv_initial_date,
         rsv_end_date,
         rsv_reason
     } = body;
 
     try {
+        const statusReservation = await statusService.getStatusByTableAndName('reservations', 'Pendiente');
+
         const result = await prisma.$transaction(async (tx) => {
             const newReservation = await prisma.reservations.create({
                 data: {
                     usr_id: usr_id,
                     pks_id: pks_id,
-                    stu_id: stu_id,
+                    stu_id: statusReservation.stu_id,
                     rsv_initial_date: rsv_initial_date,
                     rsv_end_date: rsv_end_date,
                     rsv_reason: rsv_reason,
@@ -43,17 +45,6 @@ const createReservation = async (body: any) => {
                     status: true
                 }
             });
-
-            const status = await statusService.getStatusByTableAndName('parking_spots', 'Reservado');
-
-            await tx.parking_spots.update({
-                where: {
-                    pks_id: newReservation.pks_id
-                },
-                data: {
-                    stu_id: status.stu_id,
-                }
-            })
 
             return newReservation
         })
@@ -85,8 +76,53 @@ const getReservationById = async (reservationId: string) => {
     }
 }
 
-const updateReservation = async (reservationId: string, body: any) => {
+const acceptReservation = async (reservationId: string) => {
     const reservation = await getReservationById(reservationId);
+
+    const statusAccepted = await statusService.getStatusByTableAndName('reservations', 'Aceptada');
+
+    const body = {
+        stu_id: statusAccepted.stu_id
+    }
+
+    try {
+        const result = await prisma.$transaction(async (tx) => {
+            const updatedReservation = await prisma.reservations.update({
+                where: {
+                    rsv_id: reservation.rsv_id
+                },
+                data: body
+            });
+
+            const statusParkingSpot = await statusService.getStatusByTableAndName('parking_spots', 'Reservado');
+
+            await tx.parking_spots.update({
+                where: {
+                    pks_id: updatedReservation.pks_id
+                },
+                data: {
+                    stu_id: statusParkingSpot.stu_id,
+                }
+            })
+
+            return updatedReservation
+        })
+
+        return result
+    } catch (error) {
+        throw new InternalServerError(LNG073)
+    }
+}
+
+const rejectReservation = async (reservationId: string) => {
+    const reservation = await getReservationById(reservationId);
+
+    const statusRejected = await statusService.getStatusByTableAndName('reservations', 'Rechazada');
+
+    const body = {
+        stu_id: statusRejected.stu_id,
+        rsv_active: false
+    }
 
     try {
         const updatedReservation = await prisma.reservations.update({
@@ -98,7 +134,7 @@ const updateReservation = async (reservationId: string, body: any) => {
 
         return updatedReservation;
     } catch (error) {
-        throw new InternalServerError(LNG053);
+        throw new InternalServerError(LNG074);
     }
 }
 
@@ -119,6 +155,7 @@ const deleteReservation = async (reservationId: string) => {
 export const reservationService = {
     createReservation,
     getReservationById,
-    updateReservation,
+    acceptReservation,
+    rejectReservation,
     deleteReservation
 } 
