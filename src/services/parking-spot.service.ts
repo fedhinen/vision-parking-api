@@ -79,7 +79,11 @@ const getParkingSpotById = async (parkingSpotId: string) => {
                 pks_id: parkingSpotId
             },
             include: {
-                status: true,
+                status: {
+                    select: {
+                        stu_name: true
+                    }
+                },
                 reservations: {
                     where: {
                         rsv_end_date: {
