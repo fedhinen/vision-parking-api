@@ -102,7 +102,7 @@ model vehicles {
 
 model status {
   stu_id                  String                    @id @default(uuid())
-  stu_name                String                    @unique
+  stu_name                String
   stu_table               String
   stu_description         String                    @db.LongText()
   stu_active              Boolean                   @default(true)
