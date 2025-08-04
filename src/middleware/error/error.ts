@@ -3,11 +3,13 @@ import { FIELD_NAMES } from "../../utils/error-catalog";
 
 export class HttpError extends Error {
   status: number;
+  code: string
 
-  constructor(objError: { message: string, status: number }) {
+  constructor(objError: { message: string, status: number, code: string }) {
     super(objError.message);
     this.message = objError.message;
     this.status = objError.status;
+    this.code = objError.code
     Error.captureStackTrace(this, this.constructor);
   }
 }
@@ -35,37 +37,37 @@ export class ValidationError {
 }
 
 export class AuthError extends HttpError {
-  constructor(objError: { message: string, status: number }) {
+  constructor(objError: { message: string, status: number, code: string }) {
     super(objError);
   }
 }
 
 export class InternalServerError extends HttpError {
-  constructor(objError: { message: string, status: number }) {
+  constructor(objError: { message: string, status: number, code: string }) {
     super(objError)
   }
 }
 
 export class BadRequestError extends HttpError {
-  constructor(objError: { message: string, status: number }) {
+  constructor(objError: { message: string, status: number, code: string }) {
     super(objError)
   }
 }
 
 export class NotFoundError extends HttpError {
-  constructor(objError: { message: string, status: number }) {
+  constructor(objError: { message: string, status: number, code: string }) {
     super(objError)
   }
 }
 
 export class UnauthorizedError extends HttpError {
-  constructor(objError: { message: string, status: number }) {
+  constructor(objError: { message: string, status: number, code: string }) {
     super(objError)
   }
 }
 
 export class ConflictError extends HttpError {
-  constructor(objError: { message: string, status: number }) {
+  constructor(objError: { message: string, status: number, code: string }) {
     super(objError)
   }
 }

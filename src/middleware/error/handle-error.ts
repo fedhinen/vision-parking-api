@@ -5,8 +5,10 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
     if (err instanceof HttpError) {
         const errorMessage = err.message
         const errorStatus = err.status
+        const errorCode = err.code
 
         return res.status(errorStatus).json({
+            code: errorCode,
             message: errorMessage
         });
     }
