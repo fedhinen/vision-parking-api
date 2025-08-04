@@ -396,6 +396,10 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de consultar los cajones",
             "status": 500
         },
+        "LNG072": {
+            "message": "Estatus no encontrado",
+            "status": 404
+        },
     }
 }
 

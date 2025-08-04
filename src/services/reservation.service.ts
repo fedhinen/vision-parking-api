@@ -2,6 +2,7 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
+import { statusService } from "./status.service";
 
 const {
     LNG052,
@@ -21,28 +22,47 @@ const createReservation = async (body: any) => {
     } = body;
 
     try {
-        const newReservation = await prisma.reservations.create({
-            data: {
-                usr_id: usr_id,
-                pks_id: pks_id,
-                stu_id: stu_id,
-                rsv_initial_date: rsv_initial_date,
-                rsv_end_date: rsv_end_date,
-                rsv_reason: rsv_reason,
-                rsv_created_by: "system"
-            },
-            include: {
-                user: true,
-                parking_spot: {
-                    include: {
-                        status: true
-                    }
+        const result = await prisma.$transaction(async (tx) => {
+            const newReservation = await prisma.reservations.create({
+                data: {
+                    usr_id: usr_id,
+                    pks_id: pks_id,
+                    stu_id: stu_id,
+                    rsv_initial_date: rsv_initial_date,
+                    rsv_end_date: rsv_end_date,
+                    rsv_reason: rsv_reason,
+                    rsv_created_by: "system"
                 },
-                status: true
-            }
-        });
-        return newReservation;
+                include: {
+                    user: true,
+                    parking_spot: {
+                        include: {
+                            status: true
+                        }
+                    },
+                    status: true
+                }
+            });
+
+            const status = await statusService.getStatusByTableAndName('parking_spots', 'Reservado');
+
+            await tx.parking_spots.update({
+                where: {
+                    pks_id: newReservation.pks_id
+                },
+                data: {
+                    stu_id: status.stu_id,
+                }
+            })
+
+            return newReservation
+        })
+
+        return result
     } catch (error) {
+        if (error instanceof NotFoundError) {
+            throw error;
+        }
         throw new InternalServerError(LNG051);
     }
 }
@@ -52,15 +72,6 @@ const getReservationById = async (reservationId: string) => {
         const reservation = await prisma.reservations.findUnique({
             where: {
                 rsv_id: reservationId
-            },
-            include: {
-                user: true,
-                parking_spot: {
-                    include: {
-                        status: true
-                    }
-                },
-                status: true
             }
         });
 
@@ -82,16 +93,7 @@ const updateReservation = async (reservationId: string, body: any) => {
             where: {
                 rsv_id: reservation.rsv_id
             },
-            data: body,
-            include: {
-                user: true,
-                parking_spot: {
-                    include: {
-                        status: true
-                    }
-                },
-                status: true
-            }
+            data: body
         });
 
         return updatedReservation;
@@ -104,8 +106,6 @@ const deleteReservation = async (reservationId: string) => {
     const reservation = await getReservationById(reservationId);
 
     try {
-        // For reservations, we might want to create a cancellation record
-        // and then delete or mark as cancelled
         await prisma.reservations.delete({
             where: {
                 rsv_id: reservation.rsv_id
