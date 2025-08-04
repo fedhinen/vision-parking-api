@@ -28,7 +28,7 @@ const createParkingLot = async (req: Request, res: Response, next: NextFunction)
         const parkingLot = await parkingLotService.createParkingLot(body);
 
         res.status(201).json({
-            message: "Estacionamiento creado exitosamente",
+            message: "Estacionamiento creado correctamente",
             data: parkingLot
         });
     } catch (error) {
@@ -65,7 +65,7 @@ const updateParkingLot = async (req: Request, res: Response, next: NextFunction)
         const parkingLot = await parkingLotService.updateParkingLot(id, body);
 
         res.status(200).json({
-            message: "Estacionamiento actualizado exitosamente",
+            message: "Estacionamiento actualizado correctamente",
             data: parkingLot
         });
     } catch (error) {
@@ -80,7 +80,7 @@ const deleteParkingLot = async (req: Request, res: Response, next: NextFunction)
         await parkingLotService.deleteParkingLot(id);
 
         res.status(200).json({
-            message: "Estacionamiento eliminado exitosamente"
+            message: "Estacionamiento eliminado correctamente"
         });
     } catch (error) {
         next(error);

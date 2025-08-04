@@ -49,7 +49,7 @@ const createVehicle = async (req: Request, res: Response, next: NextFunction) =>
         const vehicle = await vehicleService.createVehicle(body);
 
         res.status(201).json({
-            message: "Vehículo creado exitosamente",
+            message: "Vehículo creado correctamente",
             data: vehicle
         });
     } catch (error) {
@@ -103,7 +103,7 @@ const deleteVehicle = async (req: Request, res: Response, next: NextFunction) =>
         await vehicleService.deleteVehicle(vehicleId);
 
         res.status(200).json({
-            message: "Vehículo eliminado exitosamente"
+            message: "Vehículo eliminado correctamente"
         });
     } catch (error) {
         next(error);

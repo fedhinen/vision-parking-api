@@ -16,7 +16,7 @@ const createClient = async (req: Request, res: Response, next: NextFunction) => 
         const client = await clientService.createClient(body);
 
         res.status(201).json({
-            message: "Cliente creado exitosamente",
+            message: "Cliente creado correctamente",
             data: client
         });
     } catch (error) {
@@ -53,7 +53,7 @@ const updateClient = async (req: Request, res: Response, next: NextFunction) => 
         const client = await clientService.updateClient(id, body);
 
         res.status(200).json({
-            message: "Cliente actualizado exitosamente",
+            message: "Cliente actualizado correctamente",
             data: client
         });
     } catch (error) {
@@ -68,7 +68,7 @@ const deleteClient = async (req: Request, res: Response, next: NextFunction) => 
         await clientService.deleteClient(id);
 
         res.status(200).json({
-            message: "Cliente eliminado exitosamente"
+            message: "Cliente eliminado correctamente"
         });
     } catch (error) {
         next(error);

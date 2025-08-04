@@ -47,7 +47,7 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
 
     res.status(201).json({
       success: true,
-      message: "Archivo subido exitosamente",
+      message: "Archivo subido correctamente",
       data: {
         fil_id: fileRecord.fil_id,
         fil_name: fileRecord.fil_name,
@@ -111,13 +111,13 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
     }
 
     const stat = fs.statSync(fileRecord.fil_path);
-    
+
     res.setHeader('Content-Type', fileRecord.fil_type);
     res.setHeader('Content-Length', stat.size);
     res.setHeader('Content-Disposition', `attachment; filename="${fileRecord.fil_name}"`);
 
     const readStream = fs.createReadStream(fileRecord.fil_path);
-    
+
     readStream.on('error', (error) => {
       console.error("Error al leer el archivo:", error);
       if (!res.headersSent) {
@@ -231,7 +231,7 @@ export const deleteFile = async (req: Request, res: Response): Promise<void> => 
 
     res.status(200).json({
       success: true,
-      message: "Archivo eliminado exitosamente"
+      message: "Archivo eliminado correctamente"
     });
 
   } catch (error) {

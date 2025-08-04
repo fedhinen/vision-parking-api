@@ -81,7 +81,7 @@ const changePasswordTemplate = () => {
             <body>
                 <div class="container">
                     <h1>Cambio de contraseña exitoso</h1>
-                    <p>Tu contraseña ha sido cambiada exitosamente. Si no realizaste esta acción, por favor contacta con el soporte.</p>
+                    <p>Tu contraseña ha sido cambiada correctamente. Si no realizaste esta acción, por favor contacta con el soporte.</p>
                 </div>
             </body>
         </html>`

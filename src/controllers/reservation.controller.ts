@@ -20,7 +20,7 @@ const createReservation = async (req: Request, res: Response, next: NextFunction
         const reservation = await reservationService.createReservation(body);
 
         res.status(201).json({
-            message: "Reservación creada exitosamente",
+            message: "Reservación creada correctamente",
             data: reservation
         });
     } catch (error) {

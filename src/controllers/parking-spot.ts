@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { parkingSpotService } from "../services/parking-spot.service"
 import { parkingSpotSchema, updateParkingSpotSchema } from "../schemas/parking-spot.schema"
-import { ZodError } from "zod"
 import { ValidationError } from "../middleware/error/error"
 
 const createParkingSpot = async (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +16,7 @@ const createParkingSpot = async (req: Request, res: Response, next: NextFunction
         const parkingSpot = await parkingSpotService.createParkingSpot(body);
 
         res.status(201).json({
-            message: "Cajón de estacionamiento creado exitosamente",
+            message: "Cajón de estacionamiento creado correctamente",
             data: parkingSpot
         });
     } catch (error) {
@@ -54,7 +53,7 @@ const updateParkingSpot = async (req: Request, res: Response, next: NextFunction
         const parkingSpot = await parkingSpotService.updateParkingSpot(id, body);
 
         res.status(200).json({
-            message: "Cajón de estacionamiento actualizado exitosamente",
+            message: "Cajón de estacionamiento actualizado correctamente",
             data: parkingSpot
         });
     } catch (error) {
@@ -69,7 +68,7 @@ const deleteParkingSpot = async (req: Request, res: Response, next: NextFunction
         await parkingSpotService.deleteParkingSpot(id);
 
         res.status(200).json({
-            message: "Cajón de estacionamiento eliminado exitosamente"
+            message: "Cajón de estacionamiento eliminado correctamente"
         });
     } catch (error) {
         next(error);

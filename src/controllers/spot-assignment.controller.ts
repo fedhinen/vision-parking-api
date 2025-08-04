@@ -16,7 +16,7 @@ const createSpotAssigment = async (req: Request, res: Response, next: NextFuncti
         const spotAssignment = await spotAssignmentService.createSpotAssigment(body);
 
         res.status(201).json({
-            message: "Asignación de cajón creada exitosamente",
+            message: "Asignación de cajón creada correctamente",
             data: spotAssignment
         });
     } catch (error) {
@@ -54,7 +54,7 @@ const updateSpotAssigment = async (req: Request, res: Response, next: NextFuncti
         const spotAssignment = await spotAssignmentService.updateSpotAssigment(spotAssignmentId, body);
 
         res.status(200).json({
-            message: "Asignación de cajón actualizada exitosamente",
+            message: "Asignación de cajón actualizada correctamente",
             data: spotAssignment
         });
     } catch (error) {
@@ -69,7 +69,7 @@ const deleteSpotAssignment = async (req: Request, res: Response, next: NextFunct
         await spotAssignmentService.deleteSpotAssignment(spotAssignmentId);
 
         res.status(200).json({
-            message: "Asignación de cajón eliminada exitosamente"
+            message: "Asignación de cajón eliminada correctamente"
         });
     } catch (error) {
         next(error);

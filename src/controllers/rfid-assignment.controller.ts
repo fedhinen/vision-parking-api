@@ -16,7 +16,7 @@ const createRfidAssigment = async (req: Request, res: Response, next: NextFuncti
         const rfidAssignment = await rfidAssignmentService.createRfidAssigment(body);
 
         res.status(201).json({
-            message: "Asignación RFID creada exitosamente",
+            message: "Asignación RFID creada correctamente",
             data: rfidAssignment
         });
     } catch (error) {
@@ -52,7 +52,7 @@ const updateRfidAssignment = async (req: Request, res: Response, next: NextFunct
         const rfidAssignment = await rfidAssignmentService.updateRfidAssigment(rfidAssignmentId, body);
 
         res.status(200).json({
-            message: "Asignación RFID actualizada exitosamente",
+            message: "Asignación RFID actualizada correctamente",
             data: rfidAssignment
         });
     } catch (error) {
@@ -67,7 +67,7 @@ const deleteRfidAssignment = async (req: Request, res: Response, next: NextFunct
         await rfidAssignmentService.deleteRfidAssignment(rfidAssignmentId);
 
         res.status(200).json({
-            message: "Asignación RFID eliminada exitosamente"
+            message: "Asignación RFID eliminada correctamente"
         });
     } catch (error) {
         next(error);

@@ -16,7 +16,6 @@ const createCompanyAccessRequest = async (body: any) => {
     const {
         usr_id,
         cmp_id,
-        stu_id,
         cma_description
     } = body;
 

@@ -16,7 +16,7 @@ const createCompanyAccessRequest = async (req: Request, res: Response, next: Nex
         const companyAccessRequest = await companyAccessRequestService.createCompanyAccessRequest(body);
 
         res.status(201).json({
-            message: "Solicitud de acceso creada exitosamente",
+            message: "Solicitud de acceso creada correctamente",
             data: companyAccessRequest
         });
     } catch (error) {
@@ -75,7 +75,7 @@ const deleteCompanyAccessRequest = async (req: Request, res: Response, next: Nex
         await companyAccessRequestService.deleteCompanyAccessRequest(id);
 
         res.status(200).json({
-            message: "Solicitud de acceso eliminada exitosamente"
+            message: "Solicitud de acceso eliminada correctamente"
         });
     } catch (error) {
         next(error);
