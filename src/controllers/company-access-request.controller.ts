@@ -38,22 +38,29 @@ const getCompanyAccessRequestById = async (req: Request, res: Response, next: Ne
     }
 }
 
-const updateCompanyAccessRequest = async (req: Request, res: Response, next: NextFunction) => {
+const acceptCompanyAccessRequest = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const result = updateCompanyAccessRequestSchema.safeParse(req.body);
-
-    if (!result.success) {
-        throw new ValidationError(result.error);
-    }
-
-    const body = result.data;
-
     try {
-        const companyAccessRequest = await companyAccessRequestService.updateCompanyAccessRequest(id, body);
+        const companyAccessRequest = await companyAccessRequestService.acceptCompanyAccessRequest(id);
 
         res.status(200).json({
-            message: "Solicitud de acceso actualizada exitosamente",
+            message: "Solicitud de acceso aceptada correctamente",
+            data: companyAccessRequest
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+const rejectCompanyAccessRequest = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    try {
+        const companyAccessRequest = await companyAccessRequestService.rejectCompanyAccessRequest(id);
+
+        res.status(200).json({
+            message: "Solicitud de acceso rechazada correctamente",
             data: companyAccessRequest
         });
     } catch (error) {
@@ -78,6 +85,7 @@ const deleteCompanyAccessRequest = async (req: Request, res: Response, next: Nex
 export const companyAccessRequestController = {
     createCompanyAccessRequest,
     getCompanyAccessRequestById,
-    updateCompanyAccessRequest,
+    acceptCompanyAccessRequest,
+    rejectCompanyAccessRequest,
     deleteCompanyAccessRequest
 }

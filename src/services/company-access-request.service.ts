@@ -7,8 +7,9 @@ import { statusService } from "./status.service";
 const {
     LNG063,
     LNG026,
-    LNG064,
-    LNG034
+    LNG034,
+    LNG075,
+    LNG076
 } = ERROR_CATALOG.businessLogic
 
 const createCompanyAccessRequest = async (body: any) => {
@@ -60,31 +61,13 @@ const getCompanyAccessRequestById = async (id: string) => {
     }
 }
 
-const updateCompanyAccessRequest = async (id: string, body: any) => {
-    const {
-        cma_accepted
-    } = body
-
+const acceptCompanyAccessRequest = async (id: string) => {
     const companyAccessRequest = await getCompanyAccessRequestById(id);
 
-    if (cma_accepted) {
-        const status = await statusService.getStatusByTableAndName(
-            "company_access_requests",
-            "Aceptada"
-        );
-
-        body.stu_id = status.stu_id
-        body.cma_approved_date = new Date()
-        body.cma_approved_by = "system"
-    } else {
-        const status = await statusService.getStatusByTableAndName(
-            "company_access_requests",
-            "Rechazada"
-        );
-
-        body.stu_id = status.stu_id
-        body.cma_active = false
-    }
+    const status = await statusService.getStatusByTableAndName(
+        "company_access_requests",
+        "Aceptada"
+    );
 
     try {
         const updatedCompanyAccessRequest = await prisma.company_access_requests.update({
@@ -92,16 +75,40 @@ const updateCompanyAccessRequest = async (id: string, body: any) => {
                 cma_id: companyAccessRequest.cma_id
             },
             data: {
-                stu_id: body.stu_id,
-                cma_approved_date: body.cma_approved_date,
-                cma_approved_by: body.cma_approved_by,
-                cma_active: body.cma_active,
+                stu_id: status.stu_id,
+                cma_approved_date: new Date(),
+                cma_approved_by: "system"
             }
         });
 
         return updatedCompanyAccessRequest;
     } catch (error) {
-        throw new InternalServerError(LNG064);
+        throw new InternalServerError(LNG075);
+    }
+}
+
+const rejectCompanyAccessRequest = async (id: string) => {
+    const companyAccessRequest = await getCompanyAccessRequestById(id);
+
+    const status = await statusService.getStatusByTableAndName(
+        "company_access_requests",
+        "Rechazada"
+    );
+
+    try {
+        const updatedCompanyAccessRequest = await prisma.company_access_requests.update({
+            where: {
+                cma_id: companyAccessRequest.cma_id
+            },
+            data: {
+                stu_id: status.stu_id,
+                cma_active: false
+            }
+        });
+
+        return updatedCompanyAccessRequest;
+    } catch (error) {
+        throw new InternalServerError(LNG076);
     }
 }
 
@@ -125,6 +132,7 @@ const deleteCompanyAccessRequest = async (id: string) => {
 export const companyAccessRequestService = {
     createCompanyAccessRequest,
     getCompanyAccessRequestById,
-    updateCompanyAccessRequest,
+    acceptCompanyAccessRequest,
+    rejectCompanyAccessRequest,
     deleteCompanyAccessRequest
 } 

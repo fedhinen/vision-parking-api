@@ -15,9 +15,14 @@ router.get(
     companyAccessRequestController.getCompanyAccessRequestById
 )
 router.put(
-    "/company-access-requests/:id",
+    "/company-access-requests/:id/accept",
     authenticate,
-    companyAccessRequestController.updateCompanyAccessRequest
+    companyAccessRequestController.acceptCompanyAccessRequest
+)
+router.put(
+    "/company-access-requests/:id/reject",
+    authenticate,
+    companyAccessRequestController.rejectCompanyAccessRequest
 )
 router.delete(
     "/company-access-requests/:id",

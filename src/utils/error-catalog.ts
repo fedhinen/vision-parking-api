@@ -408,6 +408,14 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de rechazar la reservación",
             "status": 500
         },
+        "LNG075": {
+            "message": "Error al tratar de aceptar la solicitud de acceso",
+            "status": 500
+        },
+        "LNG076": {
+            "message": "Error al tratar de rechazar la solicitud de acceso",
+            "status": 500
+        },
     }
 }
 
