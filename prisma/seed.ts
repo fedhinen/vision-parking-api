@@ -20,6 +20,21 @@ const ESTATUS = [
         stu_name: "Inactivo",
         stu_table: "parking_spots",
         stu_description: "El estado de inactivo indica que el lugar de estacionamiento no está configurado para ser utilizado en este momento.",
+    },
+    {
+        stu_name: "Pendiente",
+        stu_table: "company_access_requests",
+        stu_description: "El estado pendiente indica que la solicitud de acceso a la empresa está en espera de revisión.",
+    },
+    {
+        stu_name: "Aceptada",
+        stu_table: "company_access_requests",
+        stu_description: "El estado aceptada indica que la solicitud de acceso a la empresa ha sido aprobada.",
+    },
+    {
+        stu_name: "Rechazada",
+        stu_table: "company_access_requests",
+        stu_description: "El estado rechazada indica que la solicitud de acceso a la empresa ha sido denegada.",
     }
 ]
 
