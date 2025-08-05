@@ -58,10 +58,10 @@ const createVehicle = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 const getVehicleById = async (req: Request, res: Response, next: NextFunction) => {
-    const { vehicleId } = req.params;
+    const { id } = req.params;
 
     try {
-        const vehicle = await vehicleService.getVehicleById(vehicleId);
+        const vehicle = await vehicleService.getVehicleById(id);
 
         res.status(200).json({
             message: "Vehículo encontrado correctamente",
@@ -73,7 +73,7 @@ const getVehicleById = async (req: Request, res: Response, next: NextFunction) =
 }
 
 const updateVehicle = async (req: Request, res: Response, next: NextFunction) => {
-    const { vehicleId } = req.params;
+    const { id } = req.params;
 
     const result = updateVehicleSchema.safeParse(req.body);
 
@@ -85,7 +85,7 @@ const updateVehicle = async (req: Request, res: Response, next: NextFunction) =>
 
     try {
 
-        const vehicle = await vehicleService.updateVehicle(vehicleId, body);
+        const vehicle = await vehicleService.updateVehicle(id, body);
 
         res.status(200).json({
             message: "Vehículo actualizado correctamente",
@@ -97,10 +97,10 @@ const updateVehicle = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 const deleteVehicle = async (req: Request, res: Response, next: NextFunction) => {
-    const { vehicleId } = req.params;
+    const { id } = req.params;
 
     try {
-        await vehicleService.deleteVehicle(vehicleId);
+        await vehicleService.deleteVehicle(id);
 
         res.status(200).json({
             message: "Vehículo eliminado correctamente"
