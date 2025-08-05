@@ -12,6 +12,11 @@ export const userSchema = z.object({
         .min(12, ERROR_CATALOG.validation.VAL007.message(12))
         .max(32, ERROR_CATALOG.validation.VAL008.message(32)),
     pry_name: z.string(ERROR_CATALOG.validation.VAL001.message)
+        .refine((val) => ['VISION_PARKING_WEB', 'VISION_PARKING_DESKTOP', 'VISION_PARKING_MOVIL'].includes(val),
+            {
+                message: ERROR_CATALOG.validation.VAL012.message
+            }
+        )
 })
 
 export const signinSchema = userSchema.pick({

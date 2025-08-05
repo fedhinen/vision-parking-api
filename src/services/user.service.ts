@@ -6,6 +6,7 @@ import argon2 from "argon2"
 import jwt from "jsonwebtoken"
 import { mailTemplates } from "../utils/lib/mail/templates"
 import { companyService } from "./company.service"
+import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library"
 
 
 const
@@ -278,7 +279,6 @@ const createUser = async (body: any) => {
 
     return newUser
   } catch (error) {
-    console.log(error)
     throw new InternalServerError(AUTH007);
   }
 }

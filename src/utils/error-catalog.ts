@@ -135,6 +135,11 @@ export const ERROR_CATALOG = {
             "code": "VAL011",
             "message": "El campo placa debe tener el formato AAA-000-A",
             "status": 400
+        },
+        "VAL012": {
+            "code": "VAL012",
+            "message": "El campo {field} debe de ser VISION_PARKING_WEB, VISION_PARKING_DESKTOP o VISION_PARKING_MOVIL",
+            "status": 400
         }
     },
     "businessLogic": {
@@ -561,4 +566,5 @@ export const FIELD_NAMES: Record<string, string> = {
     "rsv_reason": "Razon de la reservación",
     "rsc_description": "Razon de la cancelación",
     "cma_description": "Razon de la solicitud de acceso",
+    "pry_name": "Nombre del proyecto",
 }
