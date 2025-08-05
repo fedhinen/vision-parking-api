@@ -24,14 +24,14 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    if (!req.user?.usr_id) {
+    /* if (!req.user?.usr_id) {
       fs.unlinkSync(req.file.path);
       res.status(401).json({
         success: false,
         message: "Usuario no autenticado"
       });
       return;
-    }
+    } */
 
     // Guardar información del archivo en la base de datos
     const fileRecord = await prisma.files.create({
@@ -41,7 +41,7 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
         fil_path: req.file.path,
         fil_type: req.file.mimetype,
         fil_size: req.file.size,
-        fil_created_by: req.user.usr_id,
+        fil_created_by: "system",
       }
     });
 
