@@ -261,13 +261,13 @@ const sendChangePasswordEmail = async (usr_email: string) => {
 }
 
 const createUser = async (body: any) => {
-  const { usr_name, usr_email, hashedPassword, pry_name } = body
+  const { usr_name, usr_email, usr_password, pry_name } = body
   try {
     const newUser = await prisma.users.create({
       data: {
         usr_name,
         usr_email,
-        usr_password: hashedPassword,
+        usr_password,
         pry_name
       },
       omit: {
@@ -278,6 +278,7 @@ const createUser = async (body: any) => {
 
     return newUser
   } catch (error) {
+    console.log(error)
     throw new InternalServerError(AUTH007);
   }
 }
