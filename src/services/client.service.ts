@@ -4,6 +4,7 @@ import { ConflictError, InternalServerError, NotFoundError } from "../middleware
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { clientConfig } from "../utils/client-config";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { userService } from "./user.service";
 
 const {
     LNG029,
@@ -40,7 +41,15 @@ const createClient = async (body: any) => {
         });
 
         if (newClient) {
-            await createDefaultClientConfiguration(newClient.cmp_id);
+            await userService.signup({
+                usr_name: `${newClient.cte_email.split("@")[0]}.client`,
+                usr_email: newClient.cte_email,
+                usr_password: "VisionParking!",
+                cmp_id: newClient.cmp_id,
+                pry_name: "VISION_PARKING_WEB",
+                is_client: true
+            })
+            await createDefaultClientConfiguration(newClient);
         }
 
         return newClient;
@@ -116,8 +125,8 @@ const deleteClient = async (clientId: string) => {
     }
 }
 
-const createDefaultClientConfiguration = async (companyId: string) => {
-    const parkingLot = await clientConfig.createParkingLot(companyId);
+const createDefaultClientConfiguration = async (newClient: any) => {
+    const parkingLot = await clientConfig.createParkingLot(newClient.cmp_id);
     await clientConfig.createDefaultParkingSpots(parkingLot.pkl_id);
 }
 
