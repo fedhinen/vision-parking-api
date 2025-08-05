@@ -7,7 +7,7 @@ const {
 } = ERROR_CATALOG.businessLogic
 
 const getStatusByTableAndName = async (table: string, statusName: string) => {
-    const status = await prisma.status.findUnique({
+    const status = await prisma.status.findFirst({
         where: {
             stu_name: statusName,
             stu_table: table
