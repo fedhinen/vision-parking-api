@@ -16,7 +16,15 @@ export const userSchema = z.object({
             {
                 message: ERROR_CATALOG.validation.VAL012.message
             }
-        )
+        ),
+    cmp_id: z.string().optional()
+}).refine((data) => {
+    if (data.pry_name === 'VISION_PARKING_WEB' && !data.cmp_id) {
+        return false;
+    }
+    return true;
+}, {
+    message: ERROR_CATALOG.validation.VAL013.message
 })
 
 export const signinSchema = userSchema.pick({
