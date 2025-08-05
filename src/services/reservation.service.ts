@@ -3,6 +3,7 @@ import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { statusService } from "./status.service";
+import { mqttService } from "./mqtt.service";
 
 const {
     LNG052,
@@ -49,6 +50,23 @@ const createReservation = async (body: any) => {
             return newReservation
         })
 
+        try {
+            await mqttService.publishReservationCreated({
+                rsv_id: result.rsv_id,
+                usr_id: result.usr_id,
+                pks_id: result.pks_id,
+                rsv_initial_date: result.rsv_initial_date.toISOString(),
+                rsv_end_date: result.rsv_end_date.toISOString(),
+                rsv_reason: result.rsv_reason,
+                status: result.status.stu_name,
+                user_name: result.user.usr_name,
+                parking_spot_code: result.parking_spot.pks_number || `SPOT-${result.pks_id}`
+            })
+        } catch (mqttError) {
+            console.error('Error al publicar mensaje MQTT:', mqttError)
+        }
+
+
         return result
     } catch (error) {
         if (error instanceof NotFoundError) {
@@ -91,7 +109,12 @@ const acceptReservation = async (reservationId: string) => {
                 where: {
                     rsv_id: reservation.rsv_id
                 },
-                data: body
+                data: body,
+                include: {
+                    user: true,
+                    parking_spot: true,
+                    status: true
+                }
             });
 
             const statusParkingSpot = await statusService.getStatusByTableAndName('parking_spots', 'Reservado');
@@ -107,6 +130,17 @@ const acceptReservation = async (reservationId: string) => {
 
             return updatedReservation
         })
+
+        try {
+            await mqttService.publishReservationStatusChanged({
+                rsv_id: result.rsv_id,
+                pks_id: result.pks_id, //parking spot id
+                status: result.status.stu_name,
+                action: 'accepted'
+            })
+        } catch (mqttError) {
+            console.error('Error al publicar mensaje MQTT:', mqttError)
+        }
 
         return result
     } catch (error) {
@@ -129,8 +163,24 @@ const rejectReservation = async (reservationId: string) => {
             where: {
                 rsv_id: reservation.rsv_id
             },
-            data: body
+            data: body,
+            include: {
+                user: true,
+                parking_spot: true,
+                status: true
+            }
         });
+
+        try {
+            await mqttService.publishReservationStatusChanged({
+                rsv_id: updatedReservation.rsv_id,
+                pks_id: updatedReservation.pks_id, //parking spot id
+                status: updatedReservation.status.stu_name,
+                action: 'rejected'
+            })
+        } catch (mqttError) {
+            console.error('Error al publicar mensaje MQTT:', mqttError)
+        }
 
         return updatedReservation;
     } catch (error) {
