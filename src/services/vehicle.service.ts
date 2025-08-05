@@ -51,7 +51,8 @@ const getCompanyVehicles = async (companyId: string) => {
                     veh_brand: true,
                     veh_model: true,
                     veh_year: true,
-                    veh_color: true
+                    veh_color: true,
+                    veh_active: true
                 }
             });
 
