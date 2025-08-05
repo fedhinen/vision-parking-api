@@ -4,7 +4,6 @@ import { ERROR_CATALOG } from "../utils/error-catalog";
 export const companyAccessRequestSchema = z.object({
     usr_id: z.uuid(ERROR_CATALOG.validation.VAL002.message),
     cmp_id: z.uuid(ERROR_CATALOG.validation.VAL002.message),
-    stu_id: z.uuid(ERROR_CATALOG.validation.VAL002.message),
     cma_description: z.string(ERROR_CATALOG.validation.VAL001.message)
         .min(1, ERROR_CATALOG.validation.VAL007.message(1))
 });
