@@ -55,7 +55,7 @@ const signup = async (body: any) => {
 
   const newUser = await createUser(userData)
 
-  if (newUser.pry_name === "VISION_PARKING_DESKTOP") {
+  if (newUser.pry_name === "VISION_PARKING_WEB") {
     await companyService.addUserToCompany(newUser.usr_id, cmp_id)
   }
 }
