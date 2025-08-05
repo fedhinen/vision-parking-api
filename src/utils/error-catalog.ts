@@ -518,6 +518,21 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de rechazar la solicitud de acceso",
             "status": 500
         },
+        "LNG077": {
+            "code": "LNG077",
+            "message": "Error al tratar de consultar la compañia del usuario",
+            "status": 500
+        },
+        "LNG078": {
+            "code": "LNG078",
+            "message": "Error al tratar de asignar el usuario a la compañia",
+            "status": 500
+        },
+        "LNG079": {
+            "code": "LNG079",
+            "message": "Error al tratar de consultar los usuarios de la compañia",
+            "status": 500
+        }
     }
 }
 

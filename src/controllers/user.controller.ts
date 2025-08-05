@@ -36,7 +36,7 @@ const signin = async (req: Request, res: Response, next: NextFunction) => {
             message: "Se te ha enviado un codigo de verificacion a tu correo",
             data: {
                 usr_id: user.usr_id,
-                usr_email: user.usr_email
+                usr_email: user.usr_email,
             }
         })
     } catch (error) {

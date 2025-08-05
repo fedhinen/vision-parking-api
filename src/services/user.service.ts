@@ -5,6 +5,7 @@ import { prisma } from "../utils/lib/prisma"
 import argon2 from "argon2"
 import jwt from "jsonwebtoken"
 import { mailTemplates } from "../utils/lib/mail/templates"
+import { companyService } from "./company.service"
 
 
 const
@@ -22,7 +23,7 @@ const
   } = ERROR_CATALOG.autentication
 
 const signup = async (body: any) => {
-  const { usr_name, usr_email, usr_password } = body
+  const { usr_name, usr_email, usr_password, pry_name, cmp_id } = body
 
   const hashedPassword = await argon2.hash(usr_password)
 
@@ -45,20 +46,17 @@ const signup = async (body: any) => {
     throw new AuthError(AUTH002)
   }
 
-  try {
-    const newUser = await prisma.users.create({
-      data: {
-        usr_name,
-        usr_email,
-        usr_password: hashedPassword
-      },
-      omit: {
-        usr_password: true
-      }
-    })
-    return newUser
-  } catch (error) {
-    throw new InternalServerError(AUTH007);
+  const userData = {
+    usr_name,
+    usr_email,
+    usr_password: hashedPassword,
+    pry_name,
+  }
+
+  const newUser = await createUser(userData)
+
+  if (newUser.pry_name === "VISION_PARKING_DESKTOP") {
+    await companyService.addUserToCompany(newUser.usr_id, cmp_id)
   }
 }
 
@@ -71,8 +69,8 @@ const signin = async (body: any) => {
     const userCode = await generateCode(isRegister)
     await sendCodeEmail(userCode.usr_email, userCode.cod_code)
     return {
-      usr_id: userCode.usr_id,
-      usr_email: userCode.usr_email
+      usr_id: isRegister.usr_id,
+      usr_email: isRegister.usr_email
     }
   } catch (error) {
     throw new InternalServerError(AUTH009);
@@ -84,9 +82,6 @@ const userExists = async (usr_email: string, usr_password: string) => {
     const isRegister = await prisma.users.findUnique({
       where: {
         usr_email,
-      },
-      include: {
-        tokens: true,
       },
     });
 
@@ -184,6 +179,7 @@ const verifyCode = async (body: any) => {
 
 const generateToken = async (usr_id: string) => {
   const user = await getUserById(usr_id);
+  let company = null
 
   const tokenIds = user.tokens.map((token: any) => token.tok_id);
 
@@ -210,9 +206,14 @@ const generateToken = async (usr_id: string) => {
     },
   });
 
+  if (user.pry_name === "VISION_PARKING_DESKTOP") {
+    company = await companyService.getCompanyByUserId(user.usr_id)
+  }
+
   return {
     tok_token: newToken.tok_token,
     usr_id: newToken.usr_id,
+    cmp_id: company ? company.cmp_id : null,
   };
 }
 
@@ -222,8 +223,8 @@ const getUserById = async (usr_id: string) => {
       usr_id,
     },
     include: {
-      tokens: true,
-    },
+      tokens: true
+    }
   });
 
   if (!user) {
@@ -257,6 +258,28 @@ const sendChangePasswordEmail = async (usr_email: string) => {
   }
 
   sendEmail(mailOptions)
+}
+
+const createUser = async (body: any) => {
+  const { usr_name, usr_email, hashedPassword, pry_name } = body
+  try {
+    const newUser = await prisma.users.create({
+      data: {
+        usr_name,
+        usr_email,
+        usr_password: hashedPassword,
+        pry_name
+      },
+      omit: {
+        usr_password: true
+      }
+    })
+
+
+    return newUser
+  } catch (error) {
+    throw new InternalServerError(AUTH007);
+  }
 }
 
 export const userService = {

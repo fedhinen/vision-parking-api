@@ -10,7 +10,8 @@ export const userSchema = z.object({
         .max(45, ERROR_CATALOG.validation.VAL008.message(45)),
     usr_password: z.string(ERROR_CATALOG.validation.VAL001.message)
         .min(12, ERROR_CATALOG.validation.VAL007.message(12))
-        .max(32, ERROR_CATALOG.validation.VAL008.message(32))
+        .max(32, ERROR_CATALOG.validation.VAL008.message(32)),
+    pry_name: z.string(ERROR_CATALOG.validation.VAL001.message)
 })
 
 export const signinSchema = userSchema.pick({
