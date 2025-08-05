@@ -1,13 +1,17 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
+import { userService } from "./user.service";
 
 const {
     LNG035,
     LNG036,
     LNG037,
     LNG038,
-    LNG069
+    LNG069,
+    LNG077,
+    LNG078,
+    LNG079
 } = ERROR_CATALOG.businessLogic
 
 const getCompanies = async () => {
@@ -20,6 +24,54 @@ const getCompanies = async () => {
         return companies;
     } catch (error) {
         throw new InternalServerError(LNG069);
+    }
+}
+
+const getCompanyByUserId = async (userId: string) => {
+    const user = await userService.getUserById(userId)
+
+    try {
+        const userCompany = await prisma.company_users.findFirst({
+            where: {
+                usr_id: user.usr_id
+            },
+        })
+
+        const company = await prisma.companies.findUnique({
+            where: {
+                cmp_id: userCompany?.cmp_id
+            }
+        })
+
+        return company
+    } catch (error) {
+        throw new InternalServerError(LNG077);
+    }
+}
+
+const getUsersByCompanyId = async (companyId: string) => {
+    const company = await getCompanyById(companyId)
+
+    try {
+        const usersCompany = await prisma.company_users.findMany({
+            where: {
+                cmp_id: company.cmp_id
+            }
+        })
+
+        const userIds = usersCompany.map(user => user.usr_id)
+
+        const users = await prisma.users.findMany({
+            where: {
+                usr_id: {
+                    in: userIds
+                },
+            }
+        })
+
+        return users
+    } catch (error) {
+        throw new InternalServerError(LNG079);
     }
 }
 
@@ -94,10 +146,32 @@ const deleteCompany = async (companyId: string) => {
     }
 }
 
+const addUserToCompany = async (userId: string, companyId: string) => {
+    const user = await userService.getUserById(userId)
+
+    const company = await getCompanyById(companyId)
+
+    try {
+        const newCompanyUser = await prisma.company_users.create({
+            data: {
+                usr_id: user.usr_id,
+                cmp_id: company.cmp_id
+            }
+        })
+
+        return newCompanyUser
+    } catch (error) {
+        throw new InternalServerError(LNG078)
+    }
+}
+
 export const companyService = {
     getCompanies,
     getCompanyById,
+    getCompanyByUserId,
+    getUsersByCompanyId,
     createCompany,
     updateCompany,
-    deleteCompany
+    deleteCompany,
+    addUserToCompany
 }

@@ -71,8 +71,20 @@ const deleteCompany = async (req: Request, res: Response, next: NextFunction) =>
     }
 }
 
+const getUsersByCompanyId = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params
+
+    try {
+        const users = await companyService.getUsersByCompanyId(id)
+        res.status(200).json(users)
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const companyController = {
     getCompanies,
+    getUsersByCompanyId,
     createCompany,
     getCompanyById,
     updateCompany,
