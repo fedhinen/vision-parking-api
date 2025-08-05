@@ -1,11 +1,16 @@
 import express from 'express'
+import { createServer } from 'http'
 import { router } from './routes/routes'
 import { errorHandler } from './middleware/error/handle-error'
+import { webSocketService } from './services/websocket.service'
 import cors from "cors"
 import morgan from "morgan"
 
 const app = express()
+const server = createServer(app)
 const PORT = process.env.PORT ?? 3000
+
+webSocketService.initialize(server)
 
 app.use(cors())
 app.use(express.json())
@@ -22,8 +27,9 @@ app.get('/health', (req, res) => {
 app.use("/api", router)
 app.use(errorHandler)
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
+    console.log(`WebSocket server is running on port ${PORT}`)
 })
 
 declare global {
