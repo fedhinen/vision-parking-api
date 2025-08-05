@@ -6,8 +6,6 @@ import argon2 from "argon2"
 import jwt from "jsonwebtoken"
 import { mailTemplates } from "../utils/lib/mail/templates"
 import { companyService } from "./company.service"
-import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library"
-
 
 const
   {
@@ -24,7 +22,13 @@ const
   } = ERROR_CATALOG.autentication
 
 const signup = async (body: any) => {
-  const { usr_name, usr_email, usr_password, pry_name, cmp_id } = body
+  const {
+    usr_name,
+    usr_email,
+    usr_password,
+    pry_name,
+    cmp_id,
+  } = body
 
   const hashedPassword = await argon2.hash(usr_password)
 
@@ -56,9 +60,15 @@ const signup = async (body: any) => {
 
   const newUser = await createUser(userData)
 
-  if (newUser.pry_name === "VISION_PARKING_WEB") {
+  if (newUser.pry_name === "VISION_PARKING_DESKTOP") {
     await companyService.addUserToCompany(newUser.usr_id, cmp_id)
+    console.log(newUser.usr_id, newUser.usr_email, usr_password);
+  } else if (newUser.pry_name === "VISION_PARKING_WEB") {
+    console.log(newUser.usr_id, newUser.usr_email, usr_password);
+    //await sendCredentialsEmail(newUser.usr_name, newUser.usr_email, usr_password)
   }
+
+  return newUser
 }
 
 const signin = async (body: any) => {
@@ -68,7 +78,8 @@ const signin = async (body: any) => {
 
   try {
     const userCode = await generateCode(isRegister)
-    await sendCodeEmail(userCode.usr_email, userCode.cod_code)
+    console.log(userCode.usr_email, userCode.cod_code);
+    //await sendCodeEmail(userCode.usr_email, userCode.cod_code)
     return {
       usr_id: isRegister.usr_id,
       usr_email: isRegister.usr_email
@@ -281,6 +292,17 @@ const createUser = async (body: any) => {
   } catch (error) {
     throw new InternalServerError(AUTH007);
   }
+}
+
+const sendCredentialsEmail = async (username: string, email: string, password: string) => {
+  const mailOptions = {
+    from: process.env.MAIL_FROM,
+    to: email,
+    subject: "Tus credenciales de acceso",
+    html: mailTemplates.credentialsTemplate(username, email, password),
+  };
+
+  await sendEmail(mailOptions)
 }
 
 export const userService = {

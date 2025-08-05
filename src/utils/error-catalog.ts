@@ -140,7 +140,12 @@ export const ERROR_CATALOG = {
             "code": "VAL012",
             "message": "El campo {field} debe de ser VISION_PARKING_WEB, VISION_PARKING_DESKTOP o VISION_PARKING_MOVIL",
             "status": 400
-        }
+        },
+        "VAL013": {
+            "code": "VAL013",
+            "message": "Si tu proyecto es VISION_PARKING_WEB, debes de enviar el campo cmp_id",
+            "status": 400
+        },
     },
     "businessLogic": {
         "LNG001": {
