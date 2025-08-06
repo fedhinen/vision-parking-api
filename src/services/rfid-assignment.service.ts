@@ -35,7 +35,7 @@ const createRfidAssigment = async (body: any) => {
 
 const getRfidAssignmentById = async (rfidAssignmentId: string) => {
     try {
-        const rfidAssignment = await prisma.rfid_assignments.findUnique({
+        const rfidAssignment = await prisma.rfid_assignments.findFirst({
             where: {
                 rfa_id: rfidAssignmentId,
                 rfa_active: true
