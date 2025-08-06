@@ -164,7 +164,7 @@ model clients {
 model parking_lots {
   pkl_id         String   @id @default(uuid())
   cmp_id         String
-  pkl_name       String   @unique
+  pkl_name       String
   pkl_active     Boolean  @default(true)
   pkl_date       DateTime @default(now())
   pkl_created_by String
