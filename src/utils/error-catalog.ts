@@ -558,6 +558,11 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de consultar los tags RFID de la compañia",
             "status": 500
         },
+        "LNG082": {
+            "code": "LNG082",
+            "message": "Error al tratar de consultar las asignaciones RFID de la compañia",
+            "status": 500
+        }
     }
 }
 

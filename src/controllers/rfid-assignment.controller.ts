@@ -74,9 +74,21 @@ const deleteRfidAssignment = async (req: Request, res: Response, next: NextFunct
     }
 }
 
+const getRfidAssignmentsByCompanyId = async (req: Request, res: Response, next: NextFunction) => {
+    const { companyId } = req.params;
+
+    try {
+        const rfidAssignments = await rfidAssignmentService.getRfidAssignmentsByCompanyId(companyId);
+        res.status(200).json(rfidAssignments);
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const rfidAssignmentController = {
     createRfidAssigment,
     getRfidAssignmentById,
     updateRfidAssignment,
-    deleteRfidAssignment
+    deleteRfidAssignment,
+    getRfidAssignmentsByCompanyId
 }

@@ -2,12 +2,14 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
+import { companyService } from "./company.service";
 
 const {
     LNG056,
     LNG055,
     LNG057,
-    LNG058
+    LNG058,
+    LNG082
 } = ERROR_CATALOG.businessLogic
 
 const createRfidAssigment = async (body: any) => {
@@ -92,9 +94,47 @@ const deleteRfidAssignment = async (rfidAssignmentId: string) => {
     }
 }
 
+const getRfidAssignmentsByCompanyId = async (cmp_id: string) => {
+    const company = await companyService.getCompanyById(cmp_id)
+
+    const companyUsers = await companyService.getUsersByCompanyId(company.cmp_id)
+
+    const userIds = companyUsers.map(user => user.usr_id)
+
+    try {
+        const rfidAssignments = await prisma.rfid_assignments.findMany({
+            where: {
+                usr_id: {
+                    in: userIds
+                }
+            },
+            include: {
+                user: {
+                    select: {
+                        usr_id: true,
+                        usr_name: true,
+                        usr_email: true
+                    }
+                },
+                rfid_tag: {
+                    select: {
+                        rft_id: true,
+                        rft_tag: true
+                    }
+                }
+            }
+        })
+
+        return rfidAssignments
+    } catch (error) {
+        throw new InternalServerError(LNG082)
+    }
+}
+
 export const rfidAssignmentService = {
     createRfidAssigment,
     getRfidAssignmentById,
     updateRfidAssigment,
-    deleteRfidAssignment
+    deleteRfidAssignment,
+    getRfidAssignmentsByCompanyId
 }
