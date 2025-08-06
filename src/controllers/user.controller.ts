@@ -58,7 +58,9 @@ const verifyCode = async (req: Request, res: Response, next: NextFunction) => {
 
         res.status(200).json({
             message: "Codigo verificado correctamente",
-            tok_token: userValidated.tok_token
+            tok_token: userValidated.tok_token,
+            usr_id: userValidated.usr_id,
+            cmp_id: userValidated.cmp_id,
         })
     } catch (error) {
         next(error)
