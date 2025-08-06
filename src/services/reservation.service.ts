@@ -52,6 +52,7 @@ const createReservation = async (body: any) => {
 
         try {
             await mqttService.publishReservationCreated({
+                rsv_id: result.rsv_id,
                 usr_id: result.usr_id,
                 pks_id: result.pks_id,
                 status: result.status.stu_name,
