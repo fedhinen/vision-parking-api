@@ -52,15 +52,9 @@ const createReservation = async (body: any) => {
 
         try {
             await mqttService.publishReservationCreated({
-                rsv_id: result.rsv_id,
                 usr_id: result.usr_id,
                 pks_id: result.pks_id,
-                rsv_initial_date: result.rsv_initial_date.toISOString(),
-                rsv_end_date: result.rsv_end_date.toISOString(),
-                rsv_reason: result.rsv_reason,
                 status: result.status.stu_name,
-                user_name: result.user.usr_name,
-                parking_spot_code: result.parking_spot.pks_number || `SPOT-${result.pks_id}`
             })
         } catch (mqttError) {
             console.error('Error al publicar mensaje MQTT:', mqttError)

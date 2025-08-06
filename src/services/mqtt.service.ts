@@ -1,15 +1,9 @@
 import mqtt, { MqttClient } from 'mqtt'
 
 export interface ReservationMqttMessage {
-    rsv_id: string
     usr_id: string
     pks_id: string
-    rsv_initial_date: string
-    rsv_end_date: string
-    rsv_reason: string
     status: string
-    user_name: string
-    parking_spot_code: string
 }
 
 export interface ReservationStatusMqttMessage {
@@ -29,7 +23,7 @@ class MQTTService {
 
     private connect() {
         try {
-            this.client = mqtt.connect(process.env.MQTT_BROKER_URL ?? "mqtt://localhost", { 
+            this.client = mqtt.connect(process.env.MQTT_BROKER_URL ?? "mqtt://localhost", {
                 port: Number(process.env.MQTT_BROKER_PORT) ?? 1883,
                 reconnectPeriod: 1000,
                 connectTimeout: 30 * 1000,
@@ -90,9 +84,9 @@ class MQTTService {
     }
 
     private publishMessage(
-        topic: string, 
-        message: any, 
-        resolve: () => void, 
+        topic: string,
+        message: any,
+        resolve: () => void,
         reject: (error: Error) => void
     ) {
         this.client!.publish(topic, JSON.stringify(message), { qos: 1 }, (err) => {

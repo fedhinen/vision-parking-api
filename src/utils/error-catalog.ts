@@ -542,7 +542,17 @@ export const ERROR_CATALOG = {
             "code": "LNG079",
             "message": "Error al tratar de consultar los usuarios de la compañia",
             "status": 500
-        }
+        },
+        "LNG080": {
+            "code": "LNG080",
+            "message": "Error al tratar de crear el tag RFID",
+            "status": 500
+        },
+        "LNG081": {
+            "code": "LNG081",
+            "message": "Error al tratar de consultar los tags RFID de la compañia",
+            "status": 500
+        },
     }
 }
 
@@ -550,7 +560,7 @@ export const FIELD_NAMES: Record<string, string> = {
     "usr_name": "Usuario",
     "usr_email": "Correo electrónico",
     "usr_password": "Contraseña",
-    "cmp_name": "Nombre de la empresa",
+    "cmp_name": "Nombre de la compañia",
     "veh_plate": "Placa del vehículo",
     "veh_brand": "Marca del vehículo",
     "veh_model": "Modelo del vehículo",
