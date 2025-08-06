@@ -82,10 +82,22 @@ const deleteCompanyAccessRequest = async (req: Request, res: Response, next: Nex
     }
 }
 
+const getPendingCompanyAccessRequests = async (req: Request, res: Response, next: NextFunction) => {
+    const { companyId } = req.params;
+
+    try {
+        const pendingRequests = await companyAccessRequestService.getPendingCompanyAccessRequests(companyId);
+        res.status(200).json(pendingRequests);
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const companyAccessRequestController = {
     createCompanyAccessRequest,
     getCompanyAccessRequestById,
     acceptCompanyAccessRequest,
     rejectCompanyAccessRequest,
-    deleteCompanyAccessRequest
+    deleteCompanyAccessRequest,
+    getPendingCompanyAccessRequests
 }
