@@ -26,8 +26,8 @@ const createRfidAssigment = async (req: Request, res: Response, next: NextFuncti
 
 const getRfidAssignmentById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { rfidAssignmentId } = req.params;
-        const rfidAssignment = await rfidAssignmentService.getRfidAssignmentById(rfidAssignmentId);
+        const { id } = req.params;
+        const rfidAssignment = await rfidAssignmentService.getRfidAssignmentById(id);
 
         res.status(200).json({
             data: rfidAssignment
