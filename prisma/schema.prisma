@@ -73,8 +73,11 @@ model rfid_tags {
   rft_tag          String             @unique
   rft_date         DateTime           @default(now())
   rft_active       Boolean            @default(true)
+  cmp_id           String
   rft_created_by   String
   rfid_assignments rfid_assignments[]
+
+  company companies @relation(fields: [cmp_id], references: [cmp_id])
 }
 
 model companies {
@@ -86,6 +89,7 @@ model companies {
   parking_lots            parking_lots[]
   company_users           company_users[]
   company_access_requests company_access_requests[]
+  rfid_tags               rfid_tags[]
 }
 
 model vehicles {
