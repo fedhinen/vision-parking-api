@@ -23,7 +23,10 @@ const createCompany = async (req: Request, res: Response, next: NextFunction) =>
 
     try {
         const newCompany = await companyService.createCompany(body)
-        res.status(201).json(newCompany)
+        res.status(201).json({
+            message: "Compañia creada correctamente",
+            data: newCompany
+        })
     } catch (error) {
         next(error)
     }

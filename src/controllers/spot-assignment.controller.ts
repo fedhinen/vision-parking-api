@@ -31,7 +31,6 @@ const getSpotAssignmentById = async (req: Request, res: Response, next: NextFunc
         const spotAssignment = await spotAssignmentService.getSpotAssignmentById(spotAssignmentId);
 
         res.status(200).json({
-            success: true,
             data: spotAssignment
         });
     } catch (error) {
