@@ -187,6 +187,15 @@ const updateVehicle = async (vehicleId: string, body: any) => {
 
         return updatedVehicle;
     } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            if (
+                error.code === 'P2002' &&
+                String(error?.meta?.target).includes('veh_plate')
+            ) {
+                throw new ConflictError(LNG011);
+            }
+        }
+
         throw new InternalServerError(LNG044);
     }
 }
