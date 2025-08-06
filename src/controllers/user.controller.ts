@@ -67,8 +67,20 @@ const verifyCode = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const createDesktopUser = async (req: Request, res: Response, next: NextFunction) => {
+    const { cmp_id } = req.params
+
+    try {
+        const newUser = await userService.createDesktopUser(cmp_id)
+        res.status(201).json(newUser)
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const userController = {
     signup,
     signin,
-    verifyCode
+    verifyCode,
+    createDesktopUser
 }

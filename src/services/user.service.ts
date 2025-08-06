@@ -1,6 +1,6 @@
 import { AuthError, InternalServerError } from "../middleware/error/error"
 import { ERROR_CATALOG } from "../utils/error-catalog"
-import { sendEmail } from "../utils/functions"
+import { generateRandomEmail, generateRandomUsername, sendEmail } from "../utils/functions"
 import { prisma } from "../utils/lib/prisma"
 import argon2 from "argon2"
 import jwt from "jsonwebtoken"
@@ -63,6 +63,7 @@ const signup = async (body: any) => {
   if (newUser.pry_name === "VISION_PARKING_DESKTOP") {
     await companyService.addUserToCompany(newUser.usr_id, cmp_id)
     console.log(newUser.usr_id, newUser.usr_email, usr_password);
+    //await sendCredentialsEmail(newUser.usr_name, newUser.usr_email, usr_password)
   } else if (newUser.pry_name === "VISION_PARKING_WEB") {
     console.log(newUser.usr_id, newUser.usr_email, usr_password);
     //await sendCredentialsEmail(newUser.usr_name, newUser.usr_email, usr_password)
@@ -305,9 +306,35 @@ const sendCredentialsEmail = async (username: string, email: string, password: s
   await sendEmail(mailOptions)
 }
 
+const createDesktopUser = async (cmp_id: string) => {
+  const company = await companyService.getCompanyById(cmp_id)
+
+  const companyUsers = await companyService.getUsersByCompanyId(company.cmp_id)
+
+  const existUsers = companyUsers.filter(user => user.pry_name === "VISION_PARKING_DESKTOP")
+
+  const userNumber = existUsers.length === 0 ? 1 : existUsers.length + 1
+  const usr_name = generateRandomUsername(company.cmp_name, userNumber)
+  const usr_email = generateRandomEmail(company.cmp_name, userNumber)
+  const usr_password = `VisionParking!${new Date().getFullYear()}`
+  const pry_name = "VISION_PARKING_DESKTOP"
+
+  const userData = {
+    usr_name,
+    usr_email,
+    usr_password,
+    cmp_id,
+    pry_name,
+  }
+
+  const newUser = await signup(userData)
+  return newUser
+}
+
 export const userService = {
   signup,
   signin,
   verifyCode,
-  getUserById
+  getUserById,
+  createDesktopUser
 }

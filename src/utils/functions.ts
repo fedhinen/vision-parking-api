@@ -17,3 +17,29 @@ export const sendEmail = async (mailOptions: any) => {
         throw error
     }
 }
+
+export const generateRandomUsername = (companyName: string, userNumber: number) => {
+    const nameParts = companyName.trim().split(/\s+/);
+    let companyNamePart = '';
+
+    if (nameParts.length === 1) {
+        companyNamePart = nameParts[0].slice(0, 3).toUpperCase();
+    } else {
+        companyNamePart = nameParts.map(word => word[0].toUpperCase()).join('');
+    }
+
+    return `${companyNamePart} - Guardia00${userNumber}`
+}
+
+export const generateRandomEmail = (companyName: string, userNumber: number) => {
+    const nameParts = companyName.trim().split(/\s+/);
+    let companyNamePart = '';
+
+    if (nameParts.length === 1) {
+        companyNamePart = nameParts[0].slice(0, 3).toLowerCase();
+    } else {
+        companyNamePart = nameParts.map(word => word[0].toLowerCase()).join('');
+    }
+
+    return `${companyNamePart}.guardia.00${userNumber}@gmail.com`
+}
