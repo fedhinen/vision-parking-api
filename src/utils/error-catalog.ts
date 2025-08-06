@@ -572,4 +572,5 @@ export const FIELD_NAMES: Record<string, string> = {
     "rsc_description": "Razon de la cancelación",
     "cma_description": "Razon de la solicitud de acceso",
     "pry_name": "Nombre del proyecto",
+    "cod_code": "Código de verificación",
 }
