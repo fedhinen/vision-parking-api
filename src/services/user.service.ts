@@ -6,6 +6,7 @@ import argon2 from "argon2"
 import jwt from "jsonwebtoken"
 import { mailTemplates } from "../utils/lib/mail/templates"
 import { companyService } from "./company.service"
+import { Plataforma } from "@prisma/client"
 
 const
   {
@@ -18,7 +19,8 @@ const
     AUTH011,
     AUTH012,
     AUTH013,
-    AUTH014
+    AUTH014,
+    AUTH016
   } = ERROR_CATALOG.autentication
 
 const signup = async (body: any) => {
@@ -73,9 +75,9 @@ const signup = async (body: any) => {
 }
 
 const signin = async (body: any) => {
-  const { usr_email, usr_password } = body;
+  const { usr_email, usr_password, pry_name } = body;
 
-  const isRegister = await userExists(usr_email, usr_password)
+  const isRegister = await userExists(usr_email, usr_password, pry_name)
 
   try {
     const userCode = await generateCode(isRegister)
@@ -90,8 +92,19 @@ const signin = async (body: any) => {
   }
 };
 
-const userExists = async (usr_email: string, usr_password: string) => {
+const userExists = async (usr_email: string, usr_password: string, pry_name: Plataforma) => {
   try {
+    const isAuthorized = await prisma.users.findFirst({
+      where: {
+        usr_email,
+        pry_name
+      }
+    })
+
+    if (!isAuthorized) {
+      throw new AuthError(AUTH016)
+    }
+
     const isRegister = await prisma.users.findUnique({
       where: {
         usr_email,

@@ -29,5 +29,6 @@ export const userSchema = z.object({
 
 export const signinSchema = userSchema.pick({
     usr_email: true,
-    usr_password: true
+    usr_password: true,
+    pry_name: true
 })

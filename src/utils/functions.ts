@@ -28,7 +28,7 @@ export const generateRandomUsername = (companyName: string, userNumber: number) 
         companyNamePart = nameParts.map(word => word[0].toUpperCase()).join('');
     }
 
-    return `${companyNamePart} - Guardia00${userNumber}`
+    return `${companyNamePart}.Guardia00${userNumber}`
 }
 
 export const generateRandomEmail = (companyName: string, userNumber: number) => {

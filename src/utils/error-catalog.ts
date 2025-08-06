@@ -74,6 +74,11 @@ export const ERROR_CATALOG = {
             "code": "AUTH015",
             "message": "No contiene la cabecera de autorización",
             "status": 500
+        },
+        "AUTH016": {
+            "code": "AUTH016",
+            "message": "No tienes permisos para acceder a este sistema",
+            "status": 403
         }
     },
     "validation": {
