@@ -19,7 +19,7 @@ export const userSchema = z.object({
         ),
     cmp_id: z.string().optional()
 }).refine((data) => {
-    if (data.pry_name === 'VISION_PARKING_WEB' && !data.cmp_id) {
+    if (data.pry_name === 'VISION_PARKING_DESKTOP' && !data.cmp_id) {
         return false;
     }
     return true;
