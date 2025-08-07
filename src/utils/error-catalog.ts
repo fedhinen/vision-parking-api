@@ -587,7 +587,12 @@ export const ERROR_CATALOG = {
             "code": "LNG087",
             "message": "Error al tratar de consultar las compañias a las que tiene acceso el usuario",
             "status": 500
-        }
+        },
+        "LNG088": {
+            "code": "LNG088",
+            "message": "Error al tratar de consultar el usuario de tipo cliente",
+            "status": 500
+        },
     }
 }
 
