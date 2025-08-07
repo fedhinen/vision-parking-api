@@ -67,6 +67,13 @@ const getUsersByCompanyId = async (companyId: string) => {
                 usr_id: {
                     in: userIds
                 },
+            },
+            select: {
+                usr_id: true,
+                usr_name: true,
+                usr_email: true,
+                usr_date: true,
+                pry_name: true
             }
         })
 
