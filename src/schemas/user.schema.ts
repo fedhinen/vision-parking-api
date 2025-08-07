@@ -10,7 +10,14 @@ export const userSchema = z.object({
         .max(45, ERROR_CATALOG.validation.VAL008.message(45)),
     usr_password: z.string(ERROR_CATALOG.validation.VAL001.message)
         .min(12, ERROR_CATALOG.validation.VAL007.message(12))
-        .max(32, ERROR_CATALOG.validation.VAL008.message(32)),
+        .max(32, ERROR_CATALOG.validation.VAL008.message(32))
+        .refine((val) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,32}$/.test(
+            val
+        ),
+            {
+                message: ERROR_CATALOG.validation.VAL014.message
+            }
+        ),
     pry_name: z.string(ERROR_CATALOG.validation.VAL001.message)
         .refine((val) => ['VISION_PARKING_WEB', 'VISION_PARKING_DESKTOP', 'VISION_PARKING_MOVIL'].includes(val),
             {
