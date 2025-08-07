@@ -21,6 +21,7 @@ model users {
   usr_active              Boolean                   @default(true)
   usr_date                DateTime                  @default(now())
   pry_name                Plataforma
+  usr_is_configured       Boolean                   @default(false)
   tokens                  tokens[]
   sessions                sessions[]
   reservations            reservations[]
