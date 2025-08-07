@@ -151,6 +151,11 @@ export const ERROR_CATALOG = {
             "message": "Si tu proyecto es VISION_PARKING_WEB, debes de enviar el campo cmp_id",
             "status": 400
         },
+        "VAL014": {
+            "code": "VAL014",
+            "message": "El campo contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial",
+            "status": 400
+        },
     },
     "businessLogic": {
         "LNG001": {
@@ -617,7 +622,7 @@ export const FIELD_NAMES: Record<string, string> = {
     "cte_zipcode": "Codigo postal del cliente",
     "pkl_name": "Nombre del estacionamiento",
     "rsv_initial_date": "Fecha inicio de la reservación",
-    "rsv_final_date": "Fecha fin de la reservación",
+    "rsv_end_date": "Fecha fin de la reservación",
     "rsv_reason": "Razon de la reservación",
     "rsc_description": "Razon de la cancelación",
     "cma_description": "Razon de la solicitud de acceso",
