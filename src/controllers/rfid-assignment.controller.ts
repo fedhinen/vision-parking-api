@@ -38,7 +38,7 @@ const getRfidAssignmentById = async (req: Request, res: Response, next: NextFunc
 }
 
 const updateRfidAssignment = async (req: Request, res: Response, next: NextFunction) => {
-    const { rfidAssignmentId } = req.params;
+    const { id } = req.params;
 
     const result = updateRfidAssignmentSchema.safeParse(req.body);
 
@@ -49,7 +49,7 @@ const updateRfidAssignment = async (req: Request, res: Response, next: NextFunct
     const body = result.data;
 
     try {
-        const rfidAssignment = await rfidAssignmentService.updateRfidAssigment(rfidAssignmentId, body);
+        const rfidAssignment = await rfidAssignmentService.updateRfidAssigment(id, body);
 
         res.status(200).json({
             message: "Asignación RFID actualizada correctamente",
@@ -61,10 +61,10 @@ const updateRfidAssignment = async (req: Request, res: Response, next: NextFunct
 }
 
 const deleteRfidAssignment = async (req: Request, res: Response, next: NextFunction) => {
-    const { rfidAssignmentId } = req.params;
+    const { id } = req.params;
 
     try {
-        await rfidAssignmentService.deleteRfidAssignment(rfidAssignmentId);
+        await rfidAssignmentService.deleteRfidAssignment(id);
 
         res.status(200).json({
             message: "Asignación RFID eliminada correctamente"
