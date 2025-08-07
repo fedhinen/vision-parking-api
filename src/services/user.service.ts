@@ -20,8 +20,12 @@ const
     AUTH012,
     AUTH013,
     AUTH014,
-    AUTH016
+    AUTH016,
   } = ERROR_CATALOG.autentication
+
+const {
+  LNG084
+} = ERROR_CATALOG.businessLogic
 
 const signup = async (body: any) => {
   const {
@@ -344,10 +348,28 @@ const createDesktopUser = async (cmp_id: string) => {
   return newUser
 }
 
+const movilUserConfigurated = async (usr_id: string) => {
+  const user = await getUserById(usr_id)
+
+  try {
+    await prisma.users.update({
+      where: {
+        usr_id: user.usr_id
+      },
+      data: {
+        usr_is_configured: true
+      }
+    })
+  } catch (error) {
+    throw new InternalServerError(LNG084)
+  }
+}
+
 export const userService = {
   signup,
   signin,
   verifyCode,
   getUserById,
-  createDesktopUser
+  createDesktopUser,
+  movilUserConfigurated
 }

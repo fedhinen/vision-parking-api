@@ -567,7 +567,12 @@ export const ERROR_CATALOG = {
             "code": "LNG083",
             "message": "Error al tratar de consultar las solicitudes de acceso pendientes de la compañia",
             "status": 500
-        }
+        },
+        "LNG084": {
+            "code": "LNG084",
+            "message": "Error al tratar de terminar la configuración inicial",
+            "status": 500
+        },
     }
 }
 
