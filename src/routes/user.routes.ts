@@ -7,6 +7,7 @@ router.post("/signup", userController.signup)
 router.post("/signin", userController.signin);
 router.post("/verify", userController.verifyCode);
 router.post("/signup/desktop/:cmp_id", userController.createDesktopUser)
+router.get("/configurated/:usr_id", userController.getUserIsConfigurated)
 router.post("/configurated/:usr_id", userController.movilUserConfigurated)
 
 export const userRoutes = router;

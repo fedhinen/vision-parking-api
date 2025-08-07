@@ -78,6 +78,17 @@ const createDesktopUser = async (req: Request, res: Response, next: NextFunction
     }
 }
 
+const getUserIsConfigurated = async (req: Request, res: Response, next: NextFunction) => {
+    const { usr_id } = req.params
+
+    try {
+        const isConfigurated = await userService.getUserIsConfigurated(usr_id)
+        res.status(200).json({ isConfigurated })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const movilUserConfigurated = async (req: Request, res: Response, next: NextFunction) => {
     const { usr_id } = req.params
 
@@ -96,5 +107,6 @@ export const userController = {
     signin,
     verifyCode,
     createDesktopUser,
-    movilUserConfigurated
+    movilUserConfigurated,
+    getUserIsConfigurated
 }

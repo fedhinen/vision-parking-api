@@ -573,6 +573,11 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de terminar la configuración inicial",
             "status": 500
         },
+        "LNG085": {
+            "code": "LNG085",
+            "message": "Error al tratar de consultar la configuración inicial",
+            "status": 500
+        }
     }
 }
 
