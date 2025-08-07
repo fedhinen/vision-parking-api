@@ -102,7 +102,19 @@ const movilUserConfigurated = async (req: Request, res: Response, next: NextFunc
     }
 }
 
+const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params
+
+    try {
+        const userInfo = await userService.getUserInfo(id)
+        res.status(200).json(userInfo)
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const userController = {
+    getUserInfo,
     signup,
     signin,
     verifyCode,

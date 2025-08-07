@@ -25,7 +25,8 @@ const
 
 const {
   LNG084,
-  LNG085
+  LNG085,
+  LNG086
 } = ERROR_CATALOG.businessLogic
 
 const signup = async (body: any) => {
@@ -385,11 +386,32 @@ const movilUserConfigurated = async (usr_id: string) => {
   }
 }
 
+const getUserInfo = async (usr_id: string) => {
+  const user = await getUserById(usr_id)
+
+  try {
+    const userInfo = await prisma.users.findUnique({
+      where: {
+        usr_id: user.usr_id
+      },
+      select: {
+        usr_name: true,
+        usr_email: true,
+        usr_date: true,
+      }
+    })
+
+    return userInfo
+  } catch (error) {
+    throw new InternalServerError(LNG086)
+  }
+}
+
 export const userService = {
   signup,
   signin,
   verifyCode,
-  getUserById,
+  getUserInfo,
   createDesktopUser,
   movilUserConfigurated,
   getUserIsConfigurated

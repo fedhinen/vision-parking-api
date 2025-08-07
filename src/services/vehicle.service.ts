@@ -3,6 +3,7 @@ import { prisma } from "../utils/lib/prisma";
 import { BadRequestError, ConflictError, InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { userService } from "./user.service";
 
 const {
     LNG011,
@@ -114,6 +115,8 @@ const createVehicle = async (body: any) => {
         usr_id
     } = body
 
+    const user = await userService.getUserById(usr_id)
+
     await checkCountVehicles(usr_id);
 
     try {
@@ -131,7 +134,7 @@ const createVehicle = async (body: any) => {
 
             await tx.user_vehicles.create({
                 data: {
-                    usr_id: usr_id,
+                    usr_id: user.usr_id,
                     veh_id: newVehicle.veh_id,
                     uv_created_by: "system"
                 }
