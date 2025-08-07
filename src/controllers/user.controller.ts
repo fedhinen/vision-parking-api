@@ -67,8 +67,58 @@ const verifyCode = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const createDesktopUser = async (req: Request, res: Response, next: NextFunction) => {
+    const { cmp_id } = req.params
+
+    try {
+        const newUser = await userService.createDesktopUser(cmp_id)
+        res.status(201).json(newUser)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getUserIsConfigurated = async (req: Request, res: Response, next: NextFunction) => {
+    const { usr_id } = req.params
+
+    try {
+        const isConfigurated = await userService.getUserIsConfigurated(usr_id)
+        res.status(200).json({ isConfigurated })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const movilUserConfigurated = async (req: Request, res: Response, next: NextFunction) => {
+    const { usr_id } = req.params
+
+    try {
+        await userService.movilUserConfigurated(usr_id)
+        res.status(200).json({
+            message: "Usuario configurado correctamente"
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params
+
+    try {
+        const userInfo = await userService.getUserInfo(id)
+        res.status(200).json(userInfo)
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const userController = {
+    getUserInfo,
     signup,
     signin,
-    verifyCode
+    verifyCode,
+    createDesktopUser,
+    movilUserConfigurated,
+    getUserIsConfigurated
 }

@@ -11,7 +11,8 @@ const {
     LNG039,
     LNG040,
     LNG041,
-    LNG068
+    LNG068,
+    LNG088
 } = ERROR_CATALOG.businessLogic
 
 const createClient = async (body: any) => {
@@ -130,9 +131,26 @@ const createDefaultClientConfiguration = async (newClient: any) => {
     await clientConfig.createDefaultParkingSpots(parkingLot.pkl_id);
 }
 
+const getClientCompanyByUserId = async (userId: string) => {
+    const user = await userService.getUserById(userId);
+
+    try {
+        const userClient = await prisma.clients.findFirst({
+            where: {
+                cte_email: user.usr_email,
+            }
+        })
+
+        return userClient
+    } catch (error) {
+        throw new InternalServerError(LNG088)
+    }
+}
+
 export const clientService = {
     createClient,
     getClientById,
     updateClient,
-    deleteClient
+    deleteClient,
+    getClientCompanyByUserId
 } 

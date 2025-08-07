@@ -1,11 +1,13 @@
 import { AuthError, InternalServerError } from "../middleware/error/error"
 import { ERROR_CATALOG } from "../utils/error-catalog"
-import { sendEmail } from "../utils/functions"
+import { generateRandomEmail, generateRandomUsername, sendEmail } from "../utils/functions"
 import { prisma } from "../utils/lib/prisma"
 import argon2 from "argon2"
 import jwt from "jsonwebtoken"
 import { mailTemplates } from "../utils/lib/mail/templates"
 import { companyService } from "./company.service"
+import { Plataforma } from "@prisma/client"
+import { clientService } from "./client.service"
 
 const
   {
@@ -18,8 +20,15 @@ const
     AUTH011,
     AUTH012,
     AUTH013,
-    AUTH014
+    AUTH014,
+    AUTH016,
   } = ERROR_CATALOG.autentication
+
+const {
+  LNG084,
+  LNG085,
+  LNG086
+} = ERROR_CATALOG.businessLogic
 
 const signup = async (body: any) => {
   const {
@@ -63,6 +72,7 @@ const signup = async (body: any) => {
   if (newUser.pry_name === "VISION_PARKING_DESKTOP") {
     await companyService.addUserToCompany(newUser.usr_id, cmp_id)
     console.log(newUser.usr_id, newUser.usr_email, usr_password);
+    //await sendCredentialsEmail(newUser.usr_name, newUser.usr_email, usr_password)
   } else if (newUser.pry_name === "VISION_PARKING_WEB") {
     console.log(newUser.usr_id, newUser.usr_email, usr_password);
     //await sendCredentialsEmail(newUser.usr_name, newUser.usr_email, usr_password)
@@ -72,9 +82,9 @@ const signup = async (body: any) => {
 }
 
 const signin = async (body: any) => {
-  const { usr_email, usr_password } = body;
+  const { usr_email, usr_password, pry_name } = body;
 
-  const isRegister = await userExists(usr_email, usr_password)
+  const isRegister = await userExists(usr_email, usr_password, pry_name)
 
   try {
     const userCode = await generateCode(isRegister)
@@ -89,8 +99,19 @@ const signin = async (body: any) => {
   }
 };
 
-const userExists = async (usr_email: string, usr_password: string) => {
+const userExists = async (usr_email: string, usr_password: string, pry_name: Plataforma) => {
   try {
+    const isAuthorized = await prisma.users.findFirst({
+      where: {
+        usr_email,
+        pry_name
+      }
+    })
+
+    if (!isAuthorized) {
+      throw new AuthError(AUTH016)
+    }
+
     const isRegister = await prisma.users.findUnique({
       where: {
         usr_email,
@@ -220,6 +241,8 @@ const generateToken = async (usr_id: string) => {
 
   if (user.pry_name === "VISION_PARKING_DESKTOP") {
     company = await companyService.getCompanyByUserId(user.usr_id)
+  } else if (user.pry_name === "VISION_PARKING_WEB") {
+    company = await clientService.getClientCompanyByUserId(user.usr_id)
   }
 
   return {
@@ -305,9 +328,95 @@ const sendCredentialsEmail = async (username: string, email: string, password: s
   await sendEmail(mailOptions)
 }
 
+const createDesktopUser = async (cmp_id: string) => {
+  const company = await companyService.getCompanyById(cmp_id)
+
+  const companyUsers = await companyService.getUsersByCompanyId(company.cmp_id)
+
+  const existUsers = companyUsers.filter(user => user.pry_name === "VISION_PARKING_DESKTOP")
+
+  const userNumber = existUsers.length === 0 ? 1 : existUsers.length + 1
+  const usr_name = generateRandomUsername(company.cmp_name, userNumber)
+  const usr_email = generateRandomEmail(company.cmp_name, userNumber)
+  const usr_password = `VisionParking!${new Date().getFullYear()}`
+  const pry_name = "VISION_PARKING_DESKTOP"
+
+  const userData = {
+    usr_name,
+    usr_email,
+    usr_password,
+    cmp_id,
+    pry_name,
+  }
+
+  const newUser = await signup(userData)
+  return newUser
+}
+
+const getUserIsConfigurated = async (usr_id: string) => {
+  const user = await getUserById(usr_id)
+
+  try {
+    const isConfigurated = await prisma.users.findUnique({
+      where: {
+        usr_id: user.usr_id
+      },
+      select: {
+        usr_is_configured: true
+      }
+    })
+
+    return isConfigurated?.usr_is_configured
+  } catch (error) {
+    throw new InternalServerError(LNG085)
+  }
+}
+
+const movilUserConfigurated = async (usr_id: string) => {
+  const user = await getUserById(usr_id)
+
+  try {
+    await prisma.users.update({
+      where: {
+        usr_id: user.usr_id
+      },
+      data: {
+        usr_is_configured: true
+      }
+    })
+  } catch (error) {
+    throw new InternalServerError(LNG084)
+  }
+}
+
+const getUserInfo = async (usr_id: string) => {
+  const user = await getUserById(usr_id)
+
+  try {
+    const userInfo = await prisma.users.findUnique({
+      where: {
+        usr_id: user.usr_id
+      },
+      select: {
+        usr_name: true,
+        usr_email: true,
+        usr_date: true,
+      }
+    })
+
+    return userInfo
+  } catch (error) {
+    throw new InternalServerError(LNG086)
+  }
+}
+
 export const userService = {
   signup,
   signin,
   verifyCode,
-  getUserById
+  getUserById,
+  getUserInfo,
+  createDesktopUser,
+  movilUserConfigurated,
+  getUserIsConfigurated
 }

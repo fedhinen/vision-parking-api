@@ -3,13 +3,15 @@ import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { statusService } from "./status.service";
+import { companyService } from "./company.service";
 
 const {
     LNG063,
     LNG026,
     LNG034,
     LNG075,
-    LNG076
+    LNG076,
+    LNG083
 } = ERROR_CATALOG.businessLogic
 
 const createCompanyAccessRequest = async (body: any) => {
@@ -69,18 +71,26 @@ const acceptCompanyAccessRequest = async (id: string) => {
     );
 
     try {
-        const updatedCompanyAccessRequest = await prisma.company_access_requests.update({
-            where: {
-                cma_id: companyAccessRequest.cma_id
-            },
-            data: {
-                stu_id: status.stu_id,
-                cma_approved_date: new Date(),
-                cma_approved_by: "system"
-            }
-        });
+        const result = await prisma.$transaction(async (tx) => {
+            const updatedCompanyAccessRequest = await prisma.company_access_requests.update({
+                where: {
+                    cma_id: companyAccessRequest.cma_id
+                },
+                data: {
+                    stu_id: status.stu_id,
+                    cma_approved_date: new Date(),
+                    cma_approved_by: "system"
+                }
+            });
 
-        return updatedCompanyAccessRequest;
+            await companyService.
+                addUserToCompany(companyAccessRequest.usr_id,
+                    companyAccessRequest.cmp_id)
+
+            return updatedCompanyAccessRequest
+        })
+
+        return result;
     } catch (error) {
         throw new InternalServerError(LNG075);
     }
@@ -128,10 +138,31 @@ const deleteCompanyAccessRequest = async (id: string) => {
     }
 }
 
+const getPendingCompanyAccessRequests = async (cmp_id: string) => {
+    const company = await companyService.getCompanyById(cmp_id);
+
+    const pendingStatus = await statusService.getStatusByTableAndName(
+        "company_access_requests", "Pendiente")
+
+    try {
+        const pendingRequests = await prisma.company_access_requests.findMany({
+            where: {
+                cmp_id: company.cmp_id,
+                stu_id: pendingStatus.stu_id,
+            }
+        })
+
+        return pendingRequests
+    } catch (error) {
+        throw new InternalServerError(LNG083)
+    }
+}
+
 export const companyAccessRequestService = {
     createCompanyAccessRequest,
     getCompanyAccessRequestById,
     acceptCompanyAccessRequest,
     rejectCompanyAccessRequest,
-    deleteCompanyAccessRequest
+    deleteCompanyAccessRequest,
+    getPendingCompanyAccessRequests
 } 

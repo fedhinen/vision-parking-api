@@ -85,9 +85,21 @@ const getUsersByCompanyId = async (req: Request, res: Response, next: NextFuncti
     }
 }
 
+const getCompaniesByUserId = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params
+
+    try {
+        const companies = await companyService.getCompaniesByUserId(id)
+        res.status(200).json(companies)
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const companyController = {
     getCompanies,
     getUsersByCompanyId,
+    getCompaniesByUserId,
     createCompany,
     getCompanyById,
     updateCompany,

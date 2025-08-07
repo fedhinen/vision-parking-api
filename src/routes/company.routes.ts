@@ -10,5 +10,6 @@ router.get("/companies/:id", authenticate, companyController.getCompanyById)
 router.put("/companies/:id", authenticate, companyController.updateCompany)
 router.delete("/companies/:id", authenticate, companyController.deleteCompany)
 router.get("/companies/:id/users", authenticate, companyController.getUsersByCompanyId)
+router.get("/users/:id/companies", authenticate, companyController.getCompaniesByUserId)
 
 export const companyRoutes = router;

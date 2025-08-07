@@ -21,6 +21,7 @@ model users {
   usr_active              Boolean                   @default(true)
   usr_date                DateTime                  @default(now())
   pry_name                Plataforma
+  usr_is_configured       Boolean                   @default(false)
   tokens                  tokens[]
   sessions                sessions[]
   reservations            reservations[]
@@ -164,7 +165,7 @@ model clients {
 model parking_lots {
   pkl_id         String   @id @default(uuid())
   cmp_id         String
-  pkl_name       String   @unique
+  pkl_name       String
   pkl_active     Boolean  @default(true)
   pkl_date       DateTime @default(now())
   pkl_created_by String

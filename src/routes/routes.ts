@@ -11,6 +11,7 @@ import { rfidAssignmentsRoutes } from "./rfid-assignment.routes";
 import { companyAccessRequestRoutes } from "./company-access-request.routes";
 import { filesRoutes } from "./file.routes";
 import { testRouter } from "./test.routes";
+import { rfidTagRoutes } from "./rfid-tag.routes";
 
 export const router = Router();
 
@@ -26,3 +27,4 @@ router.use(rfidAssignmentsRoutes)
 router.use(companyAccessRequestRoutes)
 router.use(filesRoutes)
 router.use("/test", testRouter)
+router.use(rfidTagRoutes)

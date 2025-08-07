@@ -74,6 +74,11 @@ export const ERROR_CATALOG = {
             "code": "AUTH015",
             "message": "No contiene la cabecera de autorización",
             "status": 500
+        },
+        "AUTH016": {
+            "code": "AUTH016",
+            "message": "No tienes permisos para acceder a este sistema",
+            "status": 403
         }
     },
     "validation": {
@@ -551,6 +556,41 @@ export const ERROR_CATALOG = {
         "LNG081": {
             "code": "LNG081",
             "message": "Error al tratar de consultar los tags RFID de la compañia",
+            "status": 500
+        },
+        "LNG082": {
+            "code": "LNG082",
+            "message": "Error al tratar de consultar las asignaciones RFID de la compañia",
+            "status": 500
+        },
+        "LNG083": {
+            "code": "LNG083",
+            "message": "Error al tratar de consultar las solicitudes de acceso pendientes de la compañia",
+            "status": 500
+        },
+        "LNG084": {
+            "code": "LNG084",
+            "message": "Error al tratar de terminar la configuración inicial",
+            "status": 500
+        },
+        "LNG085": {
+            "code": "LNG085",
+            "message": "Error al tratar de consultar la configuración inicial",
+            "status": 500
+        },
+        "LNG086": {
+            "code": "LNG086",
+            "message": "Error al tratar de consultar la información del usuario",
+            "status": 500
+        },
+        "LNG087": {
+            "code": "LNG087",
+            "message": "Error al tratar de consultar las compañias a las que tiene acceso el usuario",
+            "status": 500
+        },
+        "LNG088": {
+            "code": "LNG088",
+            "message": "Error al tratar de consultar el usuario de tipo cliente",
             "status": 500
         },
     }

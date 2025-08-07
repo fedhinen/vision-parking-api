@@ -8,5 +8,6 @@ router.post("/rfid-assignments", authenticate, rfidAssignmentController.createRf
 router.get("/rfid-assignments/:id", authenticate, rfidAssignmentController.getRfidAssignmentById)
 router.put("/rfid-assignments/:id", authenticate, rfidAssignmentController.updateRfidAssignment)
 router.delete("/rfid-assignments/:id", authenticate, rfidAssignmentController.deleteRfidAssignment)
+router.get("/companies/:companyId/rfid-assignments", authenticate, rfidAssignmentController.getRfidAssignmentsByCompanyId)
 
 export const rfidAssignmentsRoutes = router;

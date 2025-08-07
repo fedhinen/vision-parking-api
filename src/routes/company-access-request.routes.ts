@@ -29,5 +29,10 @@ router.delete(
     authenticate,
     companyAccessRequestController.deleteCompanyAccessRequest
 )
+router.get(
+    "/companies/:companyId/company-access-requests",
+    authenticate,
+    companyAccessRequestController.getPendingCompanyAccessRequests
+)
 
 export const companyAccessRequestRoutes = router;
