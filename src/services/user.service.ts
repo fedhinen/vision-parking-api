@@ -411,6 +411,7 @@ export const userService = {
   signup,
   signin,
   verifyCode,
+  getUserById,
   getUserInfo,
   createDesktopUser,
   movilUserConfigurated,
