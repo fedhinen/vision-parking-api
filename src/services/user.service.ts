@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken"
 import { mailTemplates } from "../utils/lib/mail/templates"
 import { companyService } from "./company.service"
 import { Plataforma } from "@prisma/client"
+import { clientService } from "./client.service"
 
 const
   {
@@ -240,6 +241,8 @@ const generateToken = async (usr_id: string) => {
 
   if (user.pry_name === "VISION_PARKING_DESKTOP") {
     company = await companyService.getCompanyByUserId(user.usr_id)
+  } else if (user.pry_name === "VISION_PARKING_WEB") {
+    company = await clientService.getClientCompanyByUserId(user.usr_id)
   }
 
   return {
