@@ -11,7 +11,8 @@ const {
     LNG069,
     LNG077,
     LNG078,
-    LNG079
+    LNG079,
+    LNG087
 } = ERROR_CATALOG.businessLogic
 
 const getCompanies = async () => {
@@ -165,11 +166,38 @@ const addUserToCompany = async (userId: string, companyId: string) => {
     }
 }
 
+const getCompaniesByUserId = async (userId: string) => {
+    const user = await userService.getUserById(userId)
+
+    try {
+        const userCompanies = await prisma.company_users.findMany({
+            where: {
+                usr_id: user.usr_id
+            }
+        })
+
+        const companyIds = userCompanies.map(company => company.cmp_id)
+
+        const companies = await prisma.companies.findMany({
+            where: {
+                cmp_id: {
+                    in: companyIds
+                }
+            }
+        })
+
+        return companies
+    } catch (error) {
+        throw new InternalServerError(LNG087)
+    }
+}
+
 export const companyService = {
     getCompanies,
     getCompanyById,
     getCompanyByUserId,
     getUsersByCompanyId,
+    getCompaniesByUserId,
     createCompany,
     updateCompany,
     deleteCompany,
