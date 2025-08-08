@@ -4,17 +4,19 @@ import { reservationSchema } from "../schemas/reservation.schema"
 import { ValidationError } from "../middleware/error/error"
 
 const createReservation = async (req: Request, res: Response, next: NextFunction) => {
-    const result = reservationSchema.safeParse(req.body);
+    const requestBody = {
+        ...req.body,
+        rsv_initial_date: new Date(req.body.rsv_initial_date),
+        rsv_end_date: new Date(req.body.rsv_end_date)
+    }
+
+    const result = reservationSchema.safeParse(requestBody);
 
     if (!result.success) {
         throw new ValidationError(result.error);
     }
 
-    const body = {
-        ...result.data,
-        rsv_initial_date: new Date(req.body.rsv_initial_date),
-        rsv_end_date: new Date(req.body.rsv_end_date)
-    };
+    const body = result.data
 
     try {
         const reservation = await reservationService.createReservation(body);
@@ -23,6 +25,7 @@ const createReservation = async (req: Request, res: Response, next: NextFunction
             message: "Reservación creada correctamente",
             data: reservation
         });
+
     } catch (error) {
         next(error);
     }
