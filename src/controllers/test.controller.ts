@@ -6,16 +6,21 @@ const testWebSocket = async (req: Request, res: Response, next: NextFunction) =>
         const { message, room } = req.body
 
         if (room) {
-            webSocketService.broadcastToRoom(room, {
-                type: 'test_message',
-                data: message || 'Test message from API',
-                timestamp: new Date().toISOString()
+            webSocketService.broadcast({
+                event: 'test_message',
+                data: {
+                    message: message || 'Test message from API',
+                    timestamp: new Date().toISOString()
+                },
+                room
             })
         } else {
             webSocketService.broadcast({
-                type: 'test_message',
-                data: message || 'Test message from API',
-                timestamp: new Date().toISOString()
+                event: 'test_message',
+                data: {
+                    message: message || 'Test message from API',
+                    timestamp: new Date().toISOString()
+                }
             })
         }
 
