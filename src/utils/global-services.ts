@@ -10,16 +10,18 @@ export const getWebSocketClient = () => {
 }
 
 // Función helper para enviar notificaciones WebSocket
-export const sendWebSocketNotification = (type: string, data: any, room?: string) => {
-    const message = {
-        type,
-        data,
-        timestamp: new Date().toISOString()
-    }
-
+export const sendWebSocketNotification = (data: { event: string, data: any, room?: string }) => {
+    const { event, data: payload, room } = data
     if (room) {
-        webSocketService.broadcastToRoom(room, message)
+        webSocketService.broadcast({
+            event,
+            data: payload,
+            room
+        })
     } else {
-        webSocketService.broadcast(message)
+        webSocketService.broadcast({
+            event,
+            data
+        })
     }
 }
