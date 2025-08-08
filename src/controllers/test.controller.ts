@@ -6,16 +6,21 @@ const testWebSocket = async (req: Request, res: Response, next: NextFunction) =>
         const { message, room } = req.body
 
         if (room) {
-            webSocketService.broadcastToRoom(room, {
-                type: 'test_message',
-                data: message || 'Test message from API',
-                timestamp: new Date().toISOString()
+            webSocketService.broadcast({
+                event: 'test_message',
+                data: {
+                    message: message || 'Test message from API',
+                    timestamp: new Date().toISOString()
+                },
+                room
             })
         } else {
             webSocketService.broadcast({
-                type: 'test_message',
-                data: message || 'Test message from API',
-                timestamp: new Date().toISOString()
+                event: 'test_message',
+                data: {
+                    message: message || 'Test message from API',
+                    timestamp: new Date().toISOString()
+                }
             })
         }
 
@@ -37,12 +42,12 @@ const testMqtt = async (req: Request, res: Response, next: NextFunction) => {
                 rsv_id: data?.rsv_id || 'test-reservation-id',
                 usr_id: data?.usr_id || 'test-user-id',
                 pks_id: data?.pks_id || 'test-parking-spot-id',
-                rsv_initial_date: data?.rsv_initial_date || new Date().toISOString(),
-                rsv_end_date: data?.rsv_end_date || new Date(Date.now() + 3600000).toISOString(),
-                rsv_reason: data?.rsv_reason || 'Test reservation',
+                // rsv_initial_date: data?.rsv_initial_date || new Date().toISOString(),
+                // rsv_end_date: data?.rsv_end_date || new Date(Date.now() + 3600000).toISOString(),
+                // rsv_reason: data?.rsv_reason || 'Test reservation',
                 status: data?.status || 'Pendiente',
-                user_name: data?.user_name || 'Test User',
-                parking_spot_code: data?.parking_spot_code || 'SPOT-TEST'
+                // user_name: data?.user_name || 'Test User',
+                // parking_spot_code: data?.parking_spot_code || 'SPOT-TEST'
             })
         } else if (type === 'status') {
             await mqttService.publishReservationStatusChanged({

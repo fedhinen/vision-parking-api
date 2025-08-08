@@ -1,6 +1,7 @@
 import mqtt, { MqttClient } from 'mqtt'
 
 export interface ReservationMqttMessage {
+    rsv_id: string
     usr_id: string
     pks_id: string
     status: string

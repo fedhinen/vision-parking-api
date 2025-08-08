@@ -2,9 +2,15 @@ import { Server } from 'socket.io'
 import { Server as HttpServer } from 'http'
 
 export interface WebSocketMessage {
-    type: string
+    event: string
     data: any
-    timestamp: string
+    timestamp?: string
+}
+
+export interface BroadcastOptions {
+    event: string
+    data: any
+    room?: string
 }
 
 class WebSocketService {
@@ -39,28 +45,25 @@ class WebSocketService {
         console.log('Servidor WebSocket inicializado')
     }
 
-    broadcast(message: WebSocketMessage) {
+    broadcast(options: BroadcastOptions) {
         if (!this.io) {
             console.warn('WebSocket no inicializado')
             return
         }
 
-        this.io.emit('message', {
-            ...message,
+        const message: WebSocketMessage = {
+            event: options.event,
+            data: options.data,
             timestamp: new Date().toISOString()
-        })
-    }
-
-    broadcastToRoom(room: string, message: WebSocketMessage) {
-        if (!this.io) {
-            console.warn('WebSocket no inicializado')
-            return
         }
 
-        this.io.to(room).emit('message', {
-            ...message,
-            timestamp: new Date().toISOString()
-        })
+        if (options.room) {
+            // Broadcast a una sala específica
+            this.io.to(options.room).emit(options.event, message)
+        } else {
+            // Broadcast global
+            this.io.emit(options.event, message)
+        }
     }
 
     getIO() {
