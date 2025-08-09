@@ -95,6 +95,7 @@ const signin = async (body: any) => {
       usr_email: isRegister.usr_email
     }
   } catch (error) {
+    console.log("signinError", error);
     throw new InternalServerError(AUTH009);
   }
 };
@@ -313,6 +314,7 @@ const createUser = async (body: any) => {
 
     return newUser
   } catch (error) {
+    console.log(error)
     throw new InternalServerError(AUTH007);
   }
 }

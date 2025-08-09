@@ -62,6 +62,7 @@ const createParkingLot = async (body: any) => {
         });
         return newParkingLot;
     } catch (error) {
+        console.error("parkingLotError", error);
         throw new InternalServerError(LNG045);
     }
 }

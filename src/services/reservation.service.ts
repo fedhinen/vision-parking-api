@@ -4,6 +4,7 @@ import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { statusService } from "./status.service";
 import { mqttService } from "./mqtt.service";
+import { webSocketService } from "./websocket.service";
 
 const {
     LNG052,
@@ -24,6 +25,7 @@ const createReservation = async (body: any) => {
 
     try {
         const statusReservation = await statusService.getStatusByTableAndName('reservations', 'Pendiente');
+        const statusParkingSpot = await statusService.getStatusByTableAndName('parking_spots', 'Reservado');
 
         const result = await prisma.$transaction(async (tx) => {
             const newReservation = await prisma.reservations.create({
@@ -37,7 +39,6 @@ const createReservation = async (body: any) => {
                     rsv_created_by: "system"
                 },
                 include: {
-                    user: true,
                     parking_spot: {
                         include: {
                             status: true
@@ -46,6 +47,15 @@ const createReservation = async (body: any) => {
                     status: true
                 }
             });
+
+            await prisma.parking_spots.update({
+                where: {
+                    pks_id
+                },
+                data: {
+                    stu_id: statusParkingSpot.stu_id,
+                }
+            })
 
             return newReservation
         })
@@ -61,6 +71,20 @@ const createReservation = async (body: any) => {
             console.error('Error al publicar mensaje MQTT:', mqttError)
         }
 
+        try {
+            webSocketService.broadcast({
+                event: 'backend:new_reservation',
+                data: {
+                    pks_id: result.pks_id,
+                    status: {
+                        stu_name: result.status.stu_name
+                    }
+                },
+                room: `pks_${result.pks_id}`
+            })
+        } catch (websocketError) {
+            console.error('Error al enviar mensaje por WebSocket:', websocketError)
+        }
 
         return result
     } catch (error) {

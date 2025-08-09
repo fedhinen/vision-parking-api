@@ -156,6 +156,11 @@ export const ERROR_CATALOG = {
             "message": "El campo contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial",
             "status": 400
         },
+        "VAL015": {
+            "code": "VAL015",
+            "message": "El campo ESP32 Id debe tener el formato XX:XX:XX:XX:XX:XX",
+            "status": 400
+        },
     },
     "businessLogic": {
         "LNG001": {
@@ -596,6 +601,26 @@ export const ERROR_CATALOG = {
         "LNG088": {
             "code": "LNG088",
             "message": "Error al tratar de consultar el usuario de tipo cliente",
+            "status": 500
+        },
+        "LNG089": {
+            "code": "LNG089",
+            "message": "Error al tratar de configurar el estacionamiento",
+            "status": 500
+        },
+        "LNG090": {
+            "code": "LNG090",
+            "message": "Error al tratar de consultar la configuración del cajón",
+            "status": 500
+        },
+        "LNG091": {
+            "code": "LNG091",
+            "message": "ESP32 Id ya registrado",
+            "status": 409
+        },
+        "LNG092": {
+            "code": "LNG092",
+            "message": "Estacionamiento ya configurado",
             "status": 500
         },
     }

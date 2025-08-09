@@ -3,13 +3,19 @@ import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { parkingLotService } from "./parking-lot.service";
+import { statusService } from "./status.service";
+import { webSocketService } from "./websocket.service";
 
 const {
     LNG049,
     LNG048,
     LNG050,
     LNG033,
-    LNG071
+    LNG071,
+    LNG089,
+    LNG090,
+    LNG091,
+    LNG092
 } = ERROR_CATALOG.businessLogic
 
 const getParkingSpotsByLotId = async (parkingLotId: string) => {
@@ -68,6 +74,7 @@ const createParkingSpot = async (body: any) => {
         });
         return newParkingSpot;
     } catch (error) {
+        console.log("parkingSpotError", error);
         throw new InternalServerError(LNG048);
     }
 }
@@ -126,8 +133,24 @@ const updateParkingSpot = async (parkingSpotId: string, body: any) => {
             }
         });
 
+        try {
+            webSocketService.broadcast({
+                event: "backend:parking_spot_updated",
+                data: {
+                    pks_id: updatedParkingSpot.pks_id,
+                    status: {
+                        stu_name: updatedParkingSpot.status.stu_name
+                    }
+                },
+                room: `pks_${updatedParkingSpot.pks_id}`
+            })
+        } catch (error) {
+            console.log("Error en el websocket tratando de actualizar un parking spot", error);
+        }
+
         return updatedParkingSpot;
     } catch (error) {
+        console.log("updateParkingSpotError", error);
         throw new InternalServerError(LNG050);
     }
 }
@@ -157,10 +180,107 @@ const deleteParkingSpot = async (parkingSpotId: string) => {
     }
 }
 
+const configParkingSpot = async (parkingSpotId: string, body: any) => {
+    const {
+        esp32_id
+    } = body
+
+    try {
+        const esp32Configured = await prisma.parking_spots_config.findFirst({
+            where: {
+                esp32_id
+            }
+        })
+
+        if (esp32Configured) {
+            throw new InternalServerError(LNG091);
+        }
+    } catch (error) {
+        throw error
+    }
+
+    const parkingSpot = await getParkingSpotById(parkingSpotId)
+
+    if (parkingSpot.pks_configured) {
+        throw new InternalServerError(LNG092);
+    }
+
+    const statusDisponible = await statusService.getStatusByTableAndName("parking_spots", "Disponible");
+
+    try {
+        const { configSpot, updatedParkingSpot } = await prisma.$transaction(async (tx) => {
+            const configSpot = await prisma.parking_spots_config.create({
+                data: {
+                    pks_id: parkingSpot.pks_id,
+                    esp32_id: esp32_id
+                }
+            })
+
+            const updatedParkingSpot = await prisma.parking_spots.update({
+                where: {
+                    pks_id: parkingSpot.pks_id
+                },
+                data: {
+                    stu_id: statusDisponible.stu_id,
+                    pks_configured: true
+                },
+                include: {
+                    status: {
+                        select: {
+                            stu_name: true
+                        }
+                    }
+                }
+            })
+
+            return {
+                configSpot,
+                updatedParkingSpot
+            }
+        })
+
+        try {
+            webSocketService.broadcast({
+                event: "backend:parking_spot_configured",
+                data: {
+                    pks_id: updatedParkingSpot.pks_id,
+                    status: {
+                        stu_name: updatedParkingSpot.status.stu_name
+                    }
+                },
+                room: `pks_${updatedParkingSpot.pks_id}`
+            })
+        } catch (error) {
+            console.error("Error en el websocket tratando de configurar un parking spot", error);
+        }
+
+        return configSpot
+    } catch (error) {
+        throw new InternalServerError(LNG089)
+    }
+}
+
+const getParkingSpotConfig = async (esp32Id: string) => {
+    try {
+        const parkingSpotConfig = await prisma.parking_spots_config.findFirst({
+            where: {
+                esp32_id: esp32Id,
+                psc_active: true
+            }
+        })
+
+        return parkingSpotConfig
+    } catch (error) {
+        throw new InternalServerError(LNG090);
+    }
+}
+
 export const parkingSpotService = {
     getParkingSpotsByLotId,
     createParkingSpot,
     getParkingSpotById,
     updateParkingSpot,
-    deleteParkingSpot
+    deleteParkingSpot,
+    configParkingSpot,
+    getParkingSpotConfig
 } 
