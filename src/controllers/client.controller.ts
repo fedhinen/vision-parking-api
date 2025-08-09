@@ -31,6 +31,7 @@ const getClientById = async (req: Request, res: Response, next: NextFunction) =>
         const client = await clientService.getClientById(id);
 
         res.status(200).json({
+            message: "Cliente encontrado correctamente",
             data: client
         });
     } catch (error) {

@@ -5,6 +5,7 @@ import { ERROR_CATALOG } from "../utils/error-catalog";
 import { clientConfig } from "../utils/client-config";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { userService } from "./user.service";
+import { companyService } from "./company.service";
 
 const {
     LNG029,
@@ -25,6 +26,8 @@ const createClient = async (body: any) => {
         cmp_id
     } = body
 
+    const company = await companyService.getCompanyById(cmp_id);
+
     try {
         const newClient = await prisma.clients.create({
             data: {
@@ -33,7 +36,7 @@ const createClient = async (body: any) => {
                 cte_email: cte_email,
                 cte_address: cte_address,
                 cte_zipcode: cte_zipcode,
-                cmp_id: cmp_id,
+                cmp_id: company.cmp_id,
                 cte_created_by: "system"
             },
             include: {
@@ -45,16 +48,16 @@ const createClient = async (body: any) => {
             await userService.signup({
                 usr_name: `${newClient.cte_email.split("@")[0]}.client`,
                 usr_email: newClient.cte_email,
-                usr_password: "VisionParking!",
+                usr_password: `VisionParking${new Date().getFullYear()}!`,
                 cmp_id: newClient.cmp_id,
-                pry_name: "VISION_PARKING_WEB",
-                is_client: true
+                pry_name: "VISION_PARKING_WEB"
             })
             await createDefaultClientConfiguration(newClient);
         }
 
         return newClient;
     } catch (error) {
+        console.log("createClientError", error);
         if (error instanceof PrismaClientKnownRequestError) {
             if (
                 error.code === 'P2002' &&
