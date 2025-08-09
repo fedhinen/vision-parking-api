@@ -30,6 +30,7 @@ const getRfidAssignmentById = async (req: Request, res: Response, next: NextFunc
         const rfidAssignment = await rfidAssignmentService.getRfidAssignmentById(id);
 
         res.status(200).json({
+            message: "Asignación RFID encontrada correctamente",
             data: rfidAssignment
         });
     } catch (error) {

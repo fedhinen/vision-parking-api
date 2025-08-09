@@ -31,6 +31,7 @@ const getCompanyAccessRequestById = async (req: Request, res: Response, next: Ne
         const companyAccessRequest = await companyAccessRequestService.getCompanyAccessRequestById(id);
 
         res.status(200).json({
+            message: "Solicitud de acceso encontrada correctamente",
             data: companyAccessRequest
         });
     } catch (error) {

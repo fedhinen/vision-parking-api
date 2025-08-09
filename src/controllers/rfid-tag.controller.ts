@@ -31,7 +31,7 @@ const getRFIDTagById = async (req: Request, res: Response, next: NextFunction) =
         const rfidTag = await rfidTagService.getRFIDTagById(id);
 
         res.status(200).json({
-            message: "Tag RFID obtenido correctamente",
+            message: "Tag RFID encontrado correctamente",
             data: rfidTag
         });
     } catch (error) {

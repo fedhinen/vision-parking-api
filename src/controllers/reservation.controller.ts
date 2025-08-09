@@ -38,6 +38,7 @@ const getReservationById = async (req: Request, res: Response, next: NextFunctio
         const reservation = await reservationService.getReservationById(id);
 
         res.status(200).json({
+            message: "Reservación encontrada correctamente",
             data: reservation
         });
     } catch (error) {

@@ -37,7 +37,10 @@ const getCompanyById = async (req: Request, res: Response, next: NextFunction) =
 
     try {
         const company = await companyService.getCompanyById(id)
-        res.status(200).json(company)
+        res.status(200).json({
+            message: "Compañia encontrada correctamente",
+            data: company
+        })
     } catch (error) {
         next(error)
     }

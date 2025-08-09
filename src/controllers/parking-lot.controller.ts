@@ -43,6 +43,7 @@ const getParkingLotById = async (req: Request, res: Response, next: NextFunction
         const parkingLot = await parkingLotService.getParkingLotById(id);
 
         res.status(200).json({
+            message: "Estacionamiento encontrado correctamente",
             data: parkingLot
         });
     } catch (error) {

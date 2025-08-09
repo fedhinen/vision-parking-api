@@ -31,6 +31,7 @@ const getSpotAssignmentById = async (req: Request, res: Response, next: NextFunc
         const spotAssignment = await spotAssignmentService.getSpotAssignmentById(spotAssignmentId);
 
         res.status(200).json({
+            message: "Asignación de cajón encontrada correctamente",
             data: spotAssignment
         });
     } catch (error) {
