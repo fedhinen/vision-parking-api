@@ -2,9 +2,9 @@ import { prisma } from "../src/utils/lib/prisma";
 
 const ESTATUS = [
     {
-        stu_name: "Activo",
+        stu_name: "Disponible",
         stu_table: "parking_spots",
-        stu_description: "El estado activo indica que el lugar de estacionamiento está disponible para ser utilizado.",
+        stu_description: "El estado disponible indica que el lugar de estacionamiento está disponible para ser utilizado.",
     },
     {
         stu_name: "Ocupado",

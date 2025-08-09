@@ -180,6 +180,7 @@ model parking_spots {
   stu_id         String
   pks_number     String
   pks_order      Int
+  pks_configured Boolean  @default(false)
   pkl_date       DateTime @default(now())
   pks_created_by String
 
@@ -318,6 +319,14 @@ model user_codes {
   cod_date            DateTime @default(now())
 
   user users @relation(fields: [usr_id], references: [usr_id])
+}
+
+model parking_spots_config {
+  psc_id     String   @id @default(uuid())
+  pks_id     String
+  esp32_id   String
+  psc_active Boolean  @default(true)
+  psc_date   DateTime @default(now())
 }
 
 enum Plataforma {
