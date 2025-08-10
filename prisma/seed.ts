@@ -37,19 +37,14 @@ const ESTATUS = [
         stu_description: "El estado rechazada indica que la solicitud de acceso a la empresa ha sido denegada.",
     },
     {
-        stu_name: "Pendiente",
+        stu_name: "Realizada",
         stu_table: "reservations",
-        stu_description: "El estado pendiente indica que la reserva está en espera de revision.",
+        stu_description: "El estado pendiente indica que la reservación ha sido realizada",
     },
     {
-        stu_name: "Aceptada",
+        stu_name: "Finalizada",
         stu_table: "reservations",
-        stu_description: "El estado aceptada indica que la reserva ha sido aceptada",
-    },
-    {
-        stu_name: "Rechazada",
-        stu_table: "reservations",
-        stu_description: "El estado rechazada indica que la reserva ha sido rechazada.",
+        stu_description: "El estado aceptada indica que la reservacion ha finalizado",
     }
 ]
 
