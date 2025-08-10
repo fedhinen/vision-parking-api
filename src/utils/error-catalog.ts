@@ -623,6 +623,16 @@ export const ERROR_CATALOG = {
             "message": "Estacionamiento ya configurado",
             "status": 500
         },
+        "LNG093": {
+            "code": "LNG093",
+            "message": "Error al tratar de consultar las reservaciones del usuario",
+            "status": 500
+        },
+        "LNG094": {
+            "code": "LNG094",
+            "message": "Solamente puedes tener una reservación activa por estacionamiento",
+            "status": 409
+        },
     }
 }
 

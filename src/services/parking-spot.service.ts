@@ -91,13 +91,7 @@ const getParkingSpotById = async (parkingSpotId: string) => {
                         stu_name: true
                     }
                 },
-                reservations: {
-                    where: {
-                        rsv_end_date: {
-                            gte: new Date()
-                        }
-                    }
-                },
+                reservations: true,
                 spot_assignments: {
                     where: {
                         spa_active: true

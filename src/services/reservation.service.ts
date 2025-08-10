@@ -5,13 +5,18 @@ import { ERROR_CATALOG } from "../utils/error-catalog";
 import { statusService } from "./status.service";
 import { mqttService } from "./mqtt.service";
 import { webSocketService } from "./websocket.service";
+import { userService } from "./user.service";
+import { parkingSpotService } from "./parking-spot.service";
+import { parkingLotService } from "./parking-lot.service";
 
 const {
     LNG052,
     LNG051,
     LNG054,
     LNG073,
-    LNG074
+    LNG074,
+    LNG093,
+    LNG094,
 } = ERROR_CATALOG.businessLogic
 
 const createReservation = async (body: any) => {
@@ -23,8 +28,23 @@ const createReservation = async (body: any) => {
         rsv_reason
     } = body;
 
+    const parkingSpot = await parkingSpotService.getParkingSpotById(pks_id);
+
+    const parkingLot = await parkingLotService.getParkingLotById(parkingSpot.pkl_id);
+
+    const reservations = await getReservationsByUserId(usr_id);
+
+    const existingReservation = reservations.filter(resv =>
+        resv.status.stu_name === "Realizada"
+        && resv.parking_spot.parking_lot.cmp_id === parkingLot.company.cmp_id
+    )
+
+    if (existingReservation.length > 0) {
+        throw new InternalServerError(LNG094);
+    }
+
     try {
-        const statusReservation = await statusService.getStatusByTableAndName('reservations', 'Pendiente');
+        const statusReservation = await statusService.getStatusByTableAndName('reservations', 'Realizada');
         const statusParkingSpot = await statusService.getStatusByTableAndName('parking_spots', 'Reservado');
 
         const result = await prisma.$transaction(async (tx) => {
@@ -221,10 +241,44 @@ const deleteReservation = async (reservationId: string) => {
     }
 }
 
+const getReservationsByUserId = async (userId: string) => {
+    const user = await userService.getUserById(userId);
+
+    try {
+        const reservations = await prisma.reservations.findMany({
+            where: {
+                usr_id: user.usr_id,
+
+            },
+            include: {
+                status: {
+                    select: {
+                        stu_name: true
+                    }
+                },
+                parking_spot: {
+                    include: {
+                        parking_lot: {
+                            select: {
+                                cmp_id: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        return reservations
+    } catch (error) {
+        throw new InternalServerError(LNG093)
+    }
+}
+
 export const reservationService = {
     createReservation,
     getReservationById,
     acceptReservation,
     rejectReservation,
-    deleteReservation
+    deleteReservation,
+    getReservationsByUserId
 } 
