@@ -91,7 +91,15 @@ const getParkingSpotById = async (parkingSpotId: string) => {
                         stu_name: true
                     }
                 },
-                reservations: true,
+                reservations: {
+                    include: {
+                        status: {
+                            select: {
+                                stu_name: true
+                            }
+                        }
+                    }
+                },
                 spot_assignments: {
                     where: {
                         spa_active: true
