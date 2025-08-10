@@ -79,7 +79,12 @@ export const ERROR_CATALOG = {
             "code": "AUTH016",
             "message": "No tienes permisos para acceder a este sistema",
             "status": 403
-        }
+        },
+        "AUTH017": {
+            "code": "AUTH017",
+            "message": "Error al tratar de cerrar sesión",
+            "status": 500
+        },
     },
     "validation": {
         "VAL001": {

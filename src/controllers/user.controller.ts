@@ -44,6 +44,19 @@ const signin = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.usr_id
+
+    try {
+        await userService.logout(String(userId))
+        res.status(200).json({
+            message: "Sesion cerrada correctamente"
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const verifyCode = async (req: Request, res: Response, next: NextFunction) => {
     const result = verifyCodeSchema.safeParse(req.body)
 
@@ -117,6 +130,7 @@ export const userController = {
     getUserInfo,
     signup,
     signin,
+    logout,
     verifyCode,
     createDesktopUser,
     movilUserConfigurated,

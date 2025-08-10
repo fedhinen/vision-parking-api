@@ -22,6 +22,7 @@ const
     AUTH013,
     AUTH014,
     AUTH016,
+    AUTH017
   } = ERROR_CATALOG.autentication
 
 const {
@@ -99,6 +100,25 @@ const signin = async (body: any) => {
     throw new InternalServerError(AUTH009);
   }
 };
+
+const logout = async (userId: string) => {
+  const user = await getUserById(userId)
+
+  try {
+    const activeToken = user.tokens.find(tok => tok.tok_active)
+
+    await prisma.tokens.update({
+      where: {
+        tok_id: activeToken?.tok_id
+      },
+      data: {
+        tok_active: false
+      }
+    })
+  } catch (error) {
+    throw new InternalServerError(AUTH017)
+  }
+}
 
 const userExists = async (usr_email: string, usr_password: string, pry_name: Plataforma) => {
   try {
@@ -415,6 +435,7 @@ const getUserInfo = async (usr_id: string) => {
 export const userService = {
   signup,
   signin,
+  logout,
   verifyCode,
   getUserById,
   getUserInfo,
