@@ -89,9 +89,25 @@ const deleteReservation = async (req: Request, res: Response, next: NextFunction
     }
 }
 
+const getReservationsByUserId = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    try {
+        const reservations = await reservationService.getReservationsByUserId(id);
+
+        res.status(200).json({
+            message: "Reservaciones obtenidas correctamente",
+            data: reservations
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const reservationController = {
     createReservation,
     getReservationById,
     updateReservation,
-    deleteReservation
+    deleteReservation,
+    getReservationsByUserId
 }
