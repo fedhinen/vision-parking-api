@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { reservationService } from "../services/reservation.service"
-import { reservationSchema } from "../schemas/reservation.schema"
+import { reservationSchema, updateReservationSchema } from "../schemas/reservation.schema"
 import { ValidationError } from "../middleware/error/error"
 
 const createReservation = async (req: Request, res: Response, next: NextFunction) => {
@@ -46,29 +46,28 @@ const getReservationById = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
-const acceptReservation = async (req: Request, res: Response, next: NextFunction) => {
+const updateReservation = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    try {
-        const reservation = await reservationService.acceptReservation(id);
-
-        res.status(200).json({
-            message: "Reservación aceptada correctamente",
-            data: reservation
-        });
-    } catch (error) {
-        next(error);
+    const requestBody = {
+        ...req.body,
+        rsv_initial_date: req.body.rsv_initial_date ? new Date(req.body.rsv_initial_date) : undefined,
+        rsv_end_date: req.body.rsv_end_date ? new Date(req.body.rsv_end_date) : undefined
     }
-}
 
-const rejectReservation = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
+    const result = updateReservationSchema.safeParse(requestBody);
+
+    if (!result.success) {
+        throw new ValidationError(result.error);
+    }
+
+    const body = result.data
 
     try {
-        const reservation = await reservationService.rejectReservation(id);
+        const reservation = await reservationService.updateReservation(id, body);
 
         res.status(200).json({
-            message: "Reservación rechazada correctamente",
+            message: "Reservación actualizada correctamente",
             data: reservation
         });
     } catch (error) {
@@ -93,7 +92,6 @@ const deleteReservation = async (req: Request, res: Response, next: NextFunction
 export const reservationController = {
     createReservation,
     getReservationById,
-    acceptReservation,
-    rejectReservation,
+    updateReservation,
     deleteReservation
 }

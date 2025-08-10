@@ -13,8 +13,6 @@ const {
     LNG052,
     LNG051,
     LNG054,
-    LNG073,
-    LNG074,
     LNG093,
     LNG094,
 } = ERROR_CATALOG.businessLogic
@@ -133,97 +131,20 @@ const getReservationById = async (reservationId: string) => {
     }
 }
 
-const acceptReservation = async (reservationId: string) => {
+const updateReservation = async (reservationId: string, body: any) => {
     const reservation = await getReservationById(reservationId);
-
-    const statusAccepted = await statusService.getStatusByTableAndName('reservations', 'Aceptada');
-
-    const body = {
-        stu_id: statusAccepted.stu_id
-    }
-
-    try {
-        const result = await prisma.$transaction(async (tx) => {
-            const updatedReservation = await prisma.reservations.update({
-                where: {
-                    rsv_id: reservation.rsv_id
-                },
-                data: body,
-                include: {
-                    user: true,
-                    parking_spot: true,
-                    status: true
-                }
-            });
-
-            const statusParkingSpot = await statusService.getStatusByTableAndName('parking_spots', 'Reservado');
-
-            await tx.parking_spots.update({
-                where: {
-                    pks_id: updatedReservation.pks_id
-                },
-                data: {
-                    stu_id: statusParkingSpot.stu_id,
-                }
-            })
-
-            return updatedReservation
-        })
-
-        try {
-            await mqttService.publishReservationStatusChanged({
-                rsv_id: result.rsv_id,
-                pks_id: result.pks_id, //parking spot id
-                status: result.status.stu_name,
-                action: 'accepted'
-            })
-        } catch (mqttError) {
-            console.error('Error al publicar mensaje MQTT:', mqttError)
-        }
-
-        return result
-    } catch (error) {
-        throw new InternalServerError(LNG073)
-    }
-}
-
-const rejectReservation = async (reservationId: string) => {
-    const reservation = await getReservationById(reservationId);
-
-    const statusRejected = await statusService.getStatusByTableAndName('reservations', 'Rechazada');
-
-    const body = {
-        stu_id: statusRejected.stu_id,
-        rsv_active: false
-    }
 
     try {
         const updatedReservation = await prisma.reservations.update({
             where: {
                 rsv_id: reservation.rsv_id
             },
-            data: body,
-            include: {
-                user: true,
-                parking_spot: true,
-                status: true
-            }
+            data: body
         });
-
-        try {
-            await mqttService.publishReservationStatusChanged({
-                rsv_id: updatedReservation.rsv_id,
-                pks_id: updatedReservation.pks_id, //parking spot id
-                status: updatedReservation.status.stu_name,
-                action: 'rejected'
-            })
-        } catch (mqttError) {
-            console.error('Error al publicar mensaje MQTT:', mqttError)
-        }
 
         return updatedReservation;
     } catch (error) {
-        throw new InternalServerError(LNG074);
+        throw new InternalServerError(LNG054);
     }
 }
 
@@ -277,8 +198,7 @@ const getReservationsByUserId = async (userId: string) => {
 export const reservationService = {
     createReservation,
     getReservationById,
-    acceptReservation,
-    rejectReservation,
+    updateReservation,
     deleteReservation,
     getReservationsByUserId
 } 
