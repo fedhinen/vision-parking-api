@@ -78,12 +78,20 @@ const createReservation = async (body: any) => {
             return newReservation
         })
 
+        const parkingSpotConfig = await prisma.parking_spots_config.findFirst({
+            where: {
+                pks_id: parkingSpot.pks_id,
+                psc_active: true
+            }
+        })
+
         try {
             await mqttService.publishReservationCreated({
                 rsv_id: result.rsv_id,
                 usr_id: result.usr_id,
                 pks_id: result.pks_id,
                 status: result.status.stu_name,
+                esp32_id: parkingSpotConfig?.esp32_id!,
             })
         } catch (mqttError) {
             console.error('Error al publicar mensaje MQTT:', mqttError)

@@ -5,6 +5,7 @@ export interface ReservationMqttMessage {
     usr_id: string
     pks_id: string
     status: string
+    esp32_id: string
 }
 
 export interface ReservationStatusMqttMessage {
