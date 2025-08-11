@@ -8,5 +8,6 @@ router.post("/spot-assignments", authenticate, spotAssignmentController.createSp
 router.get("/spot-assigments/:id", authenticate, spotAssignmentController.getSpotAssignmentById)
 router.put("/spot-assigments/:id", authenticate, spotAssignmentController.updateSpotAssigment)
 router.delete("/spot-assigments/:id", authenticate, spotAssignmentController.deleteSpotAssignment)
+router.get("/parking-spots/:spotId/spot-assignments", authenticate, spotAssignmentController.getActiveSpotAssignment)
 
 export const spotAssignmentsRoutes = router;

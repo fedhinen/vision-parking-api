@@ -39,6 +39,21 @@ const getSpotAssignmentById = async (req: Request, res: Response, next: NextFunc
     }
 }
 
+const getActiveSpotAssignment = async (req: Request, res: Response, next: NextFunction) => {
+    const { spotId } = req.params;
+
+    try {
+        const spotAssignment = await spotAssignmentService.getActiveSpotAssignment(spotId);
+
+        res.status(200).json({
+            message: "Asignación de cajón activa encontrada correctamente",
+            data: spotAssignment
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 const updateSpotAssigment = async (req: Request, res: Response, next: NextFunction) => {
     const { spotAssignmentId } = req.params;
 
@@ -79,6 +94,7 @@ const deleteSpotAssignment = async (req: Request, res: Response, next: NextFunct
 export const spotAssignmentController = {
     createSpotAssigment,
     getSpotAssignmentById,
+    getActiveSpotAssignment,
     updateSpotAssigment,
     deleteSpotAssignment
 }

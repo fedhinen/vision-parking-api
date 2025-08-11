@@ -2,13 +2,13 @@
 import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
-import { spotAssignmentSchema, updateSpotAssignmentSchema, SpotAssignmentSchema, UpdateSpotAssignmentSchema } from "../schemas/spot-assignment.schema";
 
 const {
     LNG060,
     LNG059,
     LNG061,
-    LNG062
+    LNG062,
+    LNG096
 } = ERROR_CATALOG.businessLogic
 
 const createSpotAssigment = async (body: any) => {
@@ -63,6 +63,23 @@ const getSpotAssignmentById = async (spotAssignmentId: string) => {
     }
 }
 
+const getActiveSpotAssignment = async (spotId: string) => {
+    try {
+        const spotAssignment = await prisma.spot_assignments.findFirst({
+            where: {
+                pks_id: spotId,
+                spa_active: true
+            }
+        })
+
+        if (!spotAssignment) {
+            throw new NotFoundError(LNG096)
+        }
+    } catch (error) {
+        throw error
+    }
+}
+
 const updateSpotAssigment = async (spotAssignmentId: string, body: any) => {
     const spotAssignment = await getSpotAssignmentById(spotAssignmentId);
 
@@ -109,5 +126,6 @@ export const spotAssignmentService = {
     createSpotAssigment,
     getSpotAssignmentById,
     updateSpotAssigment,
-    deleteSpotAssignment
+    deleteSpotAssignment,
+    getActiveSpotAssignment
 }
