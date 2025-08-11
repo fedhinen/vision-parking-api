@@ -178,6 +178,7 @@ const generateCode = async (isRegister: any) => {
       cod_code: code
     }
   } catch (error) {
+    console.log("generateCodeError", error);
     throw new InternalServerError(AUTH010)
   }
 }

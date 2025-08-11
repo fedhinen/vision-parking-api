@@ -13,7 +13,7 @@ export const authenticate = async (
     next: NextFunction
 ) => {
     try {
-        /* const header = req.headers.authorization;
+        const header = req.headers.authorization;
 
         if (!header || !header.startsWith("Bearer ")) {
             throw new AuthError(AUTH015);
@@ -38,7 +38,7 @@ export const authenticate = async (
             usr_id: user.usr_id,
             usr_email: user.usr_email,
             usr_name: user.usr_name
-        }; */
+        };
         next();
     } catch (error) {
         next(error);
