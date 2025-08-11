@@ -5,7 +5,11 @@ import { prisma } from "../utils/lib/prisma";
 import jwt from "jsonwebtoken";
 import { userService } from "../services/user.service";
 
-const { AUTH004, AUTH015 } = ERROR_CATALOG.autentication
+const {
+    AUTH004,
+    AUTH015,
+    AUTH018
+} = ERROR_CATALOG.autentication
 
 export const authenticate = async (
     req: Request,
@@ -14,6 +18,15 @@ export const authenticate = async (
 ) => {
     try {
         const header = req.headers.authorization;
+        const apikeyHeader = req.headers['api-key-access'];
+
+        if (apikeyHeader) {
+            if (apikeyHeader !== process.env.API_KEY_ACCESS) {
+                throw new AuthError(AUTH018);
+            }
+
+            return next();
+        }
 
         if (!header || !header.startsWith("Bearer ")) {
             throw new AuthError(AUTH015);

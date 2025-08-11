@@ -85,6 +85,11 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de cerrar sesión",
             "status": 500
         },
+        "AUTH018": {
+            "code": "AUTH018",
+            "message": "API Key de acceso invalida",
+            "status": 403
+        },
     },
     "validation": {
         "VAL001": {
