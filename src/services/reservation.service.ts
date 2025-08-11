@@ -75,6 +75,14 @@ const createReservation = async (body: any) => {
                 }
             })
 
+            await prisma.spot_assignments.create({
+                data: {
+                    pks_id: pks_id,
+                    usr_id: usr_id,
+                    spa_created_by: "system"
+                }
+            })
+
             return newReservation
         })
 
