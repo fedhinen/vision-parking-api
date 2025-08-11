@@ -4,6 +4,7 @@ import { rfidAssignmentController } from "../controllers/rfid-assignment.control
 
 const router = Router();
 
+router.get("/rfid-assignments", authenticate, rfidAssignmentController.getRfidAssignmentByTag)
 router.post("/rfid-assignments", authenticate, rfidAssignmentController.createRfidAssigment)
 router.get("/rfid-assignments/:id", authenticate, rfidAssignmentController.getRfidAssignmentById)
 router.put("/rfid-assignments/:id", authenticate, rfidAssignmentController.updateRfidAssignment)
