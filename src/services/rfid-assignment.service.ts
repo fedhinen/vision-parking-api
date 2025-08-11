@@ -9,7 +9,8 @@ const {
     LNG055,
     LNG057,
     LNG058,
-    LNG082
+    LNG082,
+    LNG095
 } = ERROR_CATALOG.businessLogic
 
 const createRfidAssigment = async (body: any) => {
@@ -98,7 +99,7 @@ const getRfidAssignmentsByCompanyId = async (cmp_id: string) => {
 
     const companyUsers = await companyService.getUsersByCompanyId(company.cmp_id)
 
-    const userIds = companyUsers.map(user => user.usr_id)
+    const userIds = companyUsers.map((user: any) => user.usr_id)
 
     try {
         const rfidAssignments = await prisma.rfid_assignments.findMany({
@@ -130,10 +131,31 @@ const getRfidAssignmentsByCompanyId = async (cmp_id: string) => {
     }
 }
 
+const getRfidAssignmentByTag = async (rfidTag: string) => {
+    try {
+        const rfidAssignment = await prisma.rfid_assignments.findFirst({
+            where: {
+                rfid_tag: {
+                    rft_tag: rfidTag
+                }
+            }
+        })
+
+        if (!rfidAssignment) {
+            throw new NotFoundError(LNG095);
+        }
+
+        return rfidAssignment;
+    } catch (error) {
+        throw error
+    }
+}
+
 export const rfidAssignmentService = {
     createRfidAssigment,
     getRfidAssignmentById,
     updateRfidAssigment,
     deleteRfidAssignment,
-    getRfidAssignmentsByCompanyId
+    getRfidAssignmentsByCompanyId,
+    getRfidAssignmentByTag
 }

@@ -86,10 +86,25 @@ const getRfidAssignmentsByCompanyId = async (req: Request, res: Response, next: 
     }
 }
 
+const getRfidAssignmentByTag = async (req: Request, res: Response, next: NextFunction) => {
+    const { rfidTag } = req.query;
+
+    try {
+        const rfidAssignment = await rfidAssignmentService.getRfidAssignmentByTag(rfidTag as string);
+        res.status(200).json({
+            message: "Asignación RFID encontrada correctamente",
+            data: rfidAssignment
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const rfidAssignmentController = {
     createRfidAssigment,
     getRfidAssignmentById,
     updateRfidAssignment,
     deleteRfidAssignment,
-    getRfidAssignmentsByCompanyId
+    getRfidAssignmentsByCompanyId,
+    getRfidAssignmentByTag
 }
