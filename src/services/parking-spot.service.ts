@@ -105,7 +105,12 @@ const getParkingSpotById = async (parkingSpotId: string) => {
                         spa_active: true
                     },
                     include: {
-                        user: true
+                        user: {
+                            select: {
+                                usr_name: true,
+                                usr_email: true
+                            }
+                        }
                     }
                 }
             }

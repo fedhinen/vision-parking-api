@@ -45,7 +45,7 @@ const createReservation = async (body: any) => {
         const statusReservation = await statusService.getStatusByTableAndName('reservations', 'Realizada');
         const statusParkingSpot = await statusService.getStatusByTableAndName('parking_spots', 'Reservado');
 
-        const result = await prisma.$transaction(async (tx) => {
+        const { newReservation, updatedParkingSpot } = await prisma.$transaction(async (tx) => {
             const newReservation = await prisma.reservations.create({
                 data: {
                     usr_id: usr_id,
@@ -66,12 +66,19 @@ const createReservation = async (body: any) => {
                 }
             });
 
-            await prisma.parking_spots.update({
+            const updatedParkingSpot = await prisma.parking_spots.update({
                 where: {
                     pks_id
                 },
                 data: {
                     stu_id: statusParkingSpot.stu_id,
+                },
+                include: {
+                    status: {
+                        select: {
+                            stu_name: true
+                        }
+                    }
                 }
             })
 
@@ -83,7 +90,7 @@ const createReservation = async (body: any) => {
                 }
             })
 
-            return newReservation
+            return { newReservation, updatedParkingSpot };
         })
 
         const parkingSpotConfig = await prisma.parking_spots_config.findFirst({
@@ -95,10 +102,10 @@ const createReservation = async (body: any) => {
 
         try {
             await mqttService.publishReservationCreated({
-                rsv_id: result.rsv_id,
-                usr_id: result.usr_id,
-                pks_id: result.pks_id,
-                status: result.status.stu_name,
+                rsv_id: newReservation.rsv_id,
+                usr_id: newReservation.usr_id,
+                pks_id: newReservation.pks_id,
+                status: newReservation.status.stu_name,
                 esp32_id: parkingSpotConfig?.esp32_id!,
             })
         } catch (mqttError) {
@@ -109,18 +116,18 @@ const createReservation = async (body: any) => {
             webSocketService.broadcast({
                 event: 'backend:new_reservation',
                 data: {
-                    pks_id: result.pks_id,
+                    pks_id: newReservation.pks_id,
                     status: {
-                        stu_name: result.status.stu_name
+                        stu_name: updatedParkingSpot.status.stu_name
                     }
                 },
-                room: `pks_${result.pks_id}`
+                room: `pks_${newReservation.pks_id}`
             })
         } catch (websocketError) {
             console.error('Error al enviar mensaje por WebSocket:', websocketError)
         }
 
-        return result
+        return newReservation
     } catch (error) {
         if (error instanceof NotFoundError) {
             throw error;

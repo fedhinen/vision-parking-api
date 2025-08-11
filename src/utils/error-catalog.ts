@@ -168,7 +168,7 @@ export const ERROR_CATALOG = {
         },
         "VAL015": {
             "code": "VAL015",
-            "message": "El campo ESP32 Id debe tener el formato XX:XX:XX:XX:XX:XX",
+            "message": "El campo ESP32 debe tener el formato XX:XX:XX:XX:XX:XX",
             "status": 400
         },
     },
@@ -625,7 +625,7 @@ export const ERROR_CATALOG = {
         },
         "LNG091": {
             "code": "LNG091",
-            "message": "ESP32 Id ya registrado",
+            "message": "ESP32 ya registrado",
             "status": 409
         },
         "LNG092": {
@@ -640,7 +640,7 @@ export const ERROR_CATALOG = {
         },
         "LNG094": {
             "code": "LNG094",
-            "message": "Solamente puedes tener una reservación activa por estacionamiento",
+            "message": "Solamente puedes tener una reservación activa por compañia",
             "status": 409
         },
     }
