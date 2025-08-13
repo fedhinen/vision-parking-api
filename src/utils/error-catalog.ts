@@ -183,7 +183,7 @@ export const ERROR_CATALOG = {
         },
         "VAL018": {
             "code": "VAL018",
-            "message": "El campo color debe de ser un hexadecimal válido (#RGB o #RRGGBB)",
+            "message": "El campo Color debe de ser un hexadecimal válido (#RGB o #RRGGBB)",
             "status": 400
         },
     },
