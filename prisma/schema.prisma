@@ -154,7 +154,7 @@ model clients {
   cte_email      String
   cte_address    String
   cte_zipcode    String
-  cmp_id         String
+  cmp_id         String   @unique
   cte_active     Boolean  @default(true)
   cte_date       DateTime @default(now())
   cte_created_by String
