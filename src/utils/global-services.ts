@@ -8,18 +8,3 @@ export { webSocketService, mqttService }
 export const getWebSocketClient = () => {
     return webSocketService.getIO()
 }
-
-// Función helper para enviar notificaciones WebSocket
-export const sendWebSocketNotification = (type: string, data: any, room?: string) => {
-    const message = {
-        type,
-        data,
-        timestamp: new Date().toISOString()
-    }
-
-    if (room) {
-        webSocketService.broadcastToRoom(room, message)
-    } else {
-        webSocketService.broadcast(message)
-    }
-}
