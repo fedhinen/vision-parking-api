@@ -1,6 +1,6 @@
 
 import { prisma } from "../utils/lib/prisma";
-import { InternalServerError, NotFoundError } from "../middleware/error/error";
+import { ConflictError, InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { parkingLotService } from "./parking-lot.service";
 import { statusService } from "./status.service";
@@ -200,7 +200,7 @@ const configParkingSpot = async (parkingSpotId: string, body: any) => {
         })
 
         if (esp32Configured) {
-            throw new InternalServerError(LNG091);
+            throw new ConflictError(LNG091);
         }
     } catch (error) {
         throw error
@@ -209,7 +209,7 @@ const configParkingSpot = async (parkingSpotId: string, body: any) => {
     const parkingSpot = await getParkingSpotById(parkingSpotId)
 
     if (parkingSpot.pks_configured) {
-        throw new InternalServerError(LNG092);
+        throw new ConflictError(LNG092);
     }
 
     const statusDisponible = await statusService.getStatusByTableAndName("parking_spots", "Disponible");
