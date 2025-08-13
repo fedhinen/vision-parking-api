@@ -261,7 +261,14 @@ const configParkingSpot = async (parkingSpotId: string, body: any) => {
             console.error("Error en el websocket tratando de configurar un parking spot", error);
         }
 
-        return configSpot
+        return {
+            ...configSpot,
+            parking_spot: {
+                status: {
+                    stu_name: updatedParkingSpot.status.stu_name
+                }
+            }
+        }
     } catch (error) {
         throw new InternalServerError(LNG089)
     }
