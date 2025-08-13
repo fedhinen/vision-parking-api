@@ -9,13 +9,13 @@ const {
 
 const vehiclesCompanyReport = async (companyId: string, filters: any) => {
     const {
-        veh_color,
-        veh_model,
-        veh_brand,
-        veh_year,
-        veh_plate,
-        veh_active,
-        usr_id
+        color,
+        model,
+        brand,
+        year,
+        plate,
+        active,
+        userId
     } = filters
 
     const company = await companyService.getCompanyById(companyId)
@@ -24,13 +24,13 @@ const vehiclesCompanyReport = async (companyId: string, filters: any) => {
         const data = await prisma.vehicles.findMany({
             where: {
                 company_id: company.cmp_id,
-                ...(veh_color && { veh_color }),
-                ...(veh_model && { veh_model }),
-                ...(veh_brand && { veh_brand }),
-                ...(veh_year && { veh_year }),
-                ...(veh_plate && { veh_plate }),
-                ...(veh_active !== undefined && { veh_active }),
-                ...(usr_id && { usr_id })
+                ...(color && { color }),
+                ...(model && { model }),
+                ...(brand && { brand }),
+                ...(year && { year }),
+                ...(plate && { plate }),
+                ...(active !== undefined && { active }),
+                ...(userId && { userId })
             },
             include: {
                 user_vehicles: {
@@ -54,10 +54,10 @@ const vehiclesCompanyReport = async (companyId: string, filters: any) => {
 
 const reservationsCompanyReport = async (companyId: string, filters: any) => {
     const {
-        rsv_initial_date,
-        rsv_end_date,
-        stu_id,
-        usu_id
+        initial_date,
+        end_date,
+        statusId,
+        userId
     } = filters
 
     const company = await companyService.getCompanyById(companyId)
@@ -66,10 +66,10 @@ const reservationsCompanyReport = async (companyId: string, filters: any) => {
         const data = await prisma.reservations.findMany({
             where: {
                 company_id: company.cmp_id,
-                ...(rsv_initial_date && { rsv_initial_date }),
-                ...(rsv_end_date && { rsv_end_date }),
-                ...(stu_id && { stu_id }),
-                ...(usu_id && { usu_id })
+                ...(initial_date && { initial_date }),
+                ...(end_date && { end_date }),
+                ...(statusId && { statusId }),
+                ...(userId && { userId })
             },
             include: {
                 user: {
@@ -94,9 +94,9 @@ const reservationsCompanyReport = async (companyId: string, filters: any) => {
 
 const parkingSpotsCompanyReport = async (companyId: string, filters: any) => {
     const {
-        pks_id,
-        stu_id,
-        usr_id,
+        parkingSpotId,
+        statusId,
+        userId,
         initial_date,
         end_date
     } = filters
@@ -107,9 +107,9 @@ const parkingSpotsCompanyReport = async (companyId: string, filters: any) => {
         const data = await prisma.parking_spots.findMany({
             where: {
                 company_id: company.cmp_id,
-                ...(pks_id && { pks_id }),
-                ...(stu_id && { stu_id }),
-                ...(usr_id && { usr_id }),
+                ...(parkingSpotId && { parkingSpotId }),
+                ...(statusId && { statusId }),
+                ...(userId && { userId }),
                 ...(initial_date && { created_at: { gte: new Date(initial_date) } }),
                 ...(end_date && { created_at: { lte: new Date(end_date) } })
             },
