@@ -658,6 +658,16 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de consultar los datos para el reporte",
             "status": 500
         },
+        "LNG098": {
+            "code": "LNG098",
+            "message": "Error al tratar de crear el log de acción del usuario",
+            "status": 500
+        },
+        "LNG099": {
+            "code": "LNG099",
+            "message": "Compañia ya registrada",
+            "status": 409
+        },
     }
 }
 
