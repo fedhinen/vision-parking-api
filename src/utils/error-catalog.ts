@@ -653,6 +653,11 @@ export const ERROR_CATALOG = {
             "message": "Asignacion de spot no encontrada",
             "status": 500
         },
+        "LNG097": {
+            "code": "LNG097",
+            "message": "Error al tratar de consultar los datos para el reporte",
+            "status": 500
+        },
     }
 }
 
