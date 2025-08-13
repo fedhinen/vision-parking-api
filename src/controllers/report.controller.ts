@@ -14,6 +14,8 @@ const vehiclesCompanyReport = async (req: Request, res: Response, next: NextFunc
         userId
     } = req.query;
 
+    console.log({ color, model, brand, year, plate, active, userId });
+
     const filters = {
         color,
         model,
@@ -36,15 +38,15 @@ const reservationsCompanyReport = async (req: Request, res: Response, next: Next
     const { companyId } = req.params;
 
     const {
-        initial_date,
-        end_date,
+        initialDate,
+        endDate,
         statusId,
         userId
     } = req.query;
 
     const filters = {
-        initial_date: initial_date ? new Date(initial_date as string) : undefined,
-        end_date: end_date ? new Date(end_date as string) : undefined,
+        initial_date: initialDate ? new Date(initialDate as string) : undefined,
+        end_date: endDate ? new Date(endDate as string) : undefined,
         statusId,
         userId
     }
@@ -64,16 +66,16 @@ const parkingSpotsCompanyReport = async (req: Request, res: Response, next: Next
         parkingSpotId,
         statusId,
         userId,
-        initial_date,
-        end_date
+        initialDate,
+        endDate
     } = req.query;
 
     const filters = {
         parkingSpotId,
         statusId,
         userId,
-        initial_date: initial_date ? new Date(initial_date as string) : undefined,
-        end_date: end_date ? new Date(end_date as string) : undefined
+        initial_date: initialDate ? new Date(initialDate as string) : undefined,
+        end_date: endDate ? new Date(endDate as string) : undefined
     }
 
     try {

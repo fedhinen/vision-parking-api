@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { InternalServerError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { prisma } from "../utils/lib/prisma";
@@ -22,23 +23,18 @@ const vehiclesCompanyReport = async (companyId: string, filters: any) => {
 
     try {
         const data = await prisma.vehicles.findMany({
-            where: {
-                company_id: company.cmp_id,
-                ...(color && { color }),
-                ...(model && { model }),
-                ...(brand && { brand }),
-                ...(year && { year }),
-                ...(plate && { plate }),
-                ...(active !== undefined && { active }),
-                ...(userId && { userId })
-            },
             include: {
                 user_vehicles: {
                     include: {
                         user: {
-                            select: {
-                                usr_name: true,
-                                usr_email: true
+                            include: {
+                                company_users: {
+                                    where: {
+                                        company: {
+                                            cmp_id: company.cmp_id
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -48,14 +44,15 @@ const vehiclesCompanyReport = async (companyId: string, filters: any) => {
 
         return data
     } catch (error) {
+        console.log(error);
         throw new InternalServerError(LNG097)
     }
 }
 
 const reservationsCompanyReport = async (companyId: string, filters: any) => {
     const {
-        initial_date,
-        end_date,
+        initialDate,
+        endDate,
         statusId,
         userId
     } = filters
@@ -66,8 +63,8 @@ const reservationsCompanyReport = async (companyId: string, filters: any) => {
         const data = await prisma.reservations.findMany({
             where: {
                 company_id: company.cmp_id,
-                ...(initial_date && { initial_date }),
-                ...(end_date && { end_date }),
+                ...(initialDate && { initialDate }),
+                ...(endDate && { endDate }),
                 ...(statusId && { statusId }),
                 ...(userId && { userId })
             },
@@ -97,8 +94,8 @@ const parkingSpotsCompanyReport = async (companyId: string, filters: any) => {
         parkingSpotId,
         statusId,
         userId,
-        initial_date,
-        end_date
+        initialDate,
+        endDate
     } = filters
 
     const company = await companyService.getCompanyById(companyId)
@@ -110,8 +107,8 @@ const parkingSpotsCompanyReport = async (companyId: string, filters: any) => {
                 ...(parkingSpotId && { parkingSpotId }),
                 ...(statusId && { statusId }),
                 ...(userId && { userId }),
-                ...(initial_date && { created_at: { gte: new Date(initial_date) } }),
-                ...(end_date && { created_at: { lte: new Date(end_date) } })
+                ...(initialDate && { created_at: { gte: new Date(initialDate) } }),
+                ...(endDate && { created_at: { lte: new Date(endDate) } })
             },
             include: {
                 status: {
