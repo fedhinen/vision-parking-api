@@ -171,6 +171,16 @@ export const ERROR_CATALOG = {
             "message": "El campo ESP32 debe tener el formato XX:XX:XX:XX:XX:XX",
             "status": 400
         },
+        "VAL016": {
+            "code": "VAL016",
+            "message": "El campo Celular debe ser un número válido de 10 dígitos, con o sin el prefijo +52",
+            "status": 400
+        },
+        "VAL017": {
+            "code": "VAL017",
+            "message": "El campo Codigo postal debe ser un número válido de 5 dígitos",
+            "status": 400
+        },
     },
     "businessLogic": {
         "LNG001": {
@@ -698,4 +708,5 @@ export const FIELD_NAMES: Record<string, string> = {
     "cma_description": "Razon de la solicitud de acceso",
     "pry_name": "Nombre del proyecto",
     "cod_code": "Código de verificación",
+    "cmp_id": "Compañia"
 }

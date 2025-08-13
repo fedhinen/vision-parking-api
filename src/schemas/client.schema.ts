@@ -5,13 +5,21 @@ export const clientSchema = z.object({
     cte_name: z.string(ERROR_CATALOG.validation.VAL001.message)
         .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
     cte_phone: z.string(ERROR_CATALOG.validation.VAL001.message)
-        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1))
+        .refine((val) => /^(?:\+52|52)?\d{10}$/.test(val),
+            {
+                message: ERROR_CATALOG.validation.VAL016.message
+            }),
     cte_email: z.email(ERROR_CATALOG.validation.VAL010.message)
         .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
     cte_address: z.string(ERROR_CATALOG.validation.VAL001.message)
         .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
     cte_zipcode: z.string(ERROR_CATALOG.validation.VAL001.message)
-        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1))
+        .refine((val) => /^\d{5}$/.test(val),
+            {
+                message: ERROR_CATALOG.validation.VAL017.message
+            }),
     cmp_id: z.uuid(ERROR_CATALOG.validation.VAL002.message)
 });
 
