@@ -181,6 +181,11 @@ export const ERROR_CATALOG = {
             "message": "El campo Codigo postal debe ser un número válido de 5 dígitos",
             "status": 400
         },
+        "VAL018": {
+            "code": "VAL018",
+            "message": "El campo color debe de ser un hexadecimal válido (#RGB o #RRGGBB)",
+            "status": 400
+        },
     },
     "businessLogic": {
         "LNG001": {
