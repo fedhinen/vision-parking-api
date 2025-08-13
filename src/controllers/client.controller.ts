@@ -4,6 +4,7 @@ import { clientSchema, updateClientSchema } from "../schemas/client.schema"
 import { ValidationError } from "../middleware/error/error"
 
 const createClient = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'clients'
     const result = clientSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -14,7 +15,7 @@ const createClient = async (req: Request, res: Response, next: NextFunction) => 
 
     try {
         const client = await clientService.createClient(body);
-
+        res.locals.newId = client.cte_id
         res.status(201).json({
             message: "Cliente creado correctamente",
             data: client
@@ -40,6 +41,7 @@ const getClientById = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 const updateClient = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'clients'
     const { id } = req.params;
 
     const result = updateClientSchema.safeParse(req.body);
@@ -63,6 +65,7 @@ const updateClient = async (req: Request, res: Response, next: NextFunction) => 
 }
 
 const deleteClient = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'clients'
     const { id } = req.params;
 
     try {

@@ -4,6 +4,7 @@ import { spotAssignmentSchema, updateSpotAssignmentSchema } from "../schemas/spo
 import { ValidationError } from "../middleware/error/error"
 
 const createSpotAssigment = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'spot_assignments';
     const result = spotAssignmentSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -14,7 +15,7 @@ const createSpotAssigment = async (req: Request, res: Response, next: NextFuncti
 
     try {
         const spotAssignment = await spotAssignmentService.createSpotAssigment(body);
-
+        res.locals.newId = spotAssignment.spa_id;
         res.status(201).json({
             message: "Asignación de cajón creada correctamente",
             data: spotAssignment
@@ -55,6 +56,7 @@ const getActiveSpotAssignment = async (req: Request, res: Response, next: NextFu
 }
 
 const updateSpotAssigment = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'spot_assignments';
     const { spotAssignmentId } = req.params;
 
     const result = updateSpotAssignmentSchema.safeParse(req.body);
@@ -78,6 +80,7 @@ const updateSpotAssigment = async (req: Request, res: Response, next: NextFuncti
 }
 
 const deleteSpotAssignment = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'spot_assignments';
     const { spotAssignmentId } = req.params;
 
     try {

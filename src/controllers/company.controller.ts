@@ -13,6 +13,7 @@ const getCompanies = async (_req: Request, res: Response, next: NextFunction) =>
 }
 
 const createCompany = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'companies';
     const result = companySchema.safeParse(req.body)
 
     if (!result.success) {
@@ -23,6 +24,7 @@ const createCompany = async (req: Request, res: Response, next: NextFunction) =>
 
     try {
         const newCompany = await companyService.createCompany(body)
+        res.locals.newId = newCompany.cmp_id
         res.status(201).json({
             message: "Compañia creada correctamente",
             data: newCompany
@@ -47,6 +49,7 @@ const getCompanyById = async (req: Request, res: Response, next: NextFunction) =
 }
 
 const updateCompany = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'companies'
     const { id } = req.params
     const result = companySchema.safeParse(req.body)
 
@@ -65,6 +68,7 @@ const updateCompany = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 const deleteCompany = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'companies'
     const { id } = req.params
 
     try {

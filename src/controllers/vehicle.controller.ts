@@ -34,6 +34,7 @@ const getUserVehicles = async (req: Request, res: Response, next: NextFunction) 
 }
 
 const createVehicle = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'vehicles';
     const result = vehicleSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -47,7 +48,7 @@ const createVehicle = async (req: Request, res: Response, next: NextFunction) =>
 
     try {
         const vehicle = await vehicleService.createVehicle(body);
-
+        res.locals.newId = vehicle.veh_id;
         res.status(201).json({
             message: "Vehículo creado correctamente",
             data: vehicle
@@ -73,6 +74,7 @@ const getVehicleById = async (req: Request, res: Response, next: NextFunction) =
 }
 
 const updateVehicle = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'vehicles';
     const { id } = req.params;
 
     const result = updateVehicleSchema.safeParse(req.body);
@@ -97,6 +99,7 @@ const updateVehicle = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 const deleteVehicle = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'vehicles';
     const { id } = req.params;
 
     try {

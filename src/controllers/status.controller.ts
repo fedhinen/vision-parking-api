@@ -3,7 +3,6 @@ import { statusService } from "../services/status.service";
 
 const getStatusByTableAndName = async (req: Request, res: Response, next: NextFunction) => {
     const { table, statusName } = req.query;
-    console.log(table, statusName);
 
     try {
         const status = await statusService.getStatusByTableAndName(table as string, statusName as string);

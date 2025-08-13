@@ -4,6 +4,7 @@ import { rfidTagService } from "../services/rfid-tag.service";
 import { rfidTagSchema } from "../schemas/rfid-tag.schema";
 
 const createRFIDTag = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'rfid_tags';
     const result = rfidTagSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -14,7 +15,7 @@ const createRFIDTag = async (req: Request, res: Response, next: NextFunction) =>
 
     try {
         const rfidTag = await rfidTagService.createRFIDTag(body);
-
+        res.locals.newId = rfidTag.rft_id;
         res.status(201).json({
             message: "Tag RFID creado correctamente",
             data: rfidTag
