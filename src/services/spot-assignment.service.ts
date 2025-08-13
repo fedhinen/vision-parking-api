@@ -75,6 +75,8 @@ const getActiveSpotAssignment = async (spotId: string) => {
         if (!spotAssignment) {
             throw new NotFoundError(LNG096)
         }
+
+        return spotAssignment
     } catch (error) {
         throw error
     }

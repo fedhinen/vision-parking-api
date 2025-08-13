@@ -121,6 +121,7 @@ const logout = async (userId: string) => {
 }
 
 const userExists = async (usr_email: string, usr_password: string, pry_name: Plataforma) => {
+  console.log(pry_name)
   try {
     const isAuthorized = await prisma.users.findFirst({
       where: {

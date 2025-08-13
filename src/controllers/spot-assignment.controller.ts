@@ -78,10 +78,10 @@ const updateSpotAssigment = async (req: Request, res: Response, next: NextFuncti
 }
 
 const deleteSpotAssignment = async (req: Request, res: Response, next: NextFunction) => {
-    const { spotAssignmentId } = req.params;
+    const { id } = req.params;
 
     try {
-        await spotAssignmentService.deleteSpotAssignment(spotAssignmentId);
+        await spotAssignmentService.deleteSpotAssignment(id);
 
         res.status(200).json({
             message: "Asignación de cajón eliminada correctamente"
