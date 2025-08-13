@@ -683,6 +683,11 @@ export const ERROR_CATALOG = {
             "message": "Compañia ya registrada",
             "status": 409
         },
+        "LNG100": {
+            "code": "LNG100",
+            "message": "No tienes permiso para dar de alta un vehiculo",
+            "status": 500
+        },
     }
 }
 
