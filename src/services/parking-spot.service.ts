@@ -246,16 +246,22 @@ const configParkingSpot = async (parkingSpotId: string, body: any) => {
             }
         })
 
+        const spotId = updatedParkingSpot.pks_id;
+
+        const baseEvent = 'backend:parking_spot_configured';
+
+        const eventName = `${baseEvent}:${spotId}`;
+
         try {
             webSocketService.broadcast({
-                event: "backend:parking_spot_configured",
+                event: eventName,
                 data: {
-                    pks_id: updatedParkingSpot.pks_id,
+                    pks_id: spotId,
                     status: {
                         stu_name: updatedParkingSpot.status.stu_name
                     }
                 },
-                room: `pks_${updatedParkingSpot.pks_id}`
+                room: `pks_${spotId}`
             })
         } catch (error) {
             console.error("Error en el websocket tratando de configurar un parking spot", error);

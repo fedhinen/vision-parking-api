@@ -112,16 +112,22 @@ const createReservation = async (body: any) => {
             console.error('Error al publicar mensaje MQTT:', mqttError)
         }
 
+        const spotId = newReservation.parking_spot.pks_id
+
+        const baseEvent = 'backend:new_reservation';
+
+        const eventName = `${baseEvent}:${spotId}`;
+
         try {
             webSocketService.broadcast({
-                event: 'backend:new_reservation',
+                event: eventName,
                 data: {
-                    pks_id: newReservation.pks_id,
+                    pks_id: spotId,
                     status: {
                         stu_name: updatedParkingSpot.status.stu_name
                     }
                 },
-                room: `pks_${newReservation.pks_id}`
+                room: `pks_${spotId}`
             })
         } catch (websocketError) {
             console.error('Error al enviar mensaje por WebSocket:', websocketError)
