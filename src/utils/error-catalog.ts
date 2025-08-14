@@ -661,12 +661,12 @@ export const ERROR_CATALOG = {
         "LNG095": {
             "code": "LNG095",
             "message": "Asignacion de tag RFID no encontrada",
-            "status": 500
+            "status": 404
         },
         "LNG096": {
             "code": "LNG096",
             "message": "Asignacion de spot no encontrada",
-            "status": 500
+            "status": 404
         },
         "LNG097": {
             "code": "LNG097",
