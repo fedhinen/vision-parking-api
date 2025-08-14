@@ -646,7 +646,7 @@ export const ERROR_CATALOG = {
         "LNG092": {
             "code": "LNG092",
             "message": "Estacionamiento ya configurado",
-            "status": 500
+            "status": 409
         },
         "LNG093": {
             "code": "LNG093",
