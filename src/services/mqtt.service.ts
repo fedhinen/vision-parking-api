@@ -6,6 +6,7 @@ export interface ReservationMqttMessage {
     pks_id: string
     status: string
     esp32_id: string
+    tagIdentifier: string
 }
 
 export interface ReservationStatusMqttMessage {

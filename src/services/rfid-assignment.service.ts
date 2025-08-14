@@ -3,6 +3,7 @@ import { prisma } from "../utils/lib/prisma";
 import { InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { companyService } from "./company.service";
+import { userService } from "./user.service";
 
 const {
     LNG056,
@@ -151,11 +152,40 @@ const getRfidAssignmentByTag = async (rfidTag: string) => {
     }
 }
 
+const getRfidAssignmentByUserId = async (userId: string) => {
+    const user = await userService.getUserById(userId)
+
+    try {
+        const rfidAssignment = await prisma.rfid_assignments.findFirst({
+            where: {
+                usr_id: user.usr_id,
+                rfa_active: true
+            },
+            include: {
+                rfid_tag: {
+                    select: {
+                        rft_tag: true
+                    }
+                }
+            }
+        })
+
+        if (!rfidAssignment) {
+            throw new NotFoundError(LNG095)
+        }
+
+        return rfidAssignment
+    } catch (error) {
+        throw error
+    }
+}
+
 export const rfidAssignmentService = {
     createRfidAssigment,
     getRfidAssignmentById,
     updateRfidAssigment,
     deleteRfidAssignment,
     getRfidAssignmentsByCompanyId,
-    getRfidAssignmentByTag
+    getRfidAssignmentByTag,
+    getRfidAssignmentByUserId
 }

@@ -8,6 +8,8 @@ import { webSocketService } from "./websocket.service";
 import { userService } from "./user.service";
 import { parkingSpotService } from "./parking-spot.service";
 import { parkingLotService } from "./parking-lot.service";
+import { rfidTagService } from "./rfid-tag.service";
+import { rfidAssignmentService } from "./rfid-assignment.service";
 
 const {
     LNG052,
@@ -31,6 +33,8 @@ const createReservation = async (body: any) => {
     const parkingLot = await parkingLotService.getParkingLotById(parkingSpot.pkl_id);
 
     const reservations = await getReservationsByUserId(usr_id);
+
+    const userTag = await rfidAssignmentService.getRfidAssignmentByUserId(usr_id);
 
     const existingReservation = reservations.filter(resv =>
         resv.status.stu_name === "Realizada"
@@ -107,6 +111,7 @@ const createReservation = async (body: any) => {
                 pks_id: newReservation.pks_id,
                 status: newReservation.status.stu_name,
                 esp32_id: parkingSpotConfig?.esp32_id!,
+                tagIdentifier: userTag.rfid_tag.rft_tag
             })
         } catch (mqttError) {
             console.error('Error al publicar mensaje MQTT:', mqttError)
