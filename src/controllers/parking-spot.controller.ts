@@ -5,6 +5,7 @@ import { ValidationError } from "../middleware/error/error"
 import { parkingSpotConfigSchema } from "../schemas/parking-spot-config.schema"
 
 const createParkingSpot = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'parking_spots';
     const result = parkingSpotSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -15,7 +16,7 @@ const createParkingSpot = async (req: Request, res: Response, next: NextFunction
 
     try {
         const parkingSpot = await parkingSpotService.createParkingSpot(body);
-
+        res.locals.newId = parkingSpot.pks_id;
         res.status(201).json({
             message: "Cajón de estacionamiento creado correctamente",
             data: parkingSpot
@@ -41,6 +42,7 @@ const getParkingSpotById = async (req: Request, res: Response, next: NextFunctio
 }
 
 const updateParkingSpot = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'parking_spots';
     const { id } = req.params;
 
     const result = updateParkingSpotSchema.safeParse(req.body);
@@ -64,6 +66,7 @@ const updateParkingSpot = async (req: Request, res: Response, next: NextFunction
 }
 
 const deleteParkingSpot = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'parking_spots';
     const { id } = req.params;
 
     try {
@@ -78,6 +81,7 @@ const deleteParkingSpot = async (req: Request, res: Response, next: NextFunction
 }
 
 const configParkingSpot = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'parking_spots';
     const { id } = req.params;
 
     const result = parkingSpotConfigSchema.safeParse(req.body);

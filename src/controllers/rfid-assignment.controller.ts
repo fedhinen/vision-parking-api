@@ -4,6 +4,7 @@ import { rfidAssignmentSchema, updateRfidAssignmentSchema } from "../schemas/rfi
 import { ValidationError } from "../middleware/error/error"
 
 const createRfidAssigment = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'rfid_assignments';
     const result = rfidAssignmentSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -14,7 +15,7 @@ const createRfidAssigment = async (req: Request, res: Response, next: NextFuncti
 
     try {
         const rfidAssignment = await rfidAssignmentService.createRfidAssigment(body);
-
+        res.locals.newId = rfidAssignment.rfa_id;
         res.status(201).json({
             message: "Asignación RFID creada correctamente",
             data: rfidAssignment
@@ -39,6 +40,7 @@ const getRfidAssignmentById = async (req: Request, res: Response, next: NextFunc
 }
 
 const updateRfidAssignment = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'rfid_assignments';
     const { id } = req.params;
 
     const result = updateRfidAssignmentSchema.safeParse(req.body);
@@ -62,6 +64,7 @@ const updateRfidAssignment = async (req: Request, res: Response, next: NextFunct
 }
 
 const deleteRfidAssignment = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'rfid_assignments';
     const { id } = req.params;
 
     try {

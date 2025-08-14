@@ -1,7 +1,8 @@
 import { prisma } from "../utils/lib/prisma";
-import { InternalServerError, NotFoundError } from "../middleware/error/error";
+import { ConflictError, InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { userService } from "./user.service";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const {
     LNG035,
@@ -12,7 +13,8 @@ const {
     LNG077,
     LNG078,
     LNG079,
-    LNG087
+    LNG087,
+    LNG099
 } = ERROR_CATALOG.businessLogic
 
 const getCompanies = async () => {
@@ -94,6 +96,14 @@ const createCompany = async (body: any) => {
         });
         return newCompany;
     } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            if (
+                error.code === 'P2002' &&
+                String(error?.meta?.target).includes('cmp_name')
+            ) {
+                throw new ConflictError(LNG099);
+            }
+        }
         throw new InternalServerError(LNG035);
     }
 }

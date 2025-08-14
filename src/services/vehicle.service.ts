@@ -12,7 +12,8 @@ const {
     LNG044,
     LNG031,
     LNG065,
-    LNG066
+    LNG066,
+    LNG100
 } = ERROR_CATALOG.businessLogic
 
 const getCompanyVehicles = async (companyId: string) => {
@@ -116,6 +117,10 @@ const createVehicle = async (body: any) => {
     } = body
 
     const user = await userService.getUserById(usr_id)
+
+    if (user.pry_name !== "VISION_PARKING_MOVIL") {
+        throw new ConflictError(LNG100)
+    }
 
     await checkCountVehicles(usr_id);
 

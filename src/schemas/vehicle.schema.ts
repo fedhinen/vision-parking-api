@@ -10,7 +10,12 @@ export const vehicleSchema = z.object({
     veh_model: z.string(ERROR_CATALOG.validation.VAL001.message)
         .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
     veh_color: z.string(ERROR_CATALOG.validation.VAL001.message)
-        .min(1, ERROR_CATALOG.validation.VAL007.message(1)),
+        .min(1, ERROR_CATALOG.validation.VAL007.message(1))
+        .refine((val) => /^#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(val),
+            {
+                message: ERROR_CATALOG.validation.VAL018.message
+            }
+        ),
     veh_year: z.number(ERROR_CATALOG.validation.VAL002.message)
         .int()
         .min(1900, "Año debe ser mayor a 1900")

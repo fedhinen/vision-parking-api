@@ -171,6 +171,21 @@ export const ERROR_CATALOG = {
             "message": "El campo ESP32 debe tener el formato XX:XX:XX:XX:XX:XX",
             "status": 400
         },
+        "VAL016": {
+            "code": "VAL016",
+            "message": "El campo Celular debe ser un número válido de 10 dígitos, con o sin el prefijo +52",
+            "status": 400
+        },
+        "VAL017": {
+            "code": "VAL017",
+            "message": "El campo Codigo postal debe ser un número válido de 5 dígitos",
+            "status": 400
+        },
+        "VAL018": {
+            "code": "VAL018",
+            "message": "El campo Color debe de ser un hexadecimal válido (#RGB o #RRGGBB)",
+            "status": 400
+        },
     },
     "businessLogic": {
         "LNG001": {
@@ -658,6 +673,21 @@ export const ERROR_CATALOG = {
             "message": "Error al tratar de consultar los datos para el reporte",
             "status": 500
         },
+        "LNG098": {
+            "code": "LNG098",
+            "message": "Error al tratar de crear el log de acción del usuario",
+            "status": 500
+        },
+        "LNG099": {
+            "code": "LNG099",
+            "message": "Compañia ya registrada",
+            "status": 409
+        },
+        "LNG100": {
+            "code": "LNG100",
+            "message": "No tienes permiso para dar de alta un vehiculo",
+            "status": 500
+        },
     }
 }
 
@@ -688,4 +718,5 @@ export const FIELD_NAMES: Record<string, string> = {
     "cma_description": "Razon de la solicitud de acceso",
     "pry_name": "Nombre del proyecto",
     "cod_code": "Código de verificación",
+    "cmp_id": "Compañia"
 }

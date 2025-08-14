@@ -4,6 +4,7 @@ import { reservationSchema, updateReservationSchema } from "../schemas/reservati
 import { ValidationError } from "../middleware/error/error"
 
 const createReservation = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'reservations';
     const requestBody = {
         ...req.body,
         rsv_initial_date: new Date(req.body.rsv_initial_date),
@@ -20,7 +21,7 @@ const createReservation = async (req: Request, res: Response, next: NextFunction
 
     try {
         const reservation = await reservationService.createReservation(body);
-
+        res.locals.newId = reservation.rsv_id;
         res.status(201).json({
             message: "Reservación creada correctamente",
             data: reservation
@@ -47,6 +48,7 @@ const getReservationById = async (req: Request, res: Response, next: NextFunctio
 }
 
 const updateReservation = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'reservations';
     const { id } = req.params;
 
     const requestBody = {
@@ -76,6 +78,7 @@ const updateReservation = async (req: Request, res: Response, next: NextFunction
 }
 
 const deleteReservation = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'reservations';
     const { id } = req.params;
 
     try {

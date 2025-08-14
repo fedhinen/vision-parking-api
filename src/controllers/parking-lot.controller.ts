@@ -16,6 +16,7 @@ const getParkingLotsByCompanyId = async (req: Request, res: Response, next: Next
 }
 
 const createParkingLot = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'parking_lots';
     const result = parkingLotSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -26,7 +27,7 @@ const createParkingLot = async (req: Request, res: Response, next: NextFunction)
 
     try {
         const parkingLot = await parkingLotService.createParkingLot(body);
-
+        res.locals.newId = parkingLot.pkl_id;
         res.status(201).json({
             message: "Estacionamiento creado correctamente",
             data: parkingLot
@@ -52,6 +53,7 @@ const getParkingLotById = async (req: Request, res: Response, next: NextFunction
 }
 
 const updateParkingLot = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'parking_lots';
     const { id } = req.params;
 
     const result = updateParkingLotSchema.safeParse(req.body);
@@ -75,6 +77,7 @@ const updateParkingLot = async (req: Request, res: Response, next: NextFunction)
 }
 
 const deleteParkingLot = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'parking_lots';
     const { id } = req.params;
 
     try {

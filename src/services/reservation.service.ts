@@ -1,6 +1,6 @@
 
 import { prisma } from "../utils/lib/prisma";
-import { InternalServerError, NotFoundError } from "../middleware/error/error";
+import { ConflictError, InternalServerError, NotFoundError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { statusService } from "./status.service";
 import { mqttService } from "./mqtt.service";
@@ -38,7 +38,7 @@ const createReservation = async (body: any) => {
     )
 
     if (existingReservation.length > 0) {
-        throw new InternalServerError(LNG094);
+        throw new ConflictError(LNG094);
     }
 
     try {

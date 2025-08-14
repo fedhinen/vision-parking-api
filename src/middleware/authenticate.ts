@@ -47,6 +47,7 @@ export const authenticate = async (
         jwt.verify(token, process.env.JWT_KEY || "");
 
         const user = await userService.getUserById(tokenExist.usr_id)
+
         req.user = {
             usr_id: user.usr_id,
             usr_email: user.usr_email,
