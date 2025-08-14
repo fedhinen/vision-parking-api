@@ -142,13 +142,22 @@ const getPendingCompanyAccessRequests = async (cmp_id: string) => {
     const company = await companyService.getCompanyById(cmp_id);
 
     const pendingStatus = await statusService.getStatusByTableAndName(
-        "company_access_requests", "Pendiente")
+        "company_access_requests", "Pendiente"
+    )
 
     try {
         const pendingRequests = await prisma.company_access_requests.findMany({
             where: {
                 cmp_id: company.cmp_id,
                 stu_id: pendingStatus.stu_id,
+            },
+            include: {
+                user: {
+                    select: {
+                        usr_email: true,
+                        usr_name: true
+                    }
+                }
             }
         })
 
