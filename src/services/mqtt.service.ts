@@ -1,4 +1,5 @@
 import mqtt, { MqttClient } from 'mqtt'
+import { parkingSpotService } from './parking-spot.service'
 
 export interface ReservationMqttMessage {
     rsv_id: string
@@ -67,7 +68,57 @@ class MQTTService {
         return this.publish(topic, message)
     }
 
-    private async publish(topic: string, message: any): Promise<void> {
+    async subscribe(topic: string, callback: (message: any) => void): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (!this.client || !this.isConnected) {
+                console.warn('Cliente MQTT no conectado, reintentando conexión...')
+                this.connect()
+                setTimeout(() => {
+                    if (!this.client || !this.isConnected) {
+                        reject(new Error('No se pudo establecer conexión MQTT para suscripción'))
+                        return
+                    }
+                    this.subscribeToTopic(topic, callback, resolve, reject)
+                }, 1000)
+                return
+            }
+
+            this.subscribeToTopic(topic, callback, resolve, reject)
+        })
+    }
+
+    private subscribeToTopic(
+        topic: string,
+        callback: (message: any) => void,
+        resolve: () => void,
+        reject: (error: Error) => void
+    ) {
+        this.client!.subscribe(topic, { qos: 1 }, (err) => {
+            if (err) {
+                console.error(`Error al suscribirse al tópico ${topic}:`, err)
+                reject(err)
+            } else {
+                console.log(`Suscrito al tópico ${topic}`)
+                
+                // Configurar el listener para mensajes de este tópico
+                this.client!.on('message', (receivedTopic, message) => {
+                    if (receivedTopic === topic) {
+                        try {
+                            const parsedMessage = JSON.parse(message.toString())
+                            console.log(`Mensaje recibido en tópico ${topic}:`, parsedMessage)
+                            callback(parsedMessage)
+                        } catch (parseError) {
+                            console.error(`Error al parsear mensaje del tópico ${topic}:`, parseError)
+                        }
+                    }
+                })
+                
+                resolve()
+            }
+        })
+    }
+
+    async publish(topic: string, message: any): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!this.client || !this.isConnected) {
                 console.warn('Cliente MQTT no conectado, reintentando conexión...')
@@ -112,3 +163,22 @@ class MQTTService {
 }
 
 export const mqttService = new MQTTService()
+
+export async function initializeMqttSubscriptions() {
+    try {
+        await mqttService.subscribe('sensor:status_spot:api', async (message: {esp32Id: string}) => {
+            console.log('Estado del sensor recibido:', message)
+
+            const data = await parkingSpotService.getParkingSpotConfig(message.esp32Id)
+
+            await mqttService.publish(`api:status_spot:sensor`, {
+                ...data,
+                esp32Id: message.esp32Id
+            })
+        })
+
+        console.log('Suscripciones MQTT inicializadas exitosamente')
+    } catch (error) {
+        console.error('Error al inicializar suscripciones MQTT:', error)
+    }
+}

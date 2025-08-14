@@ -3,6 +3,7 @@ import { createServer } from 'http'
 import { router } from './routes/routes'
 import { errorHandler } from './middleware/error/handle-error'
 import { webSocketService } from './services/websocket.service'
+import { initializeMqttSubscriptions, mqttService } from './services/mqtt.service'
 import cors from "cors"
 import morgan from "morgan"
 
@@ -30,7 +31,11 @@ app.use(errorHandler)
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
     console.log(`WebSocket server is running on port ${PORT}`)
+    
+    initializeMqttSubscriptions()
 })
+
+
 
 declare global {
     namespace Express {
