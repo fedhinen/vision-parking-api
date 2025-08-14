@@ -33,6 +33,7 @@
     "@types/mqtt": "^2.5.0",
     "argon2": "^0.43.1",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
