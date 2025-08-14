@@ -3,7 +3,7 @@ import { ERROR_CATALOG } from "../utils/error-catalog";
 
 export const companySchema = z.object({
     cmp_name: z.string(ERROR_CATALOG.validation.VAL001.message)
-        .min(1, ERROR_CATALOG.validation.VAL007.message(1))
+        .min(4, ERROR_CATALOG.validation.VAL007.message(4))
 });
 
 export const updateCompanySchema = companySchema.partial();

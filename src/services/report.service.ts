@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { endOfMonth, startOfMonth } from "date-fns";
 import { InternalServerError } from "../middleware/error/error";
 import { ERROR_CATALOG } from "../utils/error-catalog";
 import { prisma } from "../utils/lib/prisma";
@@ -23,6 +23,26 @@ const vehiclesCompanyReport = async (companyId: string, filters: any) => {
 
     try {
         const data = await prisma.vehicles.findMany({
+            where: {
+                ...(color && { veh_color: color }),
+                ...(model && { veh_model: model }),
+                ...(brand && { veh_brand: brand }),
+                ...(year && { veh_year: year }),
+                ...(plate && { veh_plate: { contains: plate } }),
+                ...(active !== undefined && { veh_active: active }),
+                user_vehicles: {
+                    some: {
+                        ...(userId && { usr_id: userId }),
+                        user: {
+                            company_users: {
+                                some: {
+                                    cmp_id: company.cmp_id
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             include: {
                 user_vehicles: {
                     include: {
@@ -30,9 +50,7 @@ const vehiclesCompanyReport = async (companyId: string, filters: any) => {
                             include: {
                                 company_users: {
                                     where: {
-                                        company: {
-                                            cmp_id: company.cmp_id
-                                        }
+                                        cmp_id: company.cmp_id
                                     }
                                 }
                             }
@@ -51,8 +69,8 @@ const vehiclesCompanyReport = async (companyId: string, filters: any) => {
 
 const reservationsCompanyReport = async (companyId: string, filters: any) => {
     const {
-        initialDate,
-        endDate,
+        initialDate = startOfMonth(new Date()),
+        endDate = endOfMonth(new Date()),
         statusId,
         userId
     } = filters
@@ -62,11 +80,15 @@ const reservationsCompanyReport = async (companyId: string, filters: any) => {
     try {
         const data = await prisma.reservations.findMany({
             where: {
-                company_id: company.cmp_id,
-                ...(initialDate && { initialDate }),
-                ...(endDate && { endDate }),
-                ...(statusId && { statusId }),
-                ...(userId && { userId })
+                parking_spot: {
+                    parking_lot: {
+                        cmp_id: company.cmp_id
+                    }
+                },
+                ...(initialDate && { rsv_initial_date: { gte: new Date(initialDate) } }),
+                ...(endDate && { rsv_end_date: { lte: new Date(endDate) } }),
+                ...(statusId && { stu_id: statusId }),
+                ...(userId && { usr_id: userId })
             },
             include: {
                 user: {
@@ -94,8 +116,8 @@ const parkingSpotsCompanyReport = async (companyId: string, filters: any) => {
         parkingSpotId,
         statusId,
         userId,
-        initialDate,
-        endDate
+        initialDate = startOfMonth(new Date()),
+        endDate = endOfMonth(new Date())
     } = filters
 
     const company = await companyService.getCompanyById(companyId)
@@ -103,12 +125,21 @@ const parkingSpotsCompanyReport = async (companyId: string, filters: any) => {
     try {
         const data = await prisma.parking_spots.findMany({
             where: {
-                company_id: company.cmp_id,
-                ...(parkingSpotId && { parkingSpotId }),
-                ...(statusId && { statusId }),
-                ...(userId && { userId }),
-                ...(initialDate && { created_at: { gte: new Date(initialDate) } }),
-                ...(endDate && { created_at: { lte: new Date(endDate) } })
+                parking_lot: {
+                    cmp_id: company.cmp_id
+                },
+                ...(parkingSpotId && { pks_id: parkingSpotId }),
+                ...(statusId && { stu_id: statusId }),
+                ...(initialDate && { pkl_date: { gte: new Date(initialDate) } }),
+                ...(endDate && { pkl_date: { lte: new Date(endDate) } }),
+                ...(userId && {
+                    spot_assignments: {
+                        some: {
+                            usr_id: userId,
+                            spa_active: true
+                        }
+                    }
+                })
             },
             include: {
                 status: {
