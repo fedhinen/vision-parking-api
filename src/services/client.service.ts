@@ -16,6 +16,10 @@ const {
     LNG088
 } = ERROR_CATALOG.businessLogic
 
+const {
+    AUTH002
+} = ERROR_CATALOG.autentication
+
 const createClient = async (body: any) => {
     const {
         cte_name,
@@ -57,13 +61,17 @@ const createClient = async (body: any) => {
 
         return newClient;
     } catch (error) {
-        console.log("createClientError", error);
         if (error instanceof PrismaClientKnownRequestError) {
             if (
                 error.code === 'P2002' &&
                 String(error?.meta?.target).includes('cte_name')
             ) {
                 throw new ConflictError(LNG068);
+            } else if (
+                error.code === 'P2002' &&
+                String(error?.meta?.target).includes('cte_email')
+            ) {
+                throw new ConflictError(AUTH002);
             }
         }
         throw new InternalServerError(LNG039);

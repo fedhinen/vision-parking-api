@@ -151,7 +151,7 @@ model clients {
   cte_id         String   @id @default(uuid())
   cte_name       String   @unique
   cte_phone      String
-  cte_email      String
+  cte_email      String   @unique
   cte_address    String
   cte_zipcode    String
   cmp_id         String   @unique
