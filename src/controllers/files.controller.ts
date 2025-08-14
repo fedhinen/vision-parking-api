@@ -110,34 +110,28 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    const stat = fs.statSync(fileRecord.fil_path);
+    // Leer el archivo y convertirlo a base64
+    const fileBuffer = fs.readFileSync(fileRecord.fil_path);
+    const base64Data = fileBuffer.toString('base64');
 
-    res.setHeader('Content-Type', fileRecord.fil_type);
-    res.setHeader('Content-Length', stat.size);
-    res.setHeader('Content-Disposition', `attachment; filename="${fileRecord.fil_name}"`);
-
-    const readStream = fs.createReadStream(fileRecord.fil_path);
-
-    readStream.on('error', (error) => {
-      console.error("Error al leer el archivo:", error);
-      if (!res.headersSent) {
-        res.status(500).json({
-          success: false,
-          message: "Error al leer el archivo"
-        });
+    res.status(200).json({
+      success: true,
+      data: {
+        fil_id: fileRecord.fil_id,
+        fil_name: fileRecord.fil_name,
+        fil_type: fileRecord.fil_type,
+        fil_size: fileRecord.fil_size,
+        fil_date: fileRecord.fil_date,
+        file_data: base64Data
       }
     });
 
-    readStream.pipe(res);
-
   } catch (error) {
     console.error("Error al descargar archivo:", error);
-    if (!res.headersSent) {
-      res.status(500).json({
-        success: false,
-        message: "Error interno del servidor al descargar el archivo"
-      });
-    }
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor al descargar el archivo"
+    });
   }
 };
 
