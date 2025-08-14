@@ -292,10 +292,26 @@ const getParkingSpotConfig = async (esp32Id: string) => {
             where: {
                 esp32_id: esp32Id,
                 psc_active: true
+            },
+        })
+
+        const parkingSpot = await prisma.parking_spots.findUnique({
+            where: {
+                pks_id: parkingSpotConfig?.pks_id
+            },
+            include: {
+                status: {
+                    select: {
+                        stu_name: true
+                    }
+                }
             }
         })
 
-        return parkingSpotConfig
+        return {
+            parkingSpotConfig,
+            parkingSpot
+        }
     } catch (error) {
         throw new InternalServerError(LNG090);
     }
