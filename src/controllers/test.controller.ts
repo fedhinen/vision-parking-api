@@ -46,8 +46,8 @@ const testMqtt = async (req: Request, res: Response, next: NextFunction) => {
                 // rsv_end_date: data?.rsv_end_date || new Date(Date.now() + 3600000).toISOString(),
                 // rsv_reason: data?.rsv_reason || 'Test reservation',
                 status: data?.status || 'Pendiente',
-                // user_name: data?.user_name || 'Test User',
-                // parking_spot_code: data?.parking_spot_code || 'SPOT-TEST'
+                esp32_id: "",
+                tagIdentifier: ""
             })
         } else if (type === 'status') {
             await mqttService.publishReservationStatusChanged({
