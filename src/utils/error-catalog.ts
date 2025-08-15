@@ -90,6 +90,11 @@ export const ERROR_CATALOG = {
             "message": "API Key de acceso invalida",
             "status": 403
         },
+        "AUTH019": {
+            "code": "AUTH019",
+            "message": "Error al tratar de generar el token de reseteo de contraseña",
+            "status": 404
+        },
     },
     "validation": {
         "VAL001": {

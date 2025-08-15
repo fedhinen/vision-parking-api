@@ -3,6 +3,7 @@ import { userService } from "../services/user.service";
 import { signinSchema, userSchema } from "../schemas/user.schema";
 import { ValidationError } from "../middleware/error/error";
 import { verifyCodeSchema } from "../schemas/code.schema";
+import { passwordResetSchema } from "../schemas/password-reset.schema";
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
     const result = userSchema.safeParse(req.body)
@@ -126,6 +127,25 @@ const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const sendChangePasswordEmail = async (req: Request, res: Response, next: NextFunction) => {
+    const result = passwordResetSchema.safeParse(req.body)
+
+    if (!result.success) {
+        throw new ValidationError(result.error)
+    }
+
+    const body = result.data
+
+    try {
+        await userService.sendChangePasswordEmail(body)
+        res.status(200).json({
+            message: "Se ha enviado un correo para restablecer tu contraseña"
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const userController = {
     getUserInfo,
     signup,
@@ -134,5 +154,6 @@ export const userController = {
     verifyCode,
     createDesktopUser,
     movilUserConfigurated,
-    getUserIsConfigurated
+    getUserIsConfigurated,
+    sendChangePasswordEmail
 }

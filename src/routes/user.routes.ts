@@ -9,6 +9,7 @@ router.post("/signup", userController.signup)
 router.post("/signin", userController.signin);
 router.post("/logout", authenticate, userController.logout);
 router.post("/verify", userController.verifyCode);
+router.post("/password-reset", userController.sendChangePasswordEmail);
 router.post("/signup/desktop/:cmp_id", userController.createDesktopUser)
 router.get("/configurated/:usr_id", authenticate, userController.getUserIsConfigurated)
 router.put("/configurated/:usr_id", authenticate, userController.movilUserConfigurated)

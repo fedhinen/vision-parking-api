@@ -22,7 +22,8 @@ const
     AUTH013,
     AUTH014,
     AUTH016,
-    AUTH017
+    AUTH017,
+    AUTH019
   } = ERROR_CATALOG.autentication
 
 const {
@@ -293,7 +294,9 @@ const getUserById = async (usr_id: string) => {
   return user;
 }
 
-const sendChangePasswordEmail = async (usr_email: string) => {
+const sendChangePasswordEmail = async (body: any) => {
+  const { usr_email } = body;
+
   const user = await prisma.users.findUnique({
     where: {
       usr_email
@@ -304,16 +307,15 @@ const sendChangePasswordEmail = async (usr_email: string) => {
     throw new AuthError(AUTH014)
   }
 
-  const token = crypto.randomUUID()
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
+  const resetToken = await createResetPasswordToken(user.usr_id)
 
-  const resetLink = `http://localhost:5173/reset-password?token=${token}`
+  const resetLink = `http://localhost:5173/reset-password?token=${resetToken.rpt_token}`
 
   const mailOptions = {
     from: process.env.MAIL_FROM,
     to: user?.usr_email,
     subject: "Reestablece tu contraseña",
-    html: mailTemplates.changePasswordTemplate,
+    html: mailTemplates.changePasswordTemplate(resetLink),
   }
 
   sendEmail(mailOptions)
@@ -440,6 +442,25 @@ const getUserInfo = async (usr_id: string) => {
   }
 }
 
+const createResetPasswordToken = async (usr_id: string) => {
+  const token = crypto.randomUUID()
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
+
+  try {
+    const resetToken = prisma.reset_password_tokens.create({
+      data: {
+        usr_id,
+        rpt_token: token,
+        rpt_expiration_date: expiresAt,
+      }
+    })
+
+    return resetToken
+  } catch (error) {
+    throw new InternalServerError(AUTH019)
+  }
+}
+
 export const userService = {
   signup,
   signin,
@@ -449,5 +470,6 @@ export const userService = {
   getUserInfo,
   createDesktopUser,
   movilUserConfigurated,
-  getUserIsConfigurated
+  getUserIsConfigurated,
+  sendChangePasswordEmail
 }
