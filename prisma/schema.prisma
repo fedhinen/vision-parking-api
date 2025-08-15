@@ -50,9 +50,9 @@ model reset_password_tokens {
   rpt_id              String   @id @default(uuid())
   rpt_token           String
   usr_id              String
-  rpt_expiration_data DateTime
+  rpt_expiration_date DateTime
   rpt_used            Boolean  @default(false)
-  rpt_date            DateTime
+  rpt_date            DateTime @default(now())
 
   user users @relation(fields: [usr_id], references: [usr_id])
 }
