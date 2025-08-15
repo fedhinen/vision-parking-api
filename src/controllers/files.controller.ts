@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { prisma } from "../utils/lib/prisma";
 import fs from "fs";
 import { filesService } from "../services/files.service";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { s3 } from "../utils/lib/s3-client";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export const uploadFile = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -24,21 +27,24 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    /* if (!req.user?.usr_id) {
-      fs.unlinkSync(req.file.path);
-      res.status(401).json({
-        success: false,
-        message: "Usuario no autenticado"
-      });
-      return;
-    } */
+    const file = fs.readFileSync(req.file.path)
+    const fileBody = new Uint8Array(file.buffer)
+
+    const command = new PutObjectCommand({
+      Bucket: 'vision-parking-files',
+      Key: req.file.filename,
+      Body: fileBody,
+      ContentType: req.file.mimetype
+    })
+
+    await s3.send(command)
 
     // Guardar información del archivo en la base de datos
     const fileRecord = await prisma.files.create({
       data: {
         fil_name: req.file.originalname,
         fil_relation_id: fil_relation_id,
-        fil_path: req.file.path,
+        fil_path: req.file.filename,
         fil_type: req.file.mimetype,
         fil_size: req.file.size,
         fil_created_by: "system",
@@ -89,7 +95,7 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
 
     const fileRecord = await prisma.files.findFirst({
       where: {
-        fil_id: id,
+        fil_relation_id: id,
         fil_active: true
       }
     });
@@ -102,17 +108,12 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    if (!fs.existsSync(fileRecord.fil_path)) {
-      res.status(404).json({
-        success: false,
-        message: "El archivo físico no existe en el servidor"
-      });
-      return;
-    }
+    const getCommand = new GetObjectCommand({
+      Bucket: 'vision-parking-files',
+      Key: fileRecord.fil_path
+    })
 
-    // Leer el archivo y convertirlo a base64
-    const fileBuffer = fs.readFileSync(fileRecord.fil_path);
-    const base64Data = fileBuffer.toString('base64');
+    const url = await getSignedUrl(s3, getCommand, { expiresIn: 3600 });
 
     res.status(200).json({
       success: true,
@@ -122,7 +123,7 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
         fil_type: fileRecord.fil_type,
         fil_size: fileRecord.fil_size,
         fil_date: fileRecord.fil_date,
-        file_data: base64Data
+        fil_data: url,
       }
     });
 
