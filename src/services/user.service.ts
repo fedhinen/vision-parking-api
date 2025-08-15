@@ -71,12 +71,22 @@ const signup = async (body: any) => {
   const newUser = await createUser(userData)
 
   if (newUser.pry_name === "VISION_PARKING_DESKTOP") {
-    await companyService.addUserToCompany(newUser.usr_id, cmp_id)
-    console.log(newUser.usr_id, newUser.usr_email, usr_password);
-    //await sendCredentialsEmail(newUser.usr_name, newUser.usr_email, usr_password)
+    const userCompany = await companyService.addUserToCompany(newUser.usr_id, cmp_id)
+    await sendCredentialsEmail({
+      username: newUser.usr_name,
+      email: newUser.usr_email,
+      password: usr_password,
+      emailTo: userCompany.company.clients[0].cte_email
+    })
   } else if (newUser.pry_name === "VISION_PARKING_WEB") {
-    console.log(newUser.usr_id, newUser.usr_email, usr_password);
-    //await sendCredentialsEmail(newUser.usr_name, newUser.usr_email, usr_password)
+    await sendCredentialsEmail(
+      {
+        username: newUser.usr_name,
+        email: newUser.usr_email,
+        password: usr_password,
+        emailTo: newUser.usr_email
+      }
+    )
   }
 
   return newUser
@@ -332,10 +342,15 @@ const createUser = async (body: any) => {
   }
 }
 
-const sendCredentialsEmail = async (username: string, email: string, password: string) => {
+const sendCredentialsEmail = async ({ username, email, password, emailTo }: {
+  username: string,
+  email: string,
+  password: string,
+  emailTo: string
+}) => {
   const mailOptions = {
     from: process.env.MAIL_FROM,
-    to: email,
+    to: emailTo,
     subject: "Tus credenciales de acceso",
     html: mailTemplates.credentialsTemplate(username, email, password),
   };
