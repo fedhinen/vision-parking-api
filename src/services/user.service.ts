@@ -120,24 +120,16 @@ const logout = async (userId: string) => {
 }
 
 const userExists = async (usr_email: string, usr_password: string, pry_name: Plataforma) => {
-  console.log(pry_name)
   try {
-    const isAuthorized = await prisma.users.findFirst({
-      where: {
-        usr_email,
-        pry_name
-      }
-    })
-
-    if (!isAuthorized) {
-      throw new AuthError(AUTH016)
-    }
-
     const isRegister = await prisma.users.findUnique({
       where: {
         usr_email,
       },
     });
+
+    if (pry_name !== isRegister?.pry_name) {
+      throw new AuthError(AUTH016);
+    }
 
     if (!isRegister || !(await argon2.verify(isRegister.usr_password, usr_password))) {
       throw new AuthError(AUTH001);
