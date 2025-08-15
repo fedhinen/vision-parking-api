@@ -89,8 +89,7 @@ const signin = async (body: any) => {
 
   try {
     const userCode = await generateCode(isRegister)
-    console.log(userCode.usr_email, userCode.cod_code);
-    //await sendCodeEmail(userCode.usr_email, userCode.cod_code)
+    await sendCodeEmail(userCode.usr_email, userCode.cod_code)
     return {
       usr_id: isRegister.usr_id,
       usr_email: isRegister.usr_email
