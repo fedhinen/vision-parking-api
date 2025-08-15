@@ -98,6 +98,11 @@ const getParkingSpotById = async (parkingSpotId: string) => {
                                 stu_name: true
                             }
                         }
+                    },
+                    where: {
+                        status: {
+                            stu_name: "Realizada"
+                        }
                     }
                 },
                 spot_assignments: {
