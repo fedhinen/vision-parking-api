@@ -13,7 +13,8 @@ const {
     LNG031,
     LNG065,
     LNG066,
-    LNG100
+    LNG100,
+    LNG101
 } = ERROR_CATALOG.businessLogic
 
 const getCompanyVehicles = async (companyId: string) => {
@@ -96,7 +97,13 @@ const getUserVehicles = async (userId: string) => {
                 veh_brand: true,
                 veh_model: true,
                 veh_year: true,
-                veh_color: true
+                veh_color: true,
+                user_vehicles: {
+                    select: {
+                        uv_id: true,
+                        uv_selected: true
+                    }
+                }
             }
         });
 
@@ -122,7 +129,7 @@ const createVehicle = async (body: any) => {
         throw new ConflictError(LNG100)
     }
 
-    await checkCountVehicles(usr_id);
+    const vehiclesCount = await checkCountVehicles(usr_id);
 
     try {
         const result = await prisma.$transaction(async (tx) => {
@@ -141,7 +148,8 @@ const createVehicle = async (body: any) => {
                 data: {
                     usr_id: user.usr_id,
                     veh_id: newVehicle.veh_id,
-                    uv_created_by: "system"
+                    uv_created_by: "system",
+                    uv_selected: vehiclesCount === 0 ? true : false
                 }
             });
 
@@ -244,11 +252,59 @@ const checkCountVehicles = async (userId: string) => {
     }
 }
 
+const setSelectedVehicle = async (userId: string, vehicleId: string) => {
+    const user = await userService.getUserById(userId)
+    const vehicle = await getVehicleById(vehicleId)
+
+    try {
+        const existingSelected = await prisma.user_vehicles.findFirst({
+            where: {
+                usr_id: user.usr_id,
+                uv_selected: true
+            }
+        })
+
+        const updateSelection = await prisma.$transaction(async (tx) => {
+            await tx.user_vehicles.update({
+                where: {
+                    uv_id: existingSelected?.uv_id
+                },
+                data: {
+                    uv_selected: false
+                }
+            })
+
+            const newSelection = await tx.user_vehicles.findFirst({
+                where: {
+                    usr_id: user.usr_id,
+                    veh_id: vehicle.veh_id
+                }
+            })
+
+            const selectedUserVehicle = await tx.user_vehicles.update({
+                where: {
+                    uv_id: newSelection?.uv_id
+                },
+                data: {
+                    uv_selected: true
+                }
+            })
+
+            return selectedUserVehicle
+        })
+
+        return updateSelection
+    } catch (error) {
+        throw new InternalServerError(LNG101)
+    }
+}
+
 export const vehicleService = {
     createVehicle,
     getVehicleById,
     updateVehicle,
     deleteVehicle,
     getCompanyVehicles,
-    getUserVehicles
+    getUserVehicles,
+    setSelectedVehicle
 } 

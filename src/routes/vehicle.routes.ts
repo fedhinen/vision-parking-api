@@ -10,6 +10,7 @@ router.get("/vehicles/:id", authenticate, vehicleController.getVehicleById)
 router.put("/vehicles/:id", authenticate, logger, vehicleController.updateVehicle)
 router.delete("/vehicles/:id", authenticate, logger, vehicleController.deleteVehicle)
 router.get("/users/:id/vehicles", authenticate, vehicleController.getUserVehicles)
+router.put("/users/vehicles/:vehicleId", authenticate, logger, vehicleController.setSelectedVehicle)
 router.get("/companies/:id/vehicles", authenticate, vehicleController.getCompanyVehicles)
 
 export const vehicleRoutes = router;
