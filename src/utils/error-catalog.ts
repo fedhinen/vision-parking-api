@@ -693,6 +693,11 @@ export const ERROR_CATALOG = {
             "message": "No tienes permiso para dar de alta un vehiculo",
             "status": 500
         },
+        "LNG101": {
+            "code": "LNG101",
+            "message": "Error al tratar de establecer el vehículo seleccionado",
+            "status": 500
+        }
     }
 }
 
