@@ -90,6 +90,11 @@ export const ERROR_CATALOG = {
             "message": "API Key de acceso invalida",
             "status": 403
         },
+        "AUTH019": {
+            "code": "AUTH019",
+            "message": "Error al tratar de generar el token de reseteo de contraseña",
+            "status": 404
+        },
     },
     "validation": {
         "VAL001": {
@@ -688,6 +693,11 @@ export const ERROR_CATALOG = {
             "message": "No tienes permiso para dar de alta un vehiculo",
             "status": 500
         },
+        "LNG101": {
+            "code": "LNG101",
+            "message": "Error al tratar de establecer el vehículo seleccionado",
+            "status": 500
+        }
     }
 }
 

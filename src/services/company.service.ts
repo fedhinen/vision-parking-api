@@ -174,6 +174,17 @@ const addUserToCompany = async (userId: string, companyId: string) => {
             data: {
                 usr_id: user.usr_id,
                 cmp_id: company.cmp_id
+            },
+            include: {
+                company: {
+                    include: {
+                        clients: {
+                            select: {
+                                cte_email: true
+                            }
+                        }
+                    }
+                }
             }
         })
 

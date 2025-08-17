@@ -49,7 +49,7 @@ const codeTemplate = (code: number) => {
     `;
 }
 
-const changePasswordTemplate = () => {
+const changePasswordTemplate = (resetLink: string) => {
     return `
         <html>
             <head>
@@ -80,8 +80,11 @@ const changePasswordTemplate = () => {
             </head>
             <body>
                 <div class="container">
-                    <h1>Cambio de contraseña exitoso</h1>
-                    <p>Tu contraseña ha sido cambiada correctamente. Si no realizaste esta acción, por favor contacta con el soporte.</p>
+                    <h1>Solicitud de Cambio de Contraseña</h1>
+                    <p>Hemos recibido una solicitud para cambiar tu contraseña. Si no has realizado esta solicitud, por favor ignora este mensaje.</p>
+                    <p>Si deseas cambiar tu contraseña, haz clic en el siguiente enlace:</p>
+                    <p><a href="${resetLink}" style="color: #3498db; text-decoration: none;">Cambiar Contraseña</a></p>
+                    <p>Este enlace es válido por 1 hora.</p>
                 </div>
             </body>
         </html>`

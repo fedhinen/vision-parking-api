@@ -41,5 +41,5 @@ export const generateRandomEmail = (companyName: string, userNumber: number) => 
         companyNamePart = nameParts.map(word => word[0].toLowerCase()).join('');
     }
 
-    return `${companyNamePart}.guardia.00${userNumber}@gmail.com`
+    return `${companyNamePart}.guardia.00${userNumber}@yopmail.com`
 }

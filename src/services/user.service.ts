@@ -22,7 +22,8 @@ const
     AUTH013,
     AUTH014,
     AUTH016,
-    AUTH017
+    AUTH017,
+    AUTH019
   } = ERROR_CATALOG.autentication
 
 const {
@@ -71,12 +72,22 @@ const signup = async (body: any) => {
   const newUser = await createUser(userData)
 
   if (newUser.pry_name === "VISION_PARKING_DESKTOP") {
-    await companyService.addUserToCompany(newUser.usr_id, cmp_id)
-    console.log(newUser.usr_id, newUser.usr_email, usr_password);
-    //await sendCredentialsEmail(newUser.usr_name, newUser.usr_email, usr_password)
+    const userCompany = await companyService.addUserToCompany(newUser.usr_id, cmp_id)
+    await sendCredentialsEmail({
+      username: newUser.usr_name,
+      email: newUser.usr_email,
+      password: usr_password,
+      emailTo: userCompany.company.clients[0].cte_email
+    })
   } else if (newUser.pry_name === "VISION_PARKING_WEB") {
-    console.log(newUser.usr_id, newUser.usr_email, usr_password);
-    //await sendCredentialsEmail(newUser.usr_name, newUser.usr_email, usr_password)
+    await sendCredentialsEmail(
+      {
+        username: newUser.usr_name,
+        email: newUser.usr_email,
+        password: usr_password,
+        emailTo: newUser.usr_email
+      }
+    )
   }
 
   return newUser
@@ -120,19 +131,7 @@ const logout = async (userId: string) => {
 }
 
 const userExists = async (usr_email: string, usr_password: string, pry_name: Plataforma) => {
-  console.log(pry_name)
   try {
-    const isAuthorized = await prisma.users.findFirst({
-      where: {
-        usr_email,
-        pry_name
-      }
-    })
-
-    if (!isAuthorized) {
-      throw new AuthError(AUTH016)
-    }
-
     const isRegister = await prisma.users.findUnique({
       where: {
         usr_email,
@@ -141,6 +140,10 @@ const userExists = async (usr_email: string, usr_password: string, pry_name: Pla
 
     if (!isRegister || !(await argon2.verify(isRegister.usr_password, usr_password))) {
       throw new AuthError(AUTH001);
+    }
+
+    if (pry_name !== isRegister?.pry_name) {
+      throw new AuthError(AUTH016);
     }
 
     return isRegister
@@ -291,7 +294,9 @@ const getUserById = async (usr_id: string) => {
   return user;
 }
 
-const sendChangePasswordEmail = async (usr_email: string) => {
+const sendChangePasswordEmail = async (body: any) => {
+  const { usr_email } = body;
+
   const user = await prisma.users.findUnique({
     where: {
       usr_email
@@ -302,16 +307,15 @@ const sendChangePasswordEmail = async (usr_email: string) => {
     throw new AuthError(AUTH014)
   }
 
-  const token = crypto.randomUUID()
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
+  const resetToken = await createResetPasswordToken(user.usr_id)
 
-  const resetLink = `http://localhost:5173/reset-password?token=${token}`
+  const resetLink = `http://localhost:5173/reset-password?token=${resetToken.rpt_token}`
 
   const mailOptions = {
     from: process.env.MAIL_FROM,
     to: user?.usr_email,
     subject: "Reestablece tu contraseña",
-    html: mailTemplates.changePasswordTemplate,
+    html: mailTemplates.changePasswordTemplate(resetLink),
   }
 
   sendEmail(mailOptions)
@@ -340,10 +344,15 @@ const createUser = async (body: any) => {
   }
 }
 
-const sendCredentialsEmail = async (username: string, email: string, password: string) => {
+const sendCredentialsEmail = async ({ username, email, password, emailTo }: {
+  username: string,
+  email: string,
+  password: string,
+  emailTo: string
+}) => {
   const mailOptions = {
     from: process.env.MAIL_FROM,
-    to: email,
+    to: emailTo,
     subject: "Tus credenciales de acceso",
     html: mailTemplates.credentialsTemplate(username, email, password),
   };
@@ -433,6 +442,25 @@ const getUserInfo = async (usr_id: string) => {
   }
 }
 
+const createResetPasswordToken = async (usr_id: string) => {
+  const token = crypto.randomUUID()
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
+
+  try {
+    const resetToken = prisma.reset_password_tokens.create({
+      data: {
+        usr_id,
+        rpt_token: token,
+        rpt_expiration_date: expiresAt,
+      }
+    })
+
+    return resetToken
+  } catch (error) {
+    throw new InternalServerError(AUTH019)
+  }
+}
+
 export const userService = {
   signup,
   signin,
@@ -442,5 +470,6 @@ export const userService = {
   getUserInfo,
   createDesktopUser,
   movilUserConfigurated,
-  getUserIsConfigurated
+  getUserIsConfigurated,
+  sendChangePasswordEmail
 }

@@ -113,11 +113,29 @@ const deleteVehicle = async (req: Request, res: Response, next: NextFunction) =>
     }
 }
 
+const setSelectedVehicle = async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.tableName = 'user_vehicles';
+    const userId = req.user?.usr_id;
+    const { vehicleId } = req.params;
+
+    try {
+        const selectedVehicle = await vehicleService.setSelectedVehicle(userId as string, vehicleId);
+
+        res.status(200).json({
+            message: "Vehículo establecido correctamente",
+            data: selectedVehicle
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const vehicleController = {
     createVehicle,
     getVehicleById,
     updateVehicle,
     deleteVehicle,
     getCompanyVehicles,
-    getUserVehicles
+    getUserVehicles,
+    setSelectedVehicle
 }
