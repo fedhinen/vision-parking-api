@@ -138,12 +138,12 @@ const userExists = async (usr_email: string, usr_password: string, pry_name: Pla
       },
     });
 
-    if (pry_name !== isRegister?.pry_name) {
-      throw new AuthError(AUTH016);
-    }
-
     if (!isRegister || !(await argon2.verify(isRegister.usr_password, usr_password))) {
       throw new AuthError(AUTH001);
+    }
+
+    if (pry_name !== isRegister?.pry_name) {
+      throw new AuthError(AUTH016);
     }
 
     return isRegister
