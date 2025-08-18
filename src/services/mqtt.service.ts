@@ -36,7 +36,7 @@ class MQTTService {
             this.client = mqtt.connect(process.env.MQTT_BROKER_URL ?? "mqtt://localhost", {
                 port: Number(process.env.MQTT_BROKER_PORT) ?? 1883,
                 reconnectPeriod: 1000,
-                connectTimeout: 30 * 1000,
+                connectTimeout: 5 * 60 * 1000,
                 clean: true
             })
 
