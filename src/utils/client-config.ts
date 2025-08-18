@@ -14,7 +14,7 @@ const createParkingLot = async (companyId: string) => {
 
 const createDefaultParkingSpots = async (parkingLotId: string) => {
     const sections = ["A", "B", "C"];
-    const totalPerSection = 5;
+    const totalPerSection = 8;
 
     const inactiveStatus = await prisma.status.findFirst({
         where: {
