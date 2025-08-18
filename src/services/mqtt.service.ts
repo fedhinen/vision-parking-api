@@ -20,12 +20,18 @@ export interface ReservationStatusMqttMessage {
 class MQTTService {
     private client: MqttClient | null = null
     private isConnected = false
+    private isConnecting = false
 
     constructor() {
         this.connect()
     }
 
     private connect() {
+        if (this.isConnected || this.isConnecting) {
+            return
+        }
+        this.isConnecting = true
+
         try {
             this.client = mqtt.connect(process.env.MQTT_BROKER_URL ?? "mqtt://localhost", {
                 port: Number(process.env.MQTT_BROKER_PORT) ?? 1883,
@@ -37,21 +43,25 @@ class MQTTService {
             this.client.on('connect', () => {
                 console.log('Conectado al broker MQTT')
                 this.isConnected = true
+                this.isConnecting = false
             })
 
             this.client.on('error', (err) => {
                 console.error('Error de conexión MQTT:', err)
                 this.isConnected = false
+                this.isConnecting = false
             })
 
             this.client.on('close', () => {
                 console.log('Conexión MQTT cerrada')
                 this.isConnected = false
+                this.isConnecting = false
             })
 
             this.client.on('disconnect', () => {
                 console.log('Desconectado del broker MQTT')
                 this.isConnected = false
+                this.isConnecting = false
             })
         } catch (error) {
             console.error('Error al inicializar cliente MQTT:', error)
