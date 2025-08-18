@@ -8,7 +8,6 @@ import { webSocketService } from "./websocket.service";
 import { userService } from "./user.service";
 import { parkingSpotService } from "./parking-spot.service";
 import { parkingLotService } from "./parking-lot.service";
-import { rfidTagService } from "./rfid-tag.service";
 import { rfidAssignmentService } from "./rfid-assignment.service";
 
 const {
